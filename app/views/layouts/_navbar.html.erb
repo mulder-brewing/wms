@@ -1,15 +1,19 @@
 
   <nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid">
-      <span class="navbar-brand">
-        <h4 id="logo">Mulder WMS</h4>
-      </span>
+      <%= link_to "MULDER WMS", root_path, class: "navbar-brand" %>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarToggler">
         <div class="navbar-nav">
-          <%= link_to "Admin",   '#', class: "nav-item nav-link" %>
+          <div class="nav-item dropdown">
+            <%= link_to "Companies",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <%= link_to "List", '#', class: "dropdown-item" %>
+              <%= link_to "New", new_company_path , class: "dropdown-item" %>
+            </div>
+          </div>
           <%= link_to "Foo",   '#', class: "nav-item nav-link" %>
         </div>
         <div class="navbar-nav ml-auto">

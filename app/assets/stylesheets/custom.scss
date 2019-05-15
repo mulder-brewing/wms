@@ -1,3 +1,29 @@
+/* Universal */
+body {
+  background: #f4f4f4;
+}
+
+.navbar {
+  min-height: 33px !important;
+  margin-bottom: 0;
+  border-radius: 0;
+}
+
+.navbar-nav > a, .navbar-nav > div > a, .navbar-brand {
+  padding-top: 6px !important;
+  padding-bottom: 0 !important;
+  height: 33px;
+}
+
+.navbar-brand {
+  padding-top: 2px !important;
+}
+
+.page-header {
+  border-bottom: 1px solid #d9d9d9;
+}
+
+
 /* Debug */
 
 .debug_dump {
@@ -14,13 +40,11 @@ footer {
   padding-bottom: .5rem;
 }
 
-/* header */
-
-#logo {
-  margin-right: 10px;
-  font-size: 1.5em;
-  text-transform: uppercase;
-  letter-spacing: -1px;
-  padding-top: 9px;
-  font-weight: bold;
+// Shared Error Messages Styling
+#error_explanation {
+  color: red;
+  ul {
+    color: red;
+    margin: 0 0 30px 0;
+  }
 }

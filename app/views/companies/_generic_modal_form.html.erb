@@ -26,8 +26,7 @@
     </div>
 </div>
 <div class="modal-footer">
-  <% button_text = form_type == 'update' ? 'Cancel' : 'Close'  %>
-  <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal"><%= button_text %></button>
+  <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Close</button>
   <% if form_type == 'update' %>
     <button type="submit" form="update-form" class="btn btn-primary save">Save</button>
   <% end %>

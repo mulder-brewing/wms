@@ -4,17 +4,20 @@
 <%= provide(:new_link_toggle, 'modal') %>
 <%= provide(:new_link_target, '#create-modal') %>
 
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Actions</th>
-    </tr>
-  </thead>
-  <tbody id="company-table-body">
-    <%= render @companies %>
-  </tbody>
-</table>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Actions</th>
+        <th scope="col">Name</th>
+      </tr>
+    </thead>
+    <tbody id="company-table-body">
+      <%= render @companies %>
+    </tbody>
+  </table>
+</div>
+
 
 <div id="show-modal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">

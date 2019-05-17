@@ -7,6 +7,8 @@ ruby '2.6.3'
 gem 'rails', '~> 5.2.3'
 # Use bottstrap framework for nice web design and interface elements.
 gem 'bootstrap', '~> 4.3', '>= 4.3.1'
+#Trying to get forms to work
+gem 'popper_js'
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server

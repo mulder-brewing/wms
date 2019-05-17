@@ -7,14 +7,15 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarToggler">
         <div class="navbar-nav">
+          <%= link_to "Companies",   companies_path, class: "nav-item nav-link" %>
+          <%= link_to "Foo",   '#', class: "nav-item nav-link" %>
           <div class="nav-item dropdown">
-            <%= link_to "Companies",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
+            <%= link_to "Bar",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <%= link_to "List", '#', class: "dropdown-item" %>
-              <%= link_to "New", new_company_path , class: "dropdown-item" %>
+              <%= link_to "Bar1", '#', class: "dropdown-item" %>
+              <%= link_to "Bar2", '#' , class: "dropdown-item" %>
             </div>
           </div>
-          <%= link_to "Foo",   '#', class: "nav-item nav-link" %>
         </div>
         <div class="navbar-nav ml-auto">
           <%= link_to "Log out", '#', class: "nav-item nav-link" %>

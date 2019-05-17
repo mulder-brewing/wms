@@ -1,0 +1,6 @@
+<% if !@company.valid? %>
+$("#update-feedback").html("<%= j render 'shared/error_messages', object: @company %>");
+<% else %>
+$("#update-feedback").html("<%= j render 'shared/modal_save_success' %>");
+$("#company_<%=@company.id%>").replaceWith('<%= j render @company, company: @company %>');
+<% end %>

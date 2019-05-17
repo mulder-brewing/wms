@@ -1,7 +1,12 @@
 Rails.application.routes.draw do
   # Resources
-  resources :companies
-  
+  resources :companies do
+    member do
+      get :destroy_modal
+      get :update_modal
+    end
+  end
+
   root 'static_pages#home'
   get 'static_pages/home'
 

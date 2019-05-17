@@ -1,0 +1,64 @@
+<% provide(:title, 'Companies') %>
+<% provide(:icon_class, 'fas fa-building') %>
+<%= provide(:new_link, new_company_path) %>
+<%= provide(:new_link_toggle, 'modal') %>
+<%= provide(:new_link_target, '#create-modal') %>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody id="company-table-body">
+    <%= render @companies %>
+  </tbody>
+</table>
+
+<div id="show-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+<div id="destroy-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+<div id="update-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
+
+
+
+<%= form_for(@company, remote: true) do |f| %>
+  <div id="create-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create Company</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <div id="create-error"><!-- this is placeholder for errors when saving. --></div>
+            <%= f.label :name %>
+            <%= f.text_field :name, class: "form-control company_name", placeholder: "Enter company name" %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <%= f.submit "Save", class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

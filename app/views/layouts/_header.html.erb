@@ -1,8 +1,13 @@
 <header class="page-header">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-12 py-1">
-        <h3 class="page-title m-0 text-center"><%= header_icon(yield(:icon_class)) %>  <%= yield(:title) %></h3>
+      <div class="col-9 py-1">
+        <h3 class="page-title m-0"><%= header_icon(yield(:icon_class)) %>  <%= yield(:title) %></h3>
+      </div>
+      <div class="col-3 py-1 text-right">
+        <% if !yield(:new_link).empty? %>
+          <%= link_to 'New', yield(:new_link), 'data-toggle' => yield(:new_link_toggle), 'data-target' => yield(:new_link_target), 'class' => 'btn btn-success btn-sm' %>
+        <% end %>
       </div>
     </div>
   </div>

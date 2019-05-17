@@ -3,7 +3,6 @@ Rails.application.routes.draw do
   resources :companies do
     member do
       get :destroy_modal
-      get :update_modal
     end
   end
 

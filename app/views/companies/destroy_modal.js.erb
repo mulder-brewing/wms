@@ -1,2 +1,2 @@
-$("#destroy-modal").find(".modal-content").html("<%= j (render 'destroy') %>");
+$("#modal").html("<%= j render 'generic_modal', { :form_type => 'destroy', :title => 'Delete'} %>");
 $("#destroy-modal").modal('show');

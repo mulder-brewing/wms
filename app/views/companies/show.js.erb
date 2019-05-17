@@ -1,4 +1,4 @@
 
-$("#show-modal").find(".modal-content").html("<%= j (render 'show') %>");
+$("#modal").html("<%= j render 'generic_modal', { :form_type => 'show', :title => 'Show'} %>");
 $(".disable-input :input").prop('disabled',true);
 $("#show-modal").modal('show');

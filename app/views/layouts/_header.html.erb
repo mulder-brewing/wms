@@ -6,7 +6,7 @@
       </div>
       <div class="col-3 py-1 text-right">
         <% if !yield(:new_link).empty? %>
-          <%= link_to 'New', yield(:new_link), 'data-toggle' => yield(:new_link_toggle), 'data-target' => yield(:new_link_target), 'class' => 'btn btn-success btn-sm' %>
+          <%= link_to 'New', yield(:new_link), 'data-toggle' => yield(:new_link_toggle), 'data-target' => yield(:new_link_target), remote:true, 'class' => 'btn btn-success btn-sm' %>
         <% end %>
       </div>
     </div>

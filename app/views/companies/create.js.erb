@@ -1,12 +1,7 @@
-
-
-<% if !@company.valid? %>
-$("#create-error").html("<%= j render 'shared/error_messages', object: @company %>");
-<% else %>
+<% if @company.valid? %>
 $('#create-modal').modal('hide');
-$('.company_name').val('');
-$("#create-error").empty();
-
 $('#company-table-body').prepend('<%= j render @company, company: @company %>');
 $('#company_<%= @company.id %>').hide().fadeIn(1000);
+<% else %>
+$("#feedback").html("<%= j render 'shared/error_messages', object: @company %>");
 <% end %>

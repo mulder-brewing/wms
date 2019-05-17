@@ -1,10 +1,16 @@
 class CompaniesController < ApplicationController
   def new
     @company = Company.new
+
+    respond_to do |format|
+        format.html
+        format.js
+    end
   end
 
   def show
     @company = Company.find(params[:id])
+
     respond_to do |format|
       format.html
       format.js
@@ -33,6 +39,7 @@ class CompaniesController < ApplicationController
   def destroy
     @company = Company.find(params[:id])
     @company.destroy
+
     respond_to do |format|
       format.html { redirect_to companies_url, :flash => { :success => "Company successfully deleted!" } }
       format.js
@@ -47,7 +54,7 @@ class CompaniesController < ApplicationController
     end
   end
 
-  def update_modal
+  def edit
     @company = Company.find(params[:id])
     respond_to do |format|
       format.html

@@ -32,7 +32,7 @@ class CompaniesController < ApplicationController
   end
 
   def index
-    @companies = Company.all
+    @pagy, @companies = pagy(Company.all.order(:name), items:25)
     @company = Company.new
   end
 

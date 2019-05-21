@@ -1,7 +1,7 @@
 <% if @company.valid? %>
+  $("form").replaceWith("<%=  j render 'show_update_form', form_type: 'update' %>");
   $("#feedback").html("<%= j render 'shared/modal_save_success' %>");
-  $('.updated_at').val('<%= @company.updated_at %>');
   $("#company_<%=@company.id%>").replaceWith('<%= j render @company, company: @company %>');
 <% else %>
-  $("#feedback").html("<%= j render 'shared/error_messages', object: @company %>");
+  $("form").replaceWith("<%=  j render 'show_update_form', form_type: 'update' %>");
 <% end %>

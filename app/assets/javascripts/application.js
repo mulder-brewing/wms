@@ -17,3 +17,6 @@
 //= require jquery3
 //= require popper
 //= require bootstrap-sprockets
+//= require pagy
+
+window.addEventListener("turbolinks:load", Pagy.init);

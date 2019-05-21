@@ -1,17 +1,21 @@
-<%= form_for @company, remote:true, :html => { :id => form_type +'-form' } do |f| %>
-  <div class="form-group">
-    <div id="feedback"></div>
-    <div class="mb-2">
-      <%= f.label :name %>
-      <%= f.text_field :name, class: "form-control", placeholder: "Enter company name" %>
+<%= simple_form_for @company, remote:true, :html => { :id => form_type +'-form' } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
     </div>
-    <div class="mb-2 remove_for_new">
-      <%= f.label :created_at %>
-      <%= f.text_field :created_at, class: "form-control", disabled:true %>
+    <div class="mb-3">
+      <%= f.input :name %>
     </div>
-    <div class="mb-2 remove_for_new">
-      <%= f.label :updated_at %>
-      <%= f.text_field :updated_at, class: "form-control updated_at", disabled:true %>
-    </div>
-  </div>
+    <% if form_type == 'update' %>
+      <div class="mb-2">
+        <%= f.input :enabled, wrapper: :switch %>
+      </div>
+      <div class="mb-2">
+        Created <br>
+        <%= @company.created_at %>
+      </div>
+      <div class="mb-2">
+        Updated <br>
+        <%= @company.updated_at %>
+      </div>
+    <% end %>
 <% end %>

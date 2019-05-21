@@ -8,8 +8,10 @@
         </button>
       </div>
       <div class="modal-body disable-input">
-        <% if %w(show update create).include?(form_type) %>
+        <% if %w(update create).include?(form_type) %>
           <%= render 'show_update_form', { :form_type => form_type } %>
+        <% elsif form_type == 'show' %>
+          <%= render 'show' %>
         <% else %>
           Are you sure you want to delete this company?  This action is irreversible.
         <% end %>

@@ -3,5 +3,5 @@ $('#create-modal').modal('hide');
 $('#company-table-body').prepend('<%= j render @company, company: @company %>');
 $('#company_<%= @company.id %>').hide().fadeIn(1000);
 <% else %>
-$("#feedback").html("<%= j render 'shared/error_messages', object: @company %>");
+$("form").replaceWith("<%=  j render 'show_update_form', form_type: 'create' %>");
 <% end %>

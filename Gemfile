@@ -44,9 +44,14 @@ gem 'jquery-rails', '4.3.1'
 
 #Pagination
 gem 'pagy', '~> 3.2.0'
+#Makes pagy run quicker
+gem 'oj', '~> 3.7.12'
 
 #Generate fake random test data
 gem 'faker', '~> 1.9.3'
+
+# Simple form bootsrap compatible
+gem 'simple_form', '~>4.1.0'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

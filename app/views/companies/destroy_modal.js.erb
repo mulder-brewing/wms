@@ -1,2 +1,2 @@
-$("#modal").html("<%= j render 'generic_modal', { :form_type => 'destroy', :title => 'Delete'} %>");
+$("#modal").html("<%= j render 'shared/generic_modal', { :form_type => 'destroy', :title => 'Delete Company', :entity => 'company', :object => @company } %>");
 $("#destroy-modal").modal('show');

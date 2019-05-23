@@ -1,81 +1,44 @@
 class CompaniesController < ApplicationController
   def new
     @company = Company.new
-
-    respond_to do |format|
-        format.html
-        format.js
-    end
-  end
-
-  def show
-    @company = Company.find(params[:id])
-
-    respond_to do |format|
-      format.html
-      format.js
-    end
+    respond_to :js
   end
 
   def create
     @company = Company.new(company_params)
-
-    respond_to do |format|
-      if @company.save
-        format.html { redirect_to companies_url, :flash => { :success => "Company successfully created!" } }
-        format.js
-      else
-        format.html { render 'new' }
-        format.js
-      end
-    end
+    @company.save
+    respond_to :js
   end
 
-  def index
-    @pagy, @companies = pagy(Company.all.order(:name), items:25)
-    @company = Company.new
+  def show
+    @company = Company.find(params[:id])
+    respond_to :js
+  end
+
+  def edit
+    @company = Company.find(params[:id])
+    respond_to :js
+  end
+
+  def update
+    @company = Company.find(params[:id])
+    @company.update_attributes(company_params)
+    respond_to :js
+  end
+
+  def destroy_modal
+    @company = Company.find(params[:id])
+    respond_to :js
   end
 
   def destroy
     @company = Company.find(params[:id])
     @company.destroy
-
-    respond_to do |format|
-      format.html { redirect_to companies_url, :flash => { :success => "Company successfully deleted!" } }
-      format.js
-    end
+    respond_to :js
   end
 
-  def destroy_modal
-    @company = Company.find(params[:id])
-    respond_to do |format|
-      format.html
-      format.js
-    end
-  end
-
-  def edit
-    @company = Company.find(params[:id])
-    respond_to do |format|
-      format.html
-      format.js
-    end
-  end
-
-  def update
-    @company = Company.find(params[:id])
-    if @company.update_attributes(company_params)
-      respond_to do |format|
-        format.html { redirect_to companies_url, :flash => { :success => "Company successfully updated!" } }
-        format.js
-      end
-    else
-      respond_to do |format|
-        format.html
-        format.js
-      end
-    end
-
+  def index
+    @pagy, @companies = pagy(Company.all.order(:name), items:25)
   end
 
   private

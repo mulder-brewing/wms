@@ -1,8 +1,6 @@
 <% provide(:title, 'Companies') %>
 <% provide(:icon_class, 'fas fa-building') %>
 <%= provide(:new_link, new_company_path) %>
-<%= provide(:new_link_toggle, 'modal') %>
-<%= provide(:new_link_target, '#create-modal') %>
 
 <div class="table-responsive">
   <table class="table table-striped">
@@ -10,6 +8,7 @@
       <tr>
         <th scope="col">Actions</th>
         <th scope="col">Name</th>
+        <th scope="col">Enabled</th>
       </tr>
     </thead>
     <tbody id="company-table-body">
@@ -24,4 +23,5 @@
 
 <div class="ml-3">
   <%== pagy_bootstrap_nav_js(@pagy) %>
+  <%== pagy_info(@pagy) %>
 </div>

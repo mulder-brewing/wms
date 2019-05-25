@@ -7,7 +7,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body disable-input">
+      <div class="modal-body">
         <% if %w(update create).include?(form_type) %>
           <%= render form_path, { :form_type => form_type } %>
         <% elsif form_type == 'show' %>

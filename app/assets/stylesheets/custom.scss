@@ -3,6 +3,7 @@ body {
   background: #f4f4f4;
 }
 
+// Navbar styles
 .navbar {
   min-height: 33px !important;
   margin-bottom: 0;
@@ -19,10 +20,27 @@ body {
   padding-top: 2px !important;
 }
 
+/* Page header/title styling */
 .page-header {
   border-bottom: 1px solid #d9d9d9;
 }
 
+// Footer styles
+footer {
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+}
+
+/* JS Alert styling */
+.fixed-alert {
+  width: 50%;
+}
+
+@media (max-width : 800px) {
+  .fixed-alert {
+    width: 100%;
+  }
+}
 
 /* Debug */
 
@@ -33,24 +51,4 @@ body {
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 9.5px;
-}
-
-footer {
-  padding-top: .5rem;
-  padding-bottom: .5rem;
-}
-
-// Shared Error Messages Styling
-#error_explanation {
-  color: red;
-  ul {
-    color: red;
-    margin: 0 0 30px 0;
-  }
-}
-
-.hide-overflow {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }

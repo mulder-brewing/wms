@@ -11,12 +11,12 @@ class CompaniesController < ApplicationController
   end
 
   def show
-    @company = Company.find(params[:id])
+    @company = Company.find_by(id: params[:id])
     respond_to :js
   end
 
   def edit
-    @company = Company.find(params[:id])
+    @company = Company.find_by(id: params[:id])
     respond_to :js
   end
 
@@ -27,7 +27,7 @@ class CompaniesController < ApplicationController
   end
 
   def destroy_modal
-    @company = Company.find(params[:id])
+    @company = Company.find_by(id: params[:id])
     respond_to :js
   end
 

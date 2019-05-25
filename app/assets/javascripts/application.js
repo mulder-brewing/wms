@@ -18,5 +18,6 @@
 //= require popper
 //= require bootstrap-sprockets
 //= require pagy
+//= require_tree ./application
 
 window.addEventListener("turbolinks:load", Pagy.init);

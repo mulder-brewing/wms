@@ -2,3 +2,4 @@ $('#destroy-modal').modal('hide');
 $('#company_<%= @company.id %>').fadeOut(500, function(){
   $(this).remove();
 });
+alert_custom("success", "Company deleted successfully!")

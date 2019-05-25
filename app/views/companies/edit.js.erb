@@ -1,2 +1,6 @@
-$("#modal").html("<%= j render 'shared/generic_modal', { :form_type => 'update', :title => 'Edit Company', :form_path => 'companies/new_edit_form' } %>");
-$("#update-modal").modal('show');
+<% if @company %>
+  $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'update', :title => 'Edit Company', :form_path => 'companies/new_edit_form' } %>");
+  $("#update-modal").modal('show');
+<% else %>
+  alert_custom("warning","Company no longer exists")
+<% end %>

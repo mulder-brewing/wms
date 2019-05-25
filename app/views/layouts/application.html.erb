@@ -11,8 +11,10 @@
     <%= render 'layouts/navbar' %>
     <%= render 'layouts/header' if content_for? :title %>
     <%= render 'layouts/flash_messages' %>
-      <%= yield %>
-      <%= render 'layouts/footer' %>
-      <%= render 'layouts/debug' %>
+    <%= yield %>
+    <%= render 'layouts/modal_wrapper' %>
+    <%= render 'layouts/alert_wrapper' %>
+    <%= render 'layouts/footer' %>
+    <%= render 'layouts/debug' %>
   </body>
 </html>

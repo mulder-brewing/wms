@@ -1,4 +1,6 @@
 class CompaniesController < ApplicationController
+  before_action :app_admin
+
   def new
     @company = Company.new
     respond_to :js
@@ -45,5 +47,9 @@ class CompaniesController < ApplicationController
 
     def company_params
       params.require(:company).permit(:name, :enabled)
+    end
+
+    def app_admin
+      redirect_to(root_url) unless current_user.app_admin?
     end
 end

@@ -1,16 +1,10 @@
-<div class="mb-2">
-  <h6>Name</h6>
-  <%= @company.name %>
-</div>
-<div class="mb-2">
-  <h6>Enabled</h6>
-  <%= @company.enabled_yes_no %>
-</div>
-<div class="mb-2">
-  <h6>Created</h6>
-  <%= @company.created_at %>
-</div>
-<div class="mb-2">
-  <h6>Updated</h6>
-  <%= @company.updated_at %>
+<% width = 3 %>
+
+<div class="container">
+  <div class="row">
+    <%= render 'shared/show_field', { :label => 'Name', :value => @company.name, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Enabled', :value => @company.enabled_yes_no, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Created', :value => @company.created_at, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Updated', :value => @company.updated_at, :label_col => width } %>
+  </div>
 </div>

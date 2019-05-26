@@ -1,0 +1,23 @@
+<% provide(:title, 'Users') %>
+<% provide(:icon_class, 'fas fa-users') %>
+<%= provide(:new_link, new_user_path) %>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Actions</th>
+        <th scope="col">Username</th>
+        <% if app_admin? %>
+          <th scope="col">Company</th>
+        <% end %>
+        <th scope="col">Enabled</th>
+      </tr>
+    </thead>
+    <tbody id="user-table-body">
+      <%= render @users %>
+    </tbody>
+  </table>
+</div>
+
+<%= render 'shared/pagination' %>

@@ -5,7 +5,8 @@
     <p class="lead">A powerful, easy to use, fully cloud SaaS for all your warehouse management needs.</p>
     <hr class="my-4">
     <p class="lead">
-      <a class="btn btn-primary btn-lg" href="#" role="button">Log In</a>
+      <%= link_to "Log In", login_path , class: "btn btn-primary btn-lg", role: "button" if !logged_in? %>
+      <%= current_user.company.name if logged_in? %>
     </p>
   </div>
 </div>

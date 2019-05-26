@@ -1,0 +1,6 @@
+<% if @user %>
+$("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'show', :title => 'User' } %>");
+$("#show-modal").modal('show');
+<% else %>
+  alert_custom("warning","Company no longer exists")
+<% end %>

@@ -3,5 +3,5 @@
   $("#company_<%=@company.id%>").replaceWith('<%= j render @company, company: @company %>');
   alert_custom("success", "Company updated successfully!")
 <% else %>
-  $("form").replaceWith("<%=  j render 'companies/new_edit_form', form_type: 'update' %>");
+  $("#update-form").replaceWith("<%=  j render 'companies/new_edit_form', form_type: 'update' %>");
 <% end %>

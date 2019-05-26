@@ -4,5 +4,5 @@ $('#company-table-body').prepend('<%= j render @company, company: @company %>');
 $('#company_<%= @company.id %>').hide().fadeIn(1000);
 alert_custom("success","Company created successfully!");
 <% else %>
-$("form").replaceWith("<%=  j render 'new_edit_form', form_type: 'create' %>");
+$("#create-form").replaceWith("<%=  j render 'new_edit_form', form_type: 'create' %>");
 <% end %>

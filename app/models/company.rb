@@ -1,8 +1,9 @@
 class Company < ApplicationRecord
+  has_many :users, dependent: :destroy
+
   validates :name, presence: true, length: { maximum: 50 }, uniqueness: { case_sensitive: false }
 
   before_validation :strip_whitespace
-  before_save :strip_whitespace
 
   def enabled_yes_no
     if self.enabled

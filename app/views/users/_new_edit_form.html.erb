@@ -1,0 +1,22 @@
+<%= simple_form_for @user, remote:true, :html => { :id => form_type +'-form' } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <% show_to_admin = current_user.company_admin %>
+      <% not_self = !(@user == current_user) %>
+      <%= f.input :company_id, :collection => Company.all.order(:name), :label_method => :name, :value_method => :id if current_user.app_admin %>
+      <%= f.input :first_name, as: :string if show_to_admin %>
+      <%= f.input :last_name, as: :string if show_to_admin %>
+      <%= f.input :email, as: :string %>
+      <%= f.input :username, as: :string if show_to_admin %>
+      <%= f.input :password %>
+      <%= f.input :password_confirmation, required: true %>
+      <%= f.input :company_admin, label: 'Admin' if show_to_admin && not_self %>
+    </div>
+    <% if form_type == 'update' && show_to_admin && not_self %>
+      <div class="mb-2">
+        <%= f.input :enabled, wrapper: :switch %>
+      </div>
+    <% end %>
+<% end %>

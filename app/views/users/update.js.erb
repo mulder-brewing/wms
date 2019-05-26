@@ -1,0 +1,7 @@
+<% if @user.errors.messages.size == 0 %>
+  $('#update-modal').modal('hide');
+  $("#user_<%=@user.id%>").replaceWith('<%= j render @user, user: @user %>');
+  alert_custom("success", "User updated successfully!")
+<% else %>
+  $("#update-form").replaceWith("<%=  j render 'users/new_edit_form', form_type: 'update' %>");
+<% end %>

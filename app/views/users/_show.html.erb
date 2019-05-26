@@ -1,0 +1,14 @@
+<% width = 3 %>
+
+<div class="container">
+  <div class="row">
+    <%= render 'shared/show_field', { :label => 'Company', :value => @user.company.name, :label_col => width } if current_user.app_admin %>
+    <%= render 'shared/show_field', { :label => 'Username', :value => @user.username, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Name', :value => @user.full_name, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Email', :value => @user.email, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Admin', :value => @user.company_admin_yes_no?, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Enabled', :value => @user.enabled?, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Created', :value => @user.created_at, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Updated', :value => @user.updated_at, :label_col => width } %>
+  </div>
+</div>

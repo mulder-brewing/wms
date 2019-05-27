@@ -32,4 +32,22 @@ module SessionsHelper
   def app_admin?
     current_user.app_admin
   end
+<<<<<<< HEAD
+
+  #Returns true if the current_user is company_admin
+  def company_admin?
+    current_user.company_admin
+  end
+
+  #Returns ture is the current user is logged in and a app_admin.
+  def logged_in_app_admin?
+    logged_in? && app_admin?
+  end
+
+  #Returns true if the current_user is logged in and a company_admin.
+  def logged_in_company_admin?
+    logged_in? && company_admin?
+  end
+=======
+>>>>>>> 222d199d41cf3cc936b808c72883d03580690efc
 end

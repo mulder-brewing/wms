@@ -19,5 +19,6 @@
 //= require bootstrap-sprockets
 //= require pagy
 //= require_tree ./application
+//= require local-time
 
 window.addEventListener("turbolinks:load", Pagy.init);

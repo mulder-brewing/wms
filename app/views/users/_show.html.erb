@@ -8,7 +8,7 @@
     <%= render 'shared/show_field', { :label => 'Email', :value => @user.email, :label_col => width } %>
     <%= render 'shared/show_field', { :label => 'Admin', :value => @user.company_admin_yes_no?, :label_col => width } %>
     <%= render 'shared/show_field', { :label => 'Enabled', :value => @user.enabled?, :label_col => width } %>
-    <%= render 'shared/show_field', { :label => 'Created', :value => @user.created_at, :label_col => width } %>
-    <%= render 'shared/show_field', { :label => 'Updated', :value => @user.updated_at, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Created', :value => local_time(@user.created_at), :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Updated', :value => local_time(@user.updated_at), :label_col => width } %>
   </div>
 </div>

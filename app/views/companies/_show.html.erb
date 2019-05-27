@@ -4,7 +4,7 @@
   <div class="row">
     <%= render 'shared/show_field', { :label => 'Name', :value => @company.name, :label_col => width } %>
     <%= render 'shared/show_field', { :label => 'Enabled', :value => @company.enabled_yes_no, :label_col => width } %>
-    <%= render 'shared/show_field', { :label => 'Created', :value => @company.created_at, :label_col => width } %>
-    <%= render 'shared/show_field', { :label => 'Updated', :value => @company.updated_at, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Created', :value => local_time(@company.created_at), :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Updated', :value => local_time(@company.updated_at), :label_col => width } %>
   </div>
 </div>

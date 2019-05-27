@@ -50,10 +50,6 @@ class CompaniesController < ApplicationController
     end
 
     def app_admin
-<<<<<<< HEAD
       redirect_to(root_url) unless logged_in_app_admin?
-=======
-      redirect_to(root_url) unless current_user.app_admin?
->>>>>>> 222d199d41cf3cc936b808c72883d03580690efc
     end
 end

@@ -57,11 +57,7 @@ class UsersController < ApplicationController
       end
 
       def company_admin
-<<<<<<< HEAD
         redirect_to(root_url) unless logged_in_company_admin?
-=======
-        redirect_to(root_url) unless current_user.company_admin?
->>>>>>> 222d199d41cf3cc936b808c72883d03580690efc
       end
 
       def logged_in

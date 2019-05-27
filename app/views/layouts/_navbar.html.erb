@@ -3,10 +3,7 @@
     <div class="container-fluid">
       <%= link_to "MULDER WMS", root_path, class: "navbar-brand" %>
       <% if logged_in? %>
-<<<<<<< HEAD
         <%= link_to "Log Out", logout_path, method: :delete, :role => 'button', :class => 'btn btn-sm align-middle btn-primary ml-auto order-md-last mr-3 mr-sm-4 mr-md-0 ' %>
-=======
->>>>>>> 222d199d41cf3cc936b808c72883d03580690efc
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -23,14 +20,7 @@
             </div>
           </div>
           <div class="navbar-nav ml-auto">
-<<<<<<< HEAD
             <%= link_to current_user.username, edit_user_path(current_user), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => "nav-item nav-link mr-4" %>
-=======
-            <%= link_to current_user.username, edit_user_path(current_user), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => "nav-item nav-link mr-2" %>
-            <form class="form-inline">
-              <%= link_to "Log Out", logout_path, method: :delete , class: "btn btn-primary" %>
-            </form>
->>>>>>> 222d199d41cf3cc936b808c72883d03580690efc
           </div>
         </div>
       <% end %>

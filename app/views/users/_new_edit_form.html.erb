@@ -10,7 +10,9 @@
       <%= f.input :last_name, as: :string if show_to_admin %>
       <%= f.input :email, as: :string %>
       <%= f.input :username, as: :string if show_to_admin %>
+      <%= f.hint 'lowercase, numbers, and underscore only with no spaces' %>
       <%= f.input :password %>
+      <%= f.hint '8-64 characters with at least one of each (uppercase, lowercase, number, special)' %>
       <%= f.input :password_confirmation, required: true %>
       <%= f.input :company_admin, label: 'Admin' if show_to_admin && not_self %>
     </div>

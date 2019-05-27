@@ -2,7 +2,7 @@ class User < ApplicationRecord
 
   belongs_to :company
 
-  before_validation :strip_whitespace, :downcase_username
+  before_validation :strip_whitespace
   validates :company_id, presence: true
   validates :username, presence: true, length: { maximum: 50 }, uniqueness: { case_sensitive: false }
   validates :first_name, presence: true, length: { maximum: 50 }
@@ -12,6 +12,13 @@ class User < ApplicationRecord
   validates :password, presence: true, length: { minimum: 8 }, allow_nil: true
   validate :self_admin_enabled, on: :self
   validate :self_enabled, on: :self
+  # Regex for 8-64 characters, must have at least one uppercase, lowercase, number, and special character.
+  VALID_PASSWORD_REGEX = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*)(?=.*\W.*)[a-zA-Z0-9\S]{8,64}\z/
+  validates :password, format: { with: VALID_PASSWORD_REGEX }, allow_blank: true
+  # Regex for lowercase letters, numbers, and underscore.
+  VALID_USERNAME_REGEX = /\A[a-z0-9_]*\z/
+  validates :username, format: { with: VALID_USERNAME_REGEX }
+
 
   has_secure_password
 
@@ -41,10 +48,6 @@ class User < ApplicationRecord
       self.first_name.strip!
       self.last_name.strip!
       self.email.strip! if self.email?
-    end
-
-    def downcase_username
-      self.username.downcase!
     end
 
     # Do not allow the current user to disable admin for themself.

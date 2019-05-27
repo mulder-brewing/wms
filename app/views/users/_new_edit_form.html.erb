@@ -11,9 +11,22 @@
       <%= f.input :email, as: :string %>
       <%= f.input :username, as: :string if show_to_admin %>
       <%= f.hint 'lowercase, numbers, and underscore only with no spaces' %>
-      <%= f.input :password %>
-      <%= f.hint '8-64 characters with at least one of each (uppercase, lowercase, number, special)' %>
-      <%= f.input :password_confirmation, required: true %>
+      <% if form_type == 'update' %>
+        <div class="my-3">
+          <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            Update Password
+          </button>
+          <div class="collapse" id="collapseExample">
+            <div class="card card-body">
+      <% end %>
+              <%= f.input :password %>
+              <%= f.hint '8-64 characters with at least one of each (uppercase, lowercase, number, special)' %>
+              <%= f.input :password_confirmation, required: true %>
+      <% if form_type == 'update' %>
+            </div>
+          </div>
+        </div>
+      <% end %>
       <%= f.input :company_admin, label: 'Admin' if show_to_admin && not_self %>
     </div>
     <% if form_type == 'update' && show_to_admin && not_self %>

@@ -45,7 +45,6 @@ class UsersController < ApplicationController
     end
 
     private
-
       def user_params
         if current_user.app_admin
           params.require(:user).permit(:company_id, :username, :first_name, :last_name, :email, :enabled, :password, :password_confirmation, :company_admin )

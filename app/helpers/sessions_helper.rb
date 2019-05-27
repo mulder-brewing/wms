@@ -47,8 +47,4 @@ module SessionsHelper
   def logged_in_company_admin?
     logged_in? && company_admin?
   end
-=======
->>>>>>> 222d199d41cf3cc936b808c72883d03580690efc
-=======
->>>>>>> 222d199d41cf3cc936b808c72883d03580690efc
 end

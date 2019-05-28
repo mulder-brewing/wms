@@ -8,5 +8,21 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
+  # Shared return page title
+  def wms_title (page_title)
+    page_title + ' | Mulder WMS'
+  end
+
+end
+
+class ActionDispatch::IntegrationTest
+
+  # Log in as a particular user.
+  def log_in_as(user, password = "Password1$")
+    post login_path, params: { session: { username: user.username, password: password, } }
+  end
+
+  def log_out()
+    delete logout_path
+  end
 end

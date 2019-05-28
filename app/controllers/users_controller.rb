@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-    before_action :company_admin, except: [:edit, :update]
+    before_action :logged_in_admin, except: [:edit, :update]
     before_action :logged_in
 
     def new
@@ -55,8 +55,8 @@ class UsersController < ApplicationController
         end
       end
 
-      def company_admin
-        redirect_to(root_url) unless logged_in_company_admin?
+      def logged_in_admin
+        redirect_to(root_url) unless logged_in_admin?
       end
 
       def logged_in

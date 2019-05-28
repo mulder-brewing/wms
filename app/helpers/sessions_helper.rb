@@ -47,4 +47,9 @@ module SessionsHelper
   def logged_in_company_admin?
     logged_in? && company_admin?
   end
+
+  #Returns true if the current user is logged in as company admin or app admin.
+  def logged_in_admin?
+    logged_in? && (app_admin? || company_admin?)
+  end
 end

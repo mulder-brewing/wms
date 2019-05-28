@@ -10,7 +10,7 @@
         <div class="collapse navbar-collapse" id="navbarToggler">
           <div class="navbar-nav">
             <%= link_to "Companies",   companies_path, class: "nav-item nav-link" if current_user.app_admin? %>
-            <%= link_to "Users", users_path, class: "nav-item nav-link" if current_user.company_admin? %>
+            <%= link_to "Users", users_path, class: "nav-item nav-link" if current_user.company_admin? || current_user.app_admin? %>
             <div class="nav-item dropdown">
               <%= link_to "Bar",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">

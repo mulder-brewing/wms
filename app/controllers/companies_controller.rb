@@ -44,12 +44,11 @@ class CompaniesController < ApplicationController
   end
 
   private
-
     def company_params
       params.require(:company).permit(:name, :enabled)
     end
 
     def app_admin
-      redirect_to(root_url) unless logged_in_app_admin?
+      all_formats_redirect_to(root_url) unless logged_in_app_admin?
     end
 end

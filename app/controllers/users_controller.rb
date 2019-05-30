@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
     before_action :logged_in_admin, except: [:edit, :update]
-    before_action :logged_in
+    before_action :check_company, only: [:edit]
 
     def new
       @user = User.new
@@ -38,9 +38,9 @@ class UsersController < ApplicationController
 
     def index
       if current_user.app_admin
-        @pagy, @users = pagy(User.all.order(:username), items:25)
+        @pagy, @users = pagy(User.all_except(current_user).order(:username), items:25)
       else
-        @pagy, @users = pagy(User.where(company_id: current_user.company_id).order(:username), items:25)
+        @pagy, @users = pagy(User.where(company_id: current_user.company_id).where_except(current_user).order(:username), items:25)
       end
     end
 
@@ -56,13 +56,13 @@ class UsersController < ApplicationController
       end
 
       def logged_in_admin
-        redirect_to(root_url) unless logged_in_admin?
+        all_formats_redirect_to(root_url) unless logged_in_admin?
       end
 
-      def logged_in
-        redirect_to(root_url) unless logged_in?
+      def check_company
+        @user = User.find_by(id: params[:id])
+        all_formats_redirect_to(root_url) unless same_company_as_current_user?(@user) || current_user.app_admin?
       end
-
 
 
 end

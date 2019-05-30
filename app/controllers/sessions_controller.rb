@@ -1,5 +1,8 @@
 class SessionsController < ApplicationController
+  skip_before_action :logged_in, :only => [:new, :create]
+
   def new
+    all_formats_redirect_to(root_url) if logged_in?
   end
 
   def create

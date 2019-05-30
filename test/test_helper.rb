@@ -16,6 +16,9 @@ class ActiveSupport::TestCase
 end
 
 class ActionDispatch::IntegrationTest
+  def xhr_redirect
+    'window.location = "http://www.example.com/"'
+  end
 
   # Log in as a particular user.
   def log_in_as(user, password = "Password1$")

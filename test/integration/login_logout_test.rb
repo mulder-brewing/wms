@@ -57,7 +57,10 @@ class LoginLogoutTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", "/users", true
   end
 
-
-
+  test 'logged in user visiting login page should be redirected to home' do
+    log_in_as(@regular_user)
+    get login_path
+    assert_redirected_to root_url
+  end
 
 end

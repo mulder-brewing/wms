@@ -52,4 +52,9 @@ module SessionsHelper
   def logged_in_admin?
     logged_in? && (app_admin? || company_admin?)
   end
+
+  #Returns true if the user belongs to the same company as the current user
+  def same_company_as_current_user?(user)
+    current_user.company == user.company
+  end
 end

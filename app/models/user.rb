@@ -42,6 +42,15 @@ class User < ApplicationRecord
     self.first_name + ' ' + self.last_name
   end
 
+  # Scope for excluding user from all users.
+  def self.all_except(user)
+    where.not(id: user)
+  end
+
+  def self.where_except(user)
+    where.not(id: user)
+  end
+
   private
     def strip_whitespace
       self.username.strip!

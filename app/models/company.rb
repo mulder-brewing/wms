@@ -14,7 +14,6 @@ class Company < ApplicationRecord
   end
 
   private
-
     def strip_whitespace
       self.name.strip! if !name.nil?
     end

@@ -19,7 +19,7 @@
             <div class="card card-body">
       <% end %>
               <%= f.input :password %>
-              <%= f.hint '8-64 characters, no spaces, with at least one of each (uppercase, lowercase, number, special)' %>
+              <%= f.hint '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special' %>
               <%= f.input :password_confirmation, required: true %>
       <% if form_type == 'update' %>
             </div>

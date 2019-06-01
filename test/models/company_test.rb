@@ -5,6 +5,8 @@ class CompanyTest < ActiveSupport::TestCase
   def setup
     @company = Company.new(name: "Example Company")
     @other_company = Company.new(name: "Other Example Company")
+    @delete_company = companies(:company_to_delete)
+    @delete_user = users(:delete_me_user)
   end
 
   test "should be valid" do
@@ -32,6 +34,20 @@ class CompanyTest < ActiveSupport::TestCase
     assert_not @other_company.valid?
     @other_company.name = "DupLicAtE"
     assert_not @other_company.valid?
+  end
+
+  test "Whitespace should be stripped from front and end of company name." do
+    @company.name = "     Name     "
+    @company.save
+    assert @company.reload.name = "Name"
+    @company.name = "  /t   Name   /n  "
+    @company.save
+    assert @company.reload.name = "Name"
+  end
+
+  test "Deleteing a company should also delete it's users because of dependent destroy" do
+    @delete_company.destroy
+    assert User.find_by(id: @delete_user.id).nil?
   end
 
 end

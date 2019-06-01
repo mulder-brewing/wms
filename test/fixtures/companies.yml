@@ -3,3 +3,11 @@
 averagejoes:
   name: Average Joes
   enabled: true
+
+company_to_delete:
+  name: Delete Me Company
+  enabled: true
+
+other_company:
+  name: Other Company
+  enabled: true

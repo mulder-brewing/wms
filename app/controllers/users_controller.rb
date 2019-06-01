@@ -40,7 +40,7 @@ class UsersController < ApplicationController
       if current_user.app_admin
         @pagy, @users = pagy(User.all_except(current_user).order(:username), items:25)
       else
-        @pagy, @users = pagy(User.where(company_id: current_user.company_id).where_except(current_user).order(:username), items:25)
+        @pagy, @users = pagy(User.where_company_users_except(current_user).order(:username), items:25)
       end
     end
 

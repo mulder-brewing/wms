@@ -32,3 +32,25 @@ app_admin_user:
   app_admin: true
   company: averagejoes
   password_digest: <%= User.digest('Password1$') %>
+
+delete_me_user:
+  username: delete_me_user
+  first_name: Delete
+  last_name: Me
+  email: delete@me.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: company_to_delete
+  password_digest: <%= User.digest('Password1$') %>
+
+other_company_user:
+  username: other_company_user
+  first_name: Other
+  last_name: User
+  email: other@othercompany.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: other_company
+  password_digest: <%= User.digest('Password1$') %>

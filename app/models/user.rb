@@ -1,8 +1,10 @@
 class User < ApplicationRecord
+  attr_accessor :current_user
 
   belongs_to :company
 
   before_validation :strip_whitespace
+  validates :current_user, presence: true
   validates :company_id, presence: true
   # Regex for lowercase letters, numbers, and underscore.
   VALID_USERNAME_REGEX = /\A[a-z0-9_]*\z/
@@ -14,9 +16,10 @@ class User < ApplicationRecord
   # Regex for 8-64 characters, must have at least one uppercase, lowercase, number, and special character.  No spaces
   VALID_PASSWORD_REGEX = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*)(?=.*\W.*)[a-zA-Z0-9\S]{8,64}\z/
   validates :password, presence: true, format: { with: VALID_PASSWORD_REGEX }, allow_blank: true, allow_nil: true
-
-  validate :self_admin_enabled, on: :self
-  validate :self_enabled, on: :self
+  validate :company_check, if: :current_user_is_set
+  validate :regular_user_check, if: :current_user_is_set
+  validate :self_disable_check, if: :current_user_is_set
+  validate :self_unadmin_check, if: :current_user_is_set
 
   has_secure_password
 
@@ -40,6 +43,8 @@ class User < ApplicationRecord
     self.first_name + ' ' + self.last_name
   end
 
+
+
   # Scope for excluding user from all users.
   def self.all_except(user)
     where.not(id: user)
@@ -56,25 +61,44 @@ class User < ApplicationRecord
       self.email.strip! if self.email?
     end
 
-    # Do not allow the current user to disable admin for themself.
-    def self_admin_enabled
-      if company_admin == false
-        errors.add(:company_admin, "cannot be disabled for yourself")
-      end
-    end
-
-    # Do not allow the current user to disable themself.
-    def self_enabled
-      if enabled == false
-        errors.add(:enabled, "cannot be disabled for yourself")
-      end
-    end
-
     # Returns the hash digest of the given string, used for user fixtures with minitest.
     def User.digest(string)
       cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
                                                     BCrypt::Engine.cost
       BCrypt::Password.create(string, cost: cost)
     end
+
+    # check that the current user's company matches the company of this instance
+    def company_check
+      if company_id != current_user.company_id
+        errors.add(:company_id, "doesn't match your company") unless current_user.app_admin
+      end
+    end
+
+    def regular_user_check
+      if !current_user.company_admin && !current_user.app_admin
+        #you are a regular user
+        errors.add(:base, "can't edit users other than yourself") if self != current_user
+      end
+    end
+
+    def self_disable_check
+      if self == current_user && enabled_changed?
+        #are you trying to disable yourself?
+        errors.add(:enabled, "cannot be disabled for yourself") if enabled == false
+      end
+    end
+
+    def self_unadmin_check
+      if self == current_user && company_admin_changed?
+        #are you trying to unadmin yourself?
+        errors.add(:company_admin, "cannot be disabled for yourself") if company_admin == false
+      end
+    end
+
+    def current_user_is_set
+      !current_user.nil?
+    end
+
 
 end

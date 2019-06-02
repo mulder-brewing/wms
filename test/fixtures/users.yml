@@ -28,7 +28,7 @@ app_admin_user:
   last_name: Joe
   email: joe@average.com
   enabled: true
-  company_admin: false
+  company_admin: true
   app_admin: true
   company: averagejoes
   password_digest: <%= User.digest('Password1$') %>

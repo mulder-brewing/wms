@@ -2,6 +2,8 @@ require 'test_helper'
 
 class SessionsControllerTest < ActionDispatch::IntegrationTest
 
+  #this is tested more thoroughly by the login_logout integration test
+
   test "should get login page with correct title, login form, inputs" do
     get login_url
     assert_response :success

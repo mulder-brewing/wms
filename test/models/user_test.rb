@@ -5,9 +5,10 @@ class UserTest < ActiveSupport::TestCase
 
   def setup
     @regular_user = users(:regular_user)
+    @regular_user.current_user = @regular_user
     @company_admin = users(:company_admin_user)
+    @company_admin.current_user = @company_admin
     @other_company_user = users(:other_company_user)
-
   end
 
   test "whitespace should be stripped from beginning and end" do

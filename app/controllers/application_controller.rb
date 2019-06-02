@@ -4,7 +4,7 @@ class ApplicationController < ActionController::Base
   before_action :logged_in
 
   rescue_from ActionController::InvalidAuthenticityToken do
-    redirect_to root_url
+    all_formats_redirect_to(root_url)
   end
 
   def all_formats_redirect_to(path)
@@ -15,7 +15,6 @@ class ApplicationController < ActionController::Base
   end
 
   private
-
     def logged_in
       all_formats_redirect_to(root_url) unless logged_in?
     end

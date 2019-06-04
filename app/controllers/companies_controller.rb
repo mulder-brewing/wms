@@ -13,28 +13,28 @@ class CompaniesController < ApplicationController
   end
 
   def show
-    @company = Company.find_by(id: params[:id])
+    find_company_by_id
     respond_to :js
   end
 
   def edit
-    @company = Company.find_by(id: params[:id])
+    find_company_by_id
     respond_to :js
   end
 
   def update
-    @company = Company.find(params[:id])
+    find_company_by_id
     @company.update_attributes(company_params)
     respond_to :js
   end
 
   def destroy_modal
-    @company = Company.find_by(id: params[:id])
+    find_company_by_id
     respond_to :js
   end
 
   def destroy
-    @company = Company.find(params[:id])
+    find_company_by_id
     @company.destroy
     respond_to :js
   end
@@ -50,5 +50,9 @@ class CompaniesController < ApplicationController
 
     def app_admin
       all_formats_redirect_to(root_url) unless logged_in_app_admin?
+    end
+
+    def find_company_by_id
+      @company = Company.find_by(id: params[:id])
     end
 end

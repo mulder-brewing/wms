@@ -15,24 +15,17 @@ class UsersController < ApplicationController
     end
 
     def show
-      @user = User.find_by(id: params[:id])
-      set_current_user
-      redirect_if_user_invalid
+      find_user_redirect_invalid
       respond_to :js
     end
 
     def edit
-      @user = User.find_by(id: params[:id])
-      set_current_user
-      redirect_if_user_invalid
+      find_user_redirect_invalid
       respond_to :js
     end
 
     def update
-      @user = User.find(params[:id])
-      set_current_user
-      #company mismatch at this point will make validation fail and redirect
-      redirect_if_user_invalid
+      find_user_redirect_invalid
       @user.update_attributes(user_params)
       respond_to :js
     end
@@ -64,6 +57,16 @@ class UsersController < ApplicationController
 
       def set_current_user
         @user.current_user = current_user
+      end
+
+      def find_user_by_id(id)
+        @user = User.find_by(id: id)
+      end
+
+      def find_user_redirect_invalid
+        find_user_by_id(params[:id])
+        set_current_user
+        redirect_if_user_invalid
       end
 
 

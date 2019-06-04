@@ -8,6 +8,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @company_admin = users(:company_admin_user)
     @app_admin = users(:app_admin_user)
     @other_user = users(:other_company_user)
+    @delete_me_user = users(:delete_me_user)
     @regular_user_company = @regular_user.company
     @company_admin_company = @company_admin.company
     @app_admin_company = @app_admin.company
@@ -22,8 +23,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     log_in_as(user) if !user.nil?
   end
 
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # This function helps all the following tests to run related to getting new user page/modal.
   def new_user_modal(user, validity)
-    log_in_as(user) if !user.nil?
+    log_in_if_user(user)
     get new_user_path, xhr:true
     assert_equal validity, !redirected?(@response)
   end
@@ -41,9 +45,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_match /New User/, @response.body
   end
 
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # This function helps all the following tests to run related to creating a user.
   def create_user_as(user, username, company_id, validity)
     params = { user: { first_name: "Test", last_name: "User", username: username, password: "Password1$", company_admin: false, app_admin: false, company_id: company_id } }
-    log_in_as(user) if !user.nil?
+    log_in_if_user(user)
     if validity == false
       assert_no_difference 'User.count' do
         post users_path, xhr: true, params: params
@@ -63,7 +70,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     create_user_as(@regular_user, "test2",@regular_user_company.id, false)
     # try logged in as a company admin user
     create_user_as(@company_admin, "test3", @company_admin_company.id, true)
-    # try logged in as a app admin (should work and get modal)
+    # try logged in as a app admin
     create_user_as(@app_admin, "test4", @app_admin_company.id, true)
   end
 
@@ -75,6 +82,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     create_user_as(@app_admin, "test1", @other_company.id, true)
   end
 
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # This function helps all the following tests to run related to getting the show user page/modal.
   def show_user_as(user, show_user, validity)
     log_in_if_user(user)
     get user_path(show_user), xhr:true
@@ -88,8 +98,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     show_user_as(@regular_user, @regular_user, false)
     # try logged in as a company admin user
     show_user_as(@company_admin, @company_admin, true)
-    # try logged in as a app admin (should work and get modal)
+    show_user_as(@company_admin, @regular_user, true)
+    # try logged in as a app admin
     show_user_as(@app_admin, @app_admin, true)
+    show_user_as(@app_admin, @company_admin, true)
   end
 
   test "a company admin should not be able to see a user's information from another company." do
@@ -100,6 +112,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     show_user_as(@app_admin, @other_user, true)
   end
 
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # This function helps all the following tests to run related to getting the edit user page/modal.
   def edit_user_as(user, edit_user, validity)
     log_in_if_user(user)
     get edit_user_path(edit_user), xhr:true
@@ -119,16 +134,28 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "a regular user should should not be able to edit other users" do
     edit_user_as(@regular_user, @company_admin, false)
+    edit_user_as(@regular_user, @other_user, false)
+  end
+
+  test "a company admin should be able to edit a user in the same company." do
+    edit_user_as(@company_admin, @regular_user, true)
   end
 
   test "a company admin should not be able to edit a user in another company" do
     edit_user_as(@company_admin, @other_user, false)
   end
 
+  test "a app admin should be able to edit a user in the same company." do
+    edit_user_as(@app_admin, @company_admin, true)
+  end
+
   test "a app admin should be able to edit a user in another company" do
     edit_user_as(@app_admin, @other_user, true)
   end
 
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # This function helps all the following tests to run related to updating users.
   def update_user_as(user, update_user, parameter, test_what, validity)
     params = { user: parameter }
     log_in_if_user(user)
@@ -179,9 +206,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # ----------------------------------------------------------------------------
   # test who can and can't update email addresses
   email_hash = { email: "updated@updated.com" }
-  test "all logged in users should be able to update their email" do
-    # try not logged in
+  test "a logged out user should not be able to update a email address" do
     update_user_as(nil, @regular_user, email_hash, "email", false)
+  end
+
+  test "all logged in users should be able to update their email" do
     # try logged in as a regular user
     update_user_as(@regular_user, @regular_user, email_hash, "email", true)
     # try logged in as a company admin user
@@ -212,9 +241,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # ----------------------------------------------------------------------------
   # test who can and can't update passwords
   password_hash = { password: "NewPassword123$" }
-  test "all users should be able to update their own password" do
-    # try not logged in
+  test "a logged out user should not be able to update a password" do
     update_user_as(nil, @regular_user, password_hash, "password", false)
+  end
+
+  test "all users should be able to update their own password" do
     # try logged in as a regular user
     update_user_as(@regular_user, @regular_user, password_hash, "password", true)
     # try logged in as a company admin user
@@ -243,6 +274,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # ----------------------------------------------------------------------------
   # test who can and can't update username, first_name, and last_name.
   names_hash = { username: "updated", first_name: "updated", last_name: "updated" }
+  test "a logged out user should not be able to update username or name of any user." do
+    update_user_as(nil, @regular_user, names_hash, "names", false)
+  end
 
   test "a regular user should not be able to update username or name of any user" do
     update_user_as(@regular_user, @regular_user, names_hash, "names", false)
@@ -293,7 +327,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "a company admin should be able to update enabled or admin for users in same company" do
     update_user_as(@company_admin, @regular_user, disable_and_become_admin, "enabled", true)
-    update_user_as(@company_admin, @app_admin, disable_and_become_admin, "enabled", true)
+    update_user_as(@company_admin, @app_admin, disable_and_lose_admin, "enabled", true)
   end
 
   test "a company admin should not be able to update enabled or admin for users in another company" do
@@ -314,13 +348,61 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ----------------------------------------------------------------------------
-  # test for app_admin
+  # ----------------------------------------------------------------------------
+  # This function helps all the following tests to run related to index of users.
+  def index_users(user, validity)
+    log_in_if_user(user)
+    get users_path
+    if validity == true
+      assert_template 'users/index'
+    else
+      assert_redirected_to root_url
+    end
+  end
+
+  test "a logged out user should not get the user index page." do
+    index_users(nil, false)
+  end
+
+  test "a regular user should not get the user index page." do
+    index_users(@regular_user, false)
+  end
+
+  test "a company admin should get the user index page and should only get users from own company except self." do
+    index_users(@company_admin, true)
+    # should see these users from same company
+    assert_select "tr#user_#{@regular_user.id}"
+    assert_select "tr#user_#{@app_admin.id}"
+    # should not see self
+    assert_select "tr#user_#{@company_admin.id}", false
+    # should not see users from other companies
+    assert_select "tr#user_#{@other_user.id}", false
+    assert_select "tr#user_#{@delete_me_user.id}", false
+  end
+
+  test "a app admin should get the user index page and should get all users except self" do
+    index_users(@app_admin, true)
+    # should see these users from same company
+    assert_select "tr#user_#{@regular_user.id}"
+    assert_select "tr#user_#{@company_admin.id}"
+    assert_select "tr#user_#{@other_user.id}"
+    assert_select "tr#user_#{@delete_me_user.id}"
+    # should not see self
+    assert_select "tr#user_#{@app_admin.id}", false
+  end
+
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # test for app_admin should not be updated through the web.
   become_app_admin = { app_admin: true }
   test "no user should be able to become app admin through the web" do
     update_user_as(nil, @regular_user, become_app_admin, "app_admin", false)
     update_user_as(@regular_user, @regular_user, become_app_admin, "app_admin", false)
-    pp @response.body
+    update_user_as(@company_admin, @company_admin, become_app_admin, "app_admin", false)
+    update_user_as(@app_admin, @company_admin, become_app_admin, "app_admin", false)
   end
+
+
 
 
 

@@ -21,8 +21,10 @@ class ActionDispatch::IntegrationTest
   end
 
   # Log in as a particular user.
-  def log_in_as(user, password = "Password1$")
-    post login_path, params: { session: { username: user.username, password: password, } }
+  def log_in_as(user, password = "Password1$", swapcase = false)
+    username = user.username
+    username.swapcase! if swapcase
+    post login_path, params: { session: { username: username, password: password, } }
   end
 
   def log_out()

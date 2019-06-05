@@ -47,20 +47,12 @@ class UsersController < ApplicationController
         end
       end
 
-      def logged_in_admin
-        all_formats_redirect_to(root_url) unless logged_in_admin?
-      end
-
       def redirect_if_user_invalid
         all_formats_redirect_to(root_url) if !@user.valid?
       end
 
       def set_current_user
         @user.current_user = current_user
-      end
-
-      def find_user_by_id(id)
-        @user = User.find_by(id: id)
       end
 
       def find_user_redirect_invalid

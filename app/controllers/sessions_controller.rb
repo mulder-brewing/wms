@@ -21,4 +21,6 @@ class SessionsController < ApplicationController
     log_out
     all_formats_redirect_to(root_url)
   end
+
+  #think i need a new controller action for becoming a user
 end

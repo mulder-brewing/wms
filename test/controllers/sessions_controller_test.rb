@@ -90,4 +90,36 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(@regular_user, "Password1$", true)
     assert_redirected_to root_url
   end
+
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # This function helps all the following tests to the ability for a admin to become user.
+  def become_user_as(user, become_user, validity)
+    log_in_if_user(user)
+    get become_user_path(id: become_user.id)
+    follow_redirect!
+    if validity == true
+      assert_match /#{become_user.username}/, @response.body
+      assert_match /#{become_user.id}/, @response.body
+    else
+      assert_no_match /#{become_user.username}/, @response.body
+      assert_no_match /#{become_user.id}/, @response.body
+    end
+  end
+
+  test "a logged out user should not be able to become user" do
+    become_user_as(nil, @regular_user, false)
+  end
+
+  test "a regular user should not be able to become user" do
+    become_user_as(@regular_user, @company_admin, false)
+  end
+
+  test "a company admin should not be able to become user" do
+    become_user_as(@company_admin, @app_admin, false)
+  end
+
+  test "a app admin should be able to become user" do
+    become_user_as(@app_admin, @company_admin, true)
+  end
 end

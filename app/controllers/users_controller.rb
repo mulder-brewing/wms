@@ -40,15 +40,13 @@ class UsersController < ApplicationController
 
     private
       def user_params
-        if logged_in_admin?
+        if logged_in_app_admin?
           params.require(:user).permit(:company_id, :username, :first_name, :last_name, :email, :enabled, :password, :password_confirmation, :company_admin )
+        elsif logged_in_company_admin?
+          params.require(:user).permit(:username, :first_name, :last_name, :email, :enabled, :password, :password_confirmation, :company_admin )
         else
           params.require(:user).permit(:email, :password, :password_confirmation)
         end
-      end
-
-      def logged_in_admin
-        all_formats_redirect_to(root_url) unless logged_in_admin?
       end
 
       def redirect_if_user_invalid
@@ -57,10 +55,6 @@ class UsersController < ApplicationController
 
       def set_current_user
         @user.current_user = current_user
-      end
-
-      def find_user_by_id(id)
-        @user = User.find_by(id: id)
       end
 
       def find_user_redirect_invalid

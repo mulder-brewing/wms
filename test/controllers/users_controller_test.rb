@@ -15,13 +15,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @other_company = @other_user.company
   end
 
-  def redirected?(response)
-    xhr_redirect == response.body
-  end
-
-  def log_in_if_user(user)
-    log_in_as(user) if !user.nil?
-  end
+  
 
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
@@ -74,12 +68,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     create_user_as(@app_admin, "test4", @app_admin_company.id, true)
   end
 
-  test "a company admin shouldn't be able to create users in other company" do
-    create_user_as(@company_admin, "test1", @other_company.id, false)
+  test "if a company admin tries to create a user in another company, created user will still be same company as admin." do
+    create_user_as(@company_admin, "test1", @other_company.id, true)
+    assert_equal @company_admin.company_id, User.find_by(username: "test1").company_id
   end
 
   test "app admin should be able to create user in other company" do
     create_user_as(@app_admin, "test1", @other_company.id, true)
+    assert_equal @other_user.company_id, User.find_by(username: "test1").company_id
   end
 
   # ----------------------------------------------------------------------------
@@ -401,6 +397,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     update_user_as(@company_admin, @company_admin, become_app_admin, "app_admin", false)
     update_user_as(@app_admin, @company_admin, become_app_admin, "app_admin", false)
   end
+
 
 
 

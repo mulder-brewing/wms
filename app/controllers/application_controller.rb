@@ -19,4 +19,16 @@ class ApplicationController < ActionController::Base
       all_formats_redirect_to(root_url) unless logged_in?
     end
 
+    def logged_in_admin
+      all_formats_redirect_to(root_url) unless logged_in_admin?
+    end
+
+    def logged_in_app_admin_redirect
+      all_formats_redirect_to(root_url) unless logged_in_app_admin?
+    end
+
+    def find_user_by_id(id)
+      @user = User.find_by(id: id)
+    end
+
 end

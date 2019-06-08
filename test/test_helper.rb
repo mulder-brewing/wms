@@ -3,6 +3,7 @@ require_relative '../config/environment'
 require 'rails/test_help'
 require "minitest/reporters"
 Minitest::Reporters.use!
+require 'pp'
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
@@ -29,5 +30,13 @@ class ActionDispatch::IntegrationTest
 
   def log_out()
     delete logout_path
+  end
+
+  def redirected?(response)
+    xhr_redirect == response.body
+  end
+
+  def log_in_if_user(user)
+    log_in_as(user) if !user.nil?
   end
 end

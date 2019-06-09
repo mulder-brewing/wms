@@ -16,6 +16,6 @@ module Wms
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
 
-    config.version = 'v. 0.1.0'
+    config.version = 'v. 0.1.1'
   end
 end

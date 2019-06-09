@@ -21,6 +21,8 @@ class User < ApplicationRecord
   validate :self_disable_check, if: :current_user_pre_check
   validate :self_unadmin_check, if: :current_user_pre_check
 
+  before_save :check_password, if: :current_user_pre_check
+
   has_secure_password
 
   def enabled_yes_no?
@@ -43,8 +45,6 @@ class User < ApplicationRecord
     self.first_name + ' ' + self.last_name
   end
 
-
-
   # Scope for excluding user from all users.
   def self.all_except(user)
     where.not(id: user)
@@ -52,6 +52,10 @@ class User < ApplicationRecord
 
   def self.where_company_users_except(user)
     where("id != ? AND company_id = ?", user.id, user.company_id)
+  end
+
+  def User.password_requirements
+    '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
   end
 
   private
@@ -106,6 +110,20 @@ class User < ApplicationRecord
 
     def current_user_pre_check
       current_user_is_set && current_user_not_seed
+    end
+
+    def check_password
+      if password_digest_changed?
+        if password_reset == true && self_equals_current_user?
+          self.password_reset = false
+        elsif password_reset == false && !self_equals_current_user?
+          self.password_reset = true
+        end
+      end
+    end
+
+    def self_equals_current_user?
+      self == current_user
     end
 
 

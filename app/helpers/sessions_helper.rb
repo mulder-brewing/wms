@@ -63,4 +63,8 @@ module SessionsHelper
       all_formats_redirect_to(root_url) if !same_company_as_current_user?(object)
     end
   end
+
+  def needs_password_reset?
+    current_user.password_reset
+  end
 end

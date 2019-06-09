@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
-    before_action :logged_in_admin, except: [:edit, :update]
+    before_action :logged_in_admin, except: [:edit, :update, :update_password, :update_password_commit]
+    skip_before_action :check_reset_password, :only => [:update_password_commit, :update_password]
 
     def new
       @user = User.new
@@ -35,6 +36,21 @@ class UsersController < ApplicationController
         @pagy, @users = pagy(User.all_except(current_user).order(:username), items:25)
       else
         @pagy, @users = pagy(User.where_company_users_except(current_user).order(:username), items:25)
+      end
+    end
+
+    def update_password
+      find_user_redirect_invalid
+    end
+
+    def update_password_commit
+      find_user_redirect_invalid
+      @user.update_attributes(user_params)
+      if @user.password_reset == false
+        flash[:success] = 'Password successfully updated!'
+        all_formats_redirect_to(root_url)
+      else
+        render 'update_password'
       end
     end
 

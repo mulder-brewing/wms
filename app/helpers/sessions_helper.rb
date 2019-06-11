@@ -38,6 +38,11 @@ module SessionsHelper
     current_user.company_admin
   end
 
+  #Returns true if the current user is company_admin or app_admin
+  def admin?
+    app_admin? || company_admin?
+  end
+
   #Returns ture is the current user is logged in and a app_admin.
   def logged_in_app_admin?
     logged_in? && app_admin?

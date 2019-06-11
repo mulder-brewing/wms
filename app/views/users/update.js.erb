@@ -4,4 +4,7 @@
   alert_custom("success", "User updated successfully!")
 <% else %>
   $("#update-form").replaceWith("<%=  j render 'users/new_edit_form', form_type: 'update' %>");
+  if ( $("div.password").hasClass("form-group-invalid") || $("div.password").hasClass("form-group-invalid") ) {
+      $("#collapseExample").addClass("show");
+  }
 <% end %>

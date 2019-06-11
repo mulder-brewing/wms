@@ -45,6 +45,7 @@ class UsersController < ApplicationController
 
     def update_password_commit
       find_user_redirect_invalid
+      @user.context_password_reset = true
       @user.update_attributes(user_params)
       if @user.password_reset == false
         flash[:success] = 'Password successfully updated!'

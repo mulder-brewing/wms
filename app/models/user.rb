@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   attr_accessor :current_user
+  attr_accessor :context_password_reset
 
   belongs_to :company
 
@@ -20,6 +21,9 @@ class User < ApplicationRecord
   validate :regular_user_check, if: :current_user_pre_check
   validate :self_disable_check, if: :current_user_pre_check
   validate :self_unadmin_check, if: :current_user_pre_check
+  validate :password_repeat?
+
+  before_save :check_password_digest, if: :current_user_pre_check
 
   has_secure_password
 
@@ -43,8 +47,6 @@ class User < ApplicationRecord
     self.first_name + ' ' + self.last_name
   end
 
-
-
   # Scope for excluding user from all users.
   def self.all_except(user)
     where.not(id: user)
@@ -52,6 +54,10 @@ class User < ApplicationRecord
 
   def self.where_company_users_except(user)
     where("id != ? AND company_id = ?", user.id, user.company_id)
+  end
+
+  def User.password_requirements
+    '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
   end
 
   private
@@ -78,19 +84,19 @@ class User < ApplicationRecord
     def regular_user_check
       if !current_user.company_admin && !current_user.app_admin
         #you are a regular user
-        errors.add(:base, "can't edit users other than yourself") if self != current_user
+        errors.add(:base, "can't edit users other than yourself") if !self_equals_current_user?
       end
     end
 
     def self_disable_check
-      if self == current_user && enabled_changed?
+      if self_equals_current_user? && enabled_changed?
         #are you trying to disable yourself?
         errors.add(:enabled, "cannot be disabled for yourself") if enabled == false
       end
     end
 
     def self_unadmin_check
-      if self == current_user && company_admin_changed?
+      if self_equals_current_user? && company_admin_changed?
         #are you trying to unadmin yourself?
         errors.add(:company_admin, "cannot be disabled for yourself") if company_admin == false
       end
@@ -106,6 +112,26 @@ class User < ApplicationRecord
 
     def current_user_pre_check
       current_user_is_set && current_user_not_seed
+    end
+
+    def check_password_digest
+      if password_digest_changed?
+        if password_reset == true && self_equals_current_user?
+          self.password_reset = false
+        elsif password_reset == false && !self_equals_current_user?
+          self.password_reset = true
+        end
+      end
+    end
+
+    def self_equals_current_user?
+      self == current_user
+    end
+
+    def password_repeat?
+      if context_password_reset == true && BCrypt::Password.new(password_digest_was) == password
+        errors.add(:password, "cannot be the same as it is right now")
+      end
     end
 
 

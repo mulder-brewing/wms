@@ -10,6 +10,7 @@ regular_user:
   app_admin: false
   company: averagejoes
   password_digest: <%= User.digest('Password1$') %>
+  password_reset: false
 
 company_admin_user:
   username: avaeragejoe_admin
@@ -21,6 +22,7 @@ company_admin_user:
   app_admin: false
   company: averagejoes
   password_digest: <%= User.digest('Password1$') %>
+  password_reset: false
 
 app_admin_user:
   username: avaeragejoe_app_admin
@@ -32,6 +34,7 @@ app_admin_user:
   app_admin: true
   company: averagejoes
   password_digest: <%= User.digest('Password1$') %>
+  password_reset: false
 
 delete_me_user:
   username: delete_me_user
@@ -43,6 +46,7 @@ delete_me_user:
   app_admin: false
   company: company_to_delete
   password_digest: <%= User.digest('Password1$') %>
+  password_reset: false
 
 other_company_user:
   username: other_company_user
@@ -54,3 +58,4 @@ other_company_user:
   app_admin: false
   company: other_company
   password_digest: <%= User.digest('Password1$') %>
+  password_reset: false

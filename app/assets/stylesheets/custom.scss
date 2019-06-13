@@ -3,13 +3,6 @@ body {
   background: #f4f4f4;
 }
 
-// Navbar styles
-.navbar {
-  min-height: 33px !important;
-  margin-bottom: 0;
-  border-radius: 0;
-}
-
 .navbar-nav > a, .navbar-nav > div > a, .navbar-brand {
   padding-top: 6px !important;
   padding-bottom: 0 !important;
@@ -23,6 +16,13 @@ body {
 /* Page header/title styling */
 .page-header {
   border-bottom: 1px solid #d9d9d9;
+}
+
+/* Card Styling */
+.card-img-top {
+    width: 100%;
+    height: 225px;
+    object-fit: cover;
 }
 
 // Footer styles

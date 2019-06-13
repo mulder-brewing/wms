@@ -43,7 +43,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'jquery-rails', '4.3.1'
 
 #Pagination
-gem 'pagy', '~> 3.2.0'
+gem 'pagy', '~> 3.3.0'
 #Makes pagy run quicker
 gem 'oj', '~> 3.7.12'
 

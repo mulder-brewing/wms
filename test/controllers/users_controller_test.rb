@@ -15,7 +15,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @other_company = @other_user.company
   end
 
-  
+
 
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
@@ -397,6 +397,87 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     update_user_as(@company_admin, @company_admin, become_app_admin, "app_admin", false)
     update_user_as(@app_admin, @company_admin, become_app_admin, "app_admin", false)
   end
+
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # tests for reset password functionality
+
+  def reset_password_as(user, reset_user, test, parameter, validity)
+    params = { user: parameter }
+    log_in_if_user(user)
+    patch user_path(reset_user), xhr: true, params: params
+    reset_user.reload
+    if test == "password_reset_boolean"
+      # validity true means user has been flagged for reset password.
+      if validity == true
+        assert_equal reset_user.password_reset, true
+      # validity false means user is not flagged for reset password.
+      else
+        assert_equal reset_user.password_reset, false
+      end
+    end
+  end
+
+  test "logged in user changing their own password should not set password reset flag to true" do
+    reset_password_as(@regular_user, @regular_user, "password_reset_boolean", password_hash, false)
+    reset_password_as(@company_admin, @company_admin, "password_reset_boolean", password_hash, false)
+    reset_password_as(@app_admin, @app_admin, "password_reset_boolean", password_hash, false)
+  end
+
+  test "if a admin changes another user's password, that user's password reset flag should become true" do
+    reset_password_as(@app_admin, @company_admin, "password_reset_boolean", password_hash, true)
+    reset_password_as(@company_admin, @regular_user, "password_reset_boolean", password_hash, true)
+  end
+
+  test "A newly created user should have it's password_reset flag set to true" do
+    new_user = User.create!(company: @company_admin_company, first_name: 'New', last_name: 'User', username: 'new_user_for_test789', password: 'Password1$', current_user: "seed" )
+    assert new_user.password_reset == true
+  end
+
+  password_hash_2 = { password: "NewPassword123456$#2" }
+
+  test "Monster test that checks the full flow of a user's password being reset and that user resetting it." do
+    reset_password_as(@app_admin, @company_admin, "password_reset_boolean", password_hash, true)
+    log_in_as(@company_admin, password_hash[:password])
+    # There's 2 redirects because by default logged in redirects to root, then when password_reset is true, you get redirected to the update password page.
+    follow_redirect!
+    assert_redirected_to update_password_user_url(@company_admin)
+    follow_redirect!
+    # Should be 2 links, one being the Mulder WMS logo top left, the other being the log out link.
+    assert_select 'a[href]', 2
+    assert_select 'a[href=?]', logout_path
+    assert_select 'a[href=?]', root_path
+    assert_select "form"
+    assert_select "form input[id=user_password]"
+    assert_select "form input[id=user_password_confirmation]"
+    assert_select 'form input[type=submit][value="Update Password"]'
+    # trying to load other TMS pages should redirect the user back to update password.
+    get root_path
+    assert_redirected_to update_password_user_url(@company_admin)
+    get users_path
+    assert_redirected_to update_password_user_url(@company_admin)
+    get edit_user_path(@company_admin)
+    assert_redirected_to update_password_user_url(@company_admin)
+    # user should not be able to use the same password they logged in with as their new updated password.
+    assert_no_changes '@company_admin.password_digest' do
+      patch update_password_commit_user_path(@company_admin), params: { user: password_hash }
+      @company_admin.reload
+    end
+    assert_template 'users/update_password'
+    assert_select 'div.invalid-feedback', "Password cannot be the same as it is right now"
+    # user should be able to update their password with a new password and their password_reset should now be false.
+    assert_changes '@company_admin.password_digest' do
+      patch update_password_commit_user_path(@company_admin), params: { user: password_hash_2 }
+      @company_admin.reload
+    end
+    assert @company_admin.password_reset == false
+    assert_redirected_to root_url
+    follow_redirect!
+    assert_select 'div.alert-success', "Password successfully updated!"
+  end
+
+
+
 
 
 

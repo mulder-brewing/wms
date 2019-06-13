@@ -6,3 +6,6 @@ To seed prod database, ssh in then...
 To get Rails console, ssh in then...
   cd /var/app/current
   rails c
+
+To view the nginx config
+  cat /etc/nginx/nginx.conf

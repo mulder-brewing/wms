@@ -1,28 +1,40 @@
-
-  <nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
-    <div class="container-fluid">
-      <%= link_to "MULDER WMS", root_path, class: "navbar-brand" %>
-      <% if logged_in? %>
-        <%= link_to "Log Out", logout_path, method: :delete, :role => 'button', :class => 'btn btn-sm align-middle btn-primary ml-auto order-md-last mr-3 mr-sm-4 mr-md-0 ' %>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+<nav class="navbar navbar-default navbar-expand-md" id="dummy-navbar"><!-- Dummy nav bar in order to offset the padding for the fixed-top navbar -->
+  <span class= "navbar-brand">MULDER WMS</span>
+  <% if logged_in? %>
+    <button type="button" class = "btn btn-sm align-middle btn-primary ml-auto order-md-last mr-3 mr-sm-4 mr-md-0">Log Out</button>
+    <button class="navbar-toggler" type="button">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  <% end %>
+</nav> <!-- Dummy nav bar in order to offset the padding for the fixed-top navbar-->
+<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark" id="main-navbar">
+  <div class="container-fluid">
+    <%= link_to "MULDER WMS", root_path, class: "navbar-brand" %>
+    <% if logged_in? %>
+      <%= link_to "Log Out", logout_path, method: :delete, :role => 'button', :class => 'btn btn-sm align-middle btn-primary ml-auto order-md-last mr-3 mr-sm-4 mr-md-0 ' %>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <% if !needs_password_reset? %>
         <div class="collapse navbar-collapse" id="navbarToggler">
           <div class="navbar-nav">
-            <%= link_to "Companies",   companies_path, class: "nav-item nav-link" if current_user.app_admin? %>
-            <%= link_to "Users", users_path, class: "nav-item nav-link" if current_user.company_admin? || current_user.app_admin? %>
-            <div class="nav-item dropdown">
-              <%= link_to "Bar",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <%= link_to "Bar1", '#', class: "dropdown-item" %>
-                <%= link_to "Bar2", '#' , class: "dropdown-item" %>
+            <!-- Need to build some more functionality!-->
+            <!-- surround with erb - link_to "Companies",   companies_path, class: "nav-item nav-link"-->
+            <% if admin? %>
+              <div class="nav-item dropdown">
+                <%= link_to "Administration",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <%= link_to "Companies",   companies_path, class: "dropdown-item" if app_admin? %>
+                  <%= link_to "Users", users_path, class: "dropdown-item" if admin? %>
+                </div>
               </div>
-            </div>
+            <% end %>
           </div>
           <div class="navbar-nav ml-auto">
             <%= link_to current_user.username, edit_user_path(current_user), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => "nav-item nav-link mr-4" %>
           </div>
         </div>
       <% end %>
-    </div>
-  </nav>
+    <% end %>
+  </div>
+</nav>

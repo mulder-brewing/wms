@@ -120,7 +120,7 @@ GEM
     nokogiri (1.10.3)
       mini_portile2 (~> 2.4.0)
     oj (3.7.12)
-    pagy (3.2.0)
+    pagy (3.3.0)
     pg (1.1.4)
     popper_js (1.14.5)
     public_suffix (3.0.3)
@@ -241,7 +241,7 @@ DEPENDENCIES
   minitest (= 5.11.3)
   minitest-reporters (= 1.1.14)
   oj (~> 3.7.12)
-  pagy (~> 3.2.0)
+  pagy (~> 3.3.0)
   pg (>= 0.18, < 2.0)
   popper_js
   puma (~> 3.11)

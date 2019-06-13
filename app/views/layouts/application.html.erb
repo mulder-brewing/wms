@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="h-100">
   <head>
     <title><%= full_title(yield(:title)) %></title>
     <%= render 'layouts/bootstrap_meta_tags' %>
@@ -7,14 +7,15 @@
     <%= render 'layouts/shim' %>
     <%= render 'layouts/font_awesome_cdn' %>
   </head>
-  <body>
+  <body class="d-flex flex-column h-100">
     <%= render 'layouts/navbar' %>
-    <%= render 'layouts/header' if content_for? :title %>
-    <%= render 'layouts/flash_messages' %>
-    <%= yield %>
-    <%= render 'layouts/modal_wrapper' %>
-    <%= render 'layouts/alert_wrapper' %>
+    <main class="flex-shrink-0">
+      <%= render 'layouts/header' if content_for? :title %>
+      <%= render 'layouts/flash_messages' %>
+      <%= yield %>
+      <%= render 'layouts/modal_wrapper' %>
+      <%= render 'layouts/alert_wrapper' %>
+    </main>
     <%= render 'layouts/footer' %>
-    <%= render 'layouts/debug' %>
   </body>
 </html>

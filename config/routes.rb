@@ -5,7 +5,13 @@ Rails.application.routes.draw do
       get :destroy_modal
     end
   end
-  resources :users
+
+  resources :users do
+    member do
+      get :update_password
+      patch :update_password_commit
+    end
+  end
 
   root 'static_pages#home'
   get 'static_pages/home'

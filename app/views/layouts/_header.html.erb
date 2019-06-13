@@ -1,10 +1,10 @@
 <header class="page-header">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-9 py-1">
+      <div class="col-9 py-1 my-auto">
         <h3 class="page-title m-0"><%= header_icon(yield(:icon_class)) %>  <%= yield(:title) %></h3>
       </div>
-      <div class="col-3 py-1 text-right">
+      <div class="col-3 py-1 text-right my-auto">
         <% if !yield(:new_link).empty? %>
           <%= link_to 'New', yield(:new_link), 'data-toggle' => 'modal', 'data-target' => '#create-modal', remote:true, 'class' => 'btn btn-success btn-sm' %>
         <% end %>

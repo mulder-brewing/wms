@@ -1,0 +1,11 @@
+Welcome to Mulder WMS!
+
+Hi <%= @user.full_name %>,
+
+An account has been created for you.   Login using the link with the username and password below:
+
+<%= login_url %>
+Username: <%= @user.username %>
+Password: <%= @user.password %>
+
+This password is temporary.  You will be asked to choose your own password when you login.

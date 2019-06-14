@@ -9,3 +9,6 @@ To get Rails console, ssh in then...
 
 To view the nginx config
   cat /etc/nginx/nginx.conf
+
+To resize pictures using imagemagick
+mogrify -path new-images  -resize x225 -filter Triangle -define filter:support=2 -unsharp 0.25x0.25+8+0.065 -dither None -posterize 136 -quality 82 -define jpeg:fancy-upsampling=off -define png:compression-filter=5 -define png:compression-level=9 -define png:compression-strategy=1 -define png:exclude-chunk=all -interlace none -colorspace sRGB -strip *.jpeg

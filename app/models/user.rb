@@ -25,6 +25,8 @@ class User < ApplicationRecord
 
   before_save :check_password_digest, if: :current_user_pre_check
 
+  after_commit :send_welcome_email
+
   has_secure_password
 
   def enabled_yes_no?
@@ -131,6 +133,12 @@ class User < ApplicationRecord
     def password_repeat?
       if context_password_reset == true && BCrypt::Password.new(password_digest_was) == password
         errors.add(:password, "cannot be the same as it is right now")
+      end
+    end
+
+    def send_welcome_email
+      if !email.nil?
+        UserMailer.create_user(self).deliver_now
       end
     end
 

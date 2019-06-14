@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   attr_accessor :current_user
   attr_accessor :context_password_reset
+  attr_accessor :send_email
+  attr_accessor :send_what_email
 
   belongs_to :company
 
@@ -25,7 +27,7 @@ class User < ApplicationRecord
 
   before_save :check_password_digest, if: :current_user_pre_check
 
-  after_commit :send_welcome_email
+  after_create_commit :send_welcome_email
 
   has_secure_password
 
@@ -137,7 +139,7 @@ class User < ApplicationRecord
     end
 
     def send_welcome_email
-      if !email.nil?
+      if send_what_email == "create" && send_email && !email.nil? 
         UserMailer.create_user(self).deliver_now
       end
     end

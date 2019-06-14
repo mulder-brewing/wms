@@ -8,6 +8,7 @@
       <%= f.input :first_name, as: :string if logged_in_admin? %>
       <%= f.input :last_name, as: :string if logged_in_admin? %>
       <%= f.input :email, as: :string %>
+      <%= f.input :send_email, as: :boolean, label: 'Send email with login instructions' if logged_in_admin?  && form_type == 'create' %>
       <%= f.input :username, as: :string if logged_in_admin? %>
       <%= f.hint 'lowercase, numbers, and underscore only with no spaces' %>
       <% if form_type == 'update' %>

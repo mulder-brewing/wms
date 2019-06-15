@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   attr_accessor :current_user
   attr_accessor :context_password_reset
+  attr_accessor :send_email
+  attr_accessor :send_what_email
 
   belongs_to :company
 
@@ -22,10 +24,11 @@ class User < ApplicationRecord
   validate :self_disable_check, if: :current_user_pre_check
   validate :self_unadmin_check, if: :current_user_pre_check
   validate :password_repeat?
+  validate :email_exists_if_send_email
 
   before_save :check_password_digest, if: :current_user_pre_check
 
-  after_commit :send_welcome_email
+  after_create_commit :send_welcome_email
 
   has_secure_password
 
@@ -76,6 +79,23 @@ class User < ApplicationRecord
       BCrypt::Password.create(string, cost: cost)
     end
 
+    # Current user functions
+    def current_user_is_set
+      !current_user.nil?
+    end
+
+    def current_user_not_seed
+      current_user != "seed"
+    end
+
+    def current_user_pre_check
+      current_user_is_set && current_user_not_seed
+    end
+
+    def self_equals_current_user?
+      self == current_user
+    end
+
     # check that the current user's company matches the company of this instance
     def company_check
       if company_id != current_user.company_id
@@ -104,18 +124,7 @@ class User < ApplicationRecord
       end
     end
 
-    def current_user_is_set
-      !current_user.nil?
-    end
-
-    def current_user_not_seed
-      current_user != "seed"
-    end
-
-    def current_user_pre_check
-      current_user_is_set && current_user_not_seed
-    end
-
+    # Functions related to password reset functionality.
     def check_password_digest
       if password_digest_changed?
         if password_reset == true && self_equals_current_user?
@@ -126,21 +135,26 @@ class User < ApplicationRecord
       end
     end
 
-    def self_equals_current_user?
-      self == current_user
-    end
-
     def password_repeat?
       if context_password_reset == true && BCrypt::Password.new(password_digest_was) == password
         errors.add(:password, "cannot be the same as it is right now")
       end
     end
 
+    # Funstions related to sending mail
+    def send_mail?
+      send_email == "true" && !email.nil?
+    end
+
     def send_welcome_email
-      if !email.nil?
+      if send_what_email == "create" && send_mail?
         UserMailer.create_user(self).deliver_now
       end
     end
 
-
+    def email_exists_if_send_email
+      if send_email && email.nil?
+        errors.add(:email, "cannot be blank if you want to send email")
+      end
+    end
 end

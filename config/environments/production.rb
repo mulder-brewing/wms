@@ -65,7 +65,6 @@ Rails.application.configure do
 
   # Email Settings
   config.action_mailer.perform_caching = false
-  config.x.mail_from = %(Mulder WMS <no-reply@mulderwms.net>)
   config.action_mailer.default_url_options = { host: 'mulderwms.net' }
   config.action_mailer.perform_deliveries = true
   config.action_mailer.delivery_method = :smtp

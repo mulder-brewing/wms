@@ -10,6 +10,7 @@ class UsersController < ApplicationController
     def create
       @user = User.new(user_params)
       @user.company_id ||= current_user.company_id
+      @user.send_what_email = "create"
       set_current_user
       @user.save
       respond_to :js
@@ -57,10 +58,11 @@ class UsersController < ApplicationController
 
     private
       def user_params
+        admin_params = [:username, :first_name, :last_name, :email, :enabled, :password, :password_confirmation, :company_admin, :send_email]
         if logged_in_app_admin?
-          params.require(:user).permit(:company_id, :username, :first_name, :last_name, :email, :enabled, :password, :password_confirmation, :company_admin )
+          params.require(:user).permit(:company_id, admin_params)
         elsif logged_in_company_admin?
-          params.require(:user).permit(:username, :first_name, :last_name, :email, :enabled, :password, :password_confirmation, :company_admin )
+          params.require(:user).permit(admin_params)
         else
           params.require(:user).permit(:email, :password, :password_confirmation)
         end

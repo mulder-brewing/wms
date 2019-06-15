@@ -143,7 +143,7 @@ class User < ApplicationRecord
 
     # Funstions related to sending mail
     def send_mail?
-      send_email == "true" && !email.nil?
+      send_email == "1" && !email.nil?
     end
 
     def send_welcome_email

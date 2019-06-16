@@ -22,6 +22,6 @@ module Wms
       end if File.exists?(env_file)
     end
 
-    config.version = 'v. 0.1.6'
+    config.version = 'v. 0.1.7'
   end
 end

@@ -13,6 +13,9 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :dock_requests
+
+  # Other routes
   root 'static_pages#home'
   get 'static_pages/home'
   get '/login', to: 'sessions#new'

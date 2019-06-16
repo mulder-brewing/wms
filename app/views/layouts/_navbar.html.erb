@@ -18,8 +18,7 @@
       <% if !needs_password_reset? %>
         <div class="collapse navbar-collapse" id="navbarToggler">
           <div class="navbar-nav">
-            <!-- Need to build some more functionality!-->
-            <!-- surround with erb - link_to "Companies",   companies_path, class: "nav-item nav-link"-->
+            <%= link_to "Dock Queue", dock_requests_path, class: "nav-item nav-link" %>
             <% if admin? %>
               <div class="nav-item dropdown">
                 <%= link_to "Administration",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>

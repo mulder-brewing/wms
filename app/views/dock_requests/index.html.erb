@@ -1,0 +1,9 @@
+<% provide(:title, 'Dock Queue') %>
+<% provide(:icon_class, 'fas fa-list-ol') %>
+<%= provide(:new_link, new_dock_request_path) %>
+
+<div class="container-fluid mt-3">
+  <div class="row">
+    <%= render @dock_requests %>
+  </div>
+</div>

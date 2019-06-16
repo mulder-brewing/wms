@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_09_200651) do
+ActiveRecord::Schema.define(version: 2019_06_16_210311) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,21 @@ ActiveRecord::Schema.define(version: 2019_06_09_200651) do
     t.datetime "updated_at", null: false
     t.boolean "enabled", default: true
     t.index ["name"], name: "index_companies_on_name", unique: true
+  end
+
+  create_table "dock_requests", force: :cascade do |t|
+    t.text "primary_reference"
+    t.text "phone_number"
+    t.boolean "text_message"
+    t.text "dock"
+    t.text "note"
+    t.text "status"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_dock_requests_on_company_id"
+    t.index ["primary_reference"], name: "index_dock_requests_on_primary_reference"
+    t.index ["status"], name: "index_dock_requests_on_status"
   end
 
   create_table "users", force: :cascade do |t|
@@ -40,5 +55,6 @@ ActiveRecord::Schema.define(version: 2019_06_09_200651) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "dock_requests", "companies"
   add_foreign_key "users", "companies"
 end

@@ -72,4 +72,8 @@ module SessionsHelper
   def needs_password_reset?
     current_user.password_reset
   end
+
+  def current_company_id
+    current_user.company_id
+  end
 end

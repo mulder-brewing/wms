@@ -1,4 +1,4 @@
-<% if @user.valid? %>
+<% if @user.save_success %>
 $('#create-modal').modal('hide');
 $('#user-table-body').prepend('<%= j render @user, user: @user %>');
 $('#user_<%= @user.id %>').hide().fadeIn(1000);

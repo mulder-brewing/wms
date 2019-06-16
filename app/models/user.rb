@@ -3,6 +3,7 @@ class User < ApplicationRecord
   attr_accessor :context_password_reset
   attr_accessor :send_email
   attr_accessor :send_what_email
+  attr_accessor :save_success
 
   belongs_to :company
 
@@ -25,10 +26,14 @@ class User < ApplicationRecord
   validate :self_unadmin_check, if: :current_user_pre_check
   validate :password_repeat?
   validate :email_exists_if_send_email
+  validate :password_changed_if_send_reset_email
 
   before_save :check_password_digest, if: :current_user_pre_check
 
   after_create_commit :send_welcome_email
+  after_update_commit :send_password_reset_email
+
+  after_save :update_save_boolean
 
   has_secure_password
 
@@ -71,6 +76,11 @@ class User < ApplicationRecord
       self.last_name.strip! if self.last_name?
       self.email.strip! if self.email?
     end
+
+    def update_save_boolean
+      self.save_success = true
+    end
+
 
     # Returns the hash digest of the given string, used for user fixtures with minitest.
     def User.digest(string)
@@ -142,19 +152,45 @@ class User < ApplicationRecord
     end
 
     # Funstions related to sending mail
+    def email_exists_if_send_email
+      if send_email == "1" && email.blank?
+        errors.add(:email, "cannot be blank if you want to send email")
+        errors.add(:send_email, "can't send email without email address")
+      end
+    end
+
     def send_mail?
-      send_email == "1" && !email.nil?
+      send_email == "1" && !email.blank?
+    end
+
+    def send_email_of_type?(type)
+      send_what_email == type && send_mail?
     end
 
     def send_welcome_email
-      if send_what_email == "create" && send_mail?
+      if send_email_of_type?("create")
         UserMailer.create_user(self).deliver_now
       end
     end
 
-    def email_exists_if_send_email
-      if send_email && email.nil?
-        errors.add(:email, "cannot be blank if you want to send email")
+    def password_changed_if_send_reset_email
+      if send_email_of_type?("password-reset") && !password_digest_changed?
+        errors.add(:password, "didn't change.  can't send email.")
+        errors.add(:send_email, "can't send email if password doesn't change.")
       end
     end
+
+    def change_after_commit?(attribute)
+      self.previous_changes.has_key?(attribute)
+    end
+
+    def send_password_reset_email
+      if change_after_commit?("password_digest") && send_email_of_type?("password-reset")
+        UserMailer.password_reset(self).deliver_now unless self_equals_current_user?
+      end
+    end
+
+
+
+
 end

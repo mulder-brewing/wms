@@ -44,9 +44,9 @@ class WelcomeEmailTest < ActionDispatch::IntegrationTest
   test "checkbox to send welcome email should only show up on new modal, not the edit modal." do
     log_in_if_user(@company_admin)
     get new_user_path, xhr:true
-    assert_match /send_email/, @response.body
+    assert_match /Send email with login instructions/, @response.body
     get edit_user_path(@regular_user), xhr:true
-    assert_no_match /send_email/, @response.body
+    assert_no_match /Send email with login instructions/, @response.body
   end
 
 

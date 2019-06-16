@@ -28,6 +28,7 @@ class UsersController < ApplicationController
 
     def update
       find_user_redirect_invalid
+      @user.send_what_email = "password-reset"
       @user.update_attributes(user_params)
       respond_to :js
     end

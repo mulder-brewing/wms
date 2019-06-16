@@ -23,6 +23,7 @@
               <%= f.hint User.password_requirements %>
               <%= f.input :password_confirmation, required: true %>
       <% if form_type == 'update' %>
+              <%= f.input :send_email, as: :boolean, label: 'Send email with new password' if logged_in_admin? && not_self %>
             </div>
           </div>
         </div>

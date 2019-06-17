@@ -16,9 +16,19 @@ class DockRequestsController < ApplicationController
     respond_to :js
   end
 
+  def edit
+    @dock_request = find_object_redirect_invalid(DockRequest)
+    respond_to :js
+  end
+
+  def update
+    @dock_request = find_object_redirect_invalid(DockRequest)
+    @dock_request.update_attributes(dock_request_params)
+    respond_to :js
+  end
+
   private
     def dock_request_params
       params.require(:dock_request).permit(:primary_reference, :phone_number, :text_message, :dock, :note)
     end
-
 end

@@ -13,7 +13,14 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :dock_requests
+  resources :dock_requests do
+    member do
+      get :dock_assignment_edit
+      patch :dock_assignment_update
+    end
+  end
+
+  resources :dock_request_groups
 
   # Other routes
   root 'static_pages#home'

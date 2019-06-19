@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_16_210311) do
+ActiveRecord::Schema.define(version: 2019_06_19_225315) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,6 +23,15 @@ ActiveRecord::Schema.define(version: 2019_06_16_210311) do
     t.index ["name"], name: "index_companies_on_name", unique: true
   end
 
+  create_table "dock_request_groups", force: :cascade do |t|
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_dock_request_groups_on_company_id"
+    t.index ["description", "company_id"], name: "index_dock_request_groups_on_description_and_company_id", unique: true
+  end
+
   create_table "dock_requests", force: :cascade do |t|
     t.text "primary_reference"
     t.text "phone_number"
@@ -33,7 +42,9 @@ ActiveRecord::Schema.define(version: 2019_06_16_210311) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "company_id"
+    t.bigint "dock_request_group_id"
     t.index ["company_id"], name: "index_dock_requests_on_company_id"
+    t.index ["dock_request_group_id"], name: "index_dock_requests_on_dock_request_group_id"
     t.index ["primary_reference"], name: "index_dock_requests_on_primary_reference"
     t.index ["status"], name: "index_dock_requests_on_status"
   end
@@ -55,6 +66,8 @@ ActiveRecord::Schema.define(version: 2019_06_16_210311) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "dock_request_groups", "companies"
   add_foreign_key "dock_requests", "companies"
+  add_foreign_key "dock_requests", "dock_request_groups"
   add_foreign_key "users", "companies"
 end

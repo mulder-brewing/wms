@@ -24,7 +24,8 @@
                 <%= link_to "Administration",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <%= link_to "Companies",   companies_path, class: "dropdown-item" if app_admin? %>
-                  <%= link_to "Users", users_path, class: "dropdown-item" if admin? %>
+                  <%= link_to "Users", users_path, class: "dropdown-item" %>
+                  <%= link_to "Dock Request Groups", dock_request_groups_path, class: "dropdown-item" %>
                 </div>
               </div>
             <% end %>

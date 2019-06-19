@@ -1,0 +1,8 @@
+<tr id="dock_request_group_<%= dock_request_group.id %>">
+  <th scope="row">
+    <%= link_to 'Edit', edit_dock_request_group_path(dock_request_group), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => 'btn btn-primary btn-sm m-1'  %>
+  </th>
+  <td>
+    <%= dock_request_group.description %>
+  </td>
+</tr>

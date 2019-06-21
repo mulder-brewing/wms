@@ -20,7 +20,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :dock_request_groups
+  resources :dock_groups
 
   # Other routes
   root 'static_pages#home'

@@ -1,8 +1,0 @@
-<%= simple_form_for @dock_request_group, remote:true, :html => { :id => form_type +'-form' } do |f| %>
-    <div id="feedback">
-      <%= errors_for(f.object) %>
-    </div>
-    <div class="mb-3">
-      <%= f.input :description, as: :string %>
-    </div>
-<% end %>

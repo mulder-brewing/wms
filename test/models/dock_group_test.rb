@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class DockRequestGroupsControllerTest < ActionDispatch::IntegrationTest
+class DockGroupTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

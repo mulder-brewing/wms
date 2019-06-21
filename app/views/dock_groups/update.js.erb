@@ -1,0 +1,7 @@
+<% if @dock_group.save_success %>
+  $('#update-modal').modal('hide');
+  $("#dock_group_<%=@dock_group.id%>").replaceWith('<%= j render @dock_group, dock_group: @dock_group %>');
+  alert_custom("success", "Dock request group updated successfully!")
+<% else %>
+  $("#update-form").replaceWith("<%=  j render 'dock_groups/new_edit_form', form_type: 'update' %>");
+<% end %>

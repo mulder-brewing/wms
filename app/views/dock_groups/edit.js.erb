@@ -1,0 +1,6 @@
+<% if @dock_group.valid? %>
+  $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'update', :title => 'Edit Dock Group', :form_path => 'dock_groups/new_edit_form' } %>");
+  $("#update-modal").modal('show');
+<% elsif !@dock_group %>
+  alert_custom("warning","Dock request group no longer exists")
+<% end %>

@@ -37,5 +37,10 @@ module ApplicationHelper
     end
   end
 
+  # Returns Yes for true and No for false.
+  def human_boolean(boolean)
+    boolean ? 'Yes' : 'No'
+  end
+
 
 end

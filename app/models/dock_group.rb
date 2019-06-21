@@ -1,4 +1,5 @@
-class DockRequestGroup < ApplicationRecord
+class DockGroup < ApplicationRecord
+  belongs_to :company
   has_many :dock_requests, dependent: :destroy
 
   attr_accessor :save_success

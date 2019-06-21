@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  include DockRequestsControllerHelper
+
   skip_before_action :logged_in, :only => [:new, :create]
   skip_before_action :check_reset_password, :only => [:destroy]
   before_action :logged_in_app_admin_redirect, :only => [:become_user]
@@ -18,6 +20,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
+    clear_dock_group
     log_out
     all_formats_redirect_to(root_url)
   end

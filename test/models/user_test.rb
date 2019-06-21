@@ -111,20 +111,6 @@ class UserTest < ActiveSupport::TestCase
     assert_not @company_admin.valid?(:self)
   end
 
-  test "enabled_yes_no?" do
-    @regular_user.enabled = true
-    assert_match @regular_user.enabled_yes_no?, "Yes"
-    @regular_user.enabled = false
-    assert_match @regular_user.enabled_yes_no?, "No"
-  end
-
-  test "company_admin_yes_no?" do
-    @regular_user.company_admin = true
-    assert_match @regular_user.company_admin_yes_no?, "Yes"
-    @regular_user.company_admin = false
-    assert_match @regular_user.company_admin_yes_no?, "No"
-  end
-
   test "full_name" do
     assert_match @regular_user.full_name, "Average Joe"
   end

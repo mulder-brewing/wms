@@ -20,5 +20,6 @@
 //= require pagy
 //= require_tree ./application
 //= require local-time
+//= require jquery.mask
 
 window.addEventListener("turbolinks:load", Pagy.init);

@@ -59,3 +59,15 @@ other_company_user:
   company: other_company
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+
+other_company_admin:
+  username: other_company_admin
+  first_name: Other
+  last_name: User
+  email: other@othercompany.com
+  enabled: true
+  company_admin: true
+  app_admin: false
+  company: other_company
+  password_digest: <%= User.digest('Password1$') %>
+  password_reset: false

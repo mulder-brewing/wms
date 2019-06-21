@@ -1,0 +1,8 @@
+<% if @dock_group.save_success %>
+$('#create-modal').modal('hide');
+$('#company-table-body').prepend('<%= j render @dock_group, dock_group: @dock_group %>');
+$('#dock_group_<%= @dock_group.id %>').hide().fadeIn(1000);
+alert_custom("success","Dock Request Group created successfully!");
+<% else %>
+$("#create-form").replaceWith("<%=  j render 'new_edit_form', form_type: 'create' %>");
+<% end %>

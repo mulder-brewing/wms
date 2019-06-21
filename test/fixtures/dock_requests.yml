@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  primary_reference: MyText
+  phone_number: MyText
+  text_message: false
+  dock: MyText
+  note: MyText
+
+two:
+  primary_reference: MyText
+  phone_number: MyText
+  text_message: false
+  dock: MyText
+  note: MyText

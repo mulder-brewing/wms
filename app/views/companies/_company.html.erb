@@ -8,6 +8,6 @@
       <%= link_to company.name, company_path(company),  {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#show-modal' }  %>
     </td>
     <td>
-      <%= company.enabled_yes_no %>
+      <%= human_boolean(company.enabled) %>
     </td>
   </tr>

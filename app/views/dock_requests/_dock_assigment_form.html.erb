@@ -1,0 +1,8 @@
+<%= simple_form_for @dock_request, :url => { :action => "dock_assignment_update" }, remote:true, :html => { :id => form_type +'-form' } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :dock, as: :string %>
+    </div>
+<% end %>

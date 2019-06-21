@@ -1,0 +1,6 @@
+<% if @dock_request.valid? %>
+  $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'update', :title => 'Edit Dock Request', :form_path => 'dock_requests/new_edit_form' } %>");
+  $("#update-modal").modal('show');
+<% elsif !@dock_request %>
+  alert_custom("warning","Dock request no longer exists")
+<% end %>

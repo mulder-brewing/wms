@@ -1,0 +1,7 @@
+<% if @dock_request.save_success %>
+  $('#update-modal').modal('hide');
+  $("#dock_request_<%=@dock_request.id%>").replaceWith('<%= j render @dock_request, dock_request: @dock_request %>');
+  alert_custom("success", "Dock request updated successfully!")
+<% else %>
+  $("#update-form").replaceWith("<%=  j render 'dock_requests/new_edit_form', form_type: 'update' %>");
+<% end %>

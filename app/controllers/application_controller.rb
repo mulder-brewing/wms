@@ -36,4 +36,25 @@ class ApplicationController < ActionController::Base
       all_formats_redirect_to(update_password_user_url(current_user)) if logged_in? && needs_password_reset?
     end
 
+    # These functions help with locating a object for a model, setting current_user for the model, and redirecting to root url if that object is invalid.
+    def find_object_redirect_invalid(model)
+      object = find_object_by_id(model)
+      object_with_current_user = set_current_user(object)
+      redirect_if_object_invalid(object_with_current_user)
+      return object_with_current_user
+    end
+
+    def find_object_by_id(model)
+      return model.find(params[:id])
+    end
+
+    def redirect_if_object_invalid(object)
+      all_formats_redirect_to(root_url) if !object.valid?
+    end
+
+    def set_current_user(object)
+      object.current_user = current_user
+      return object
+    end
+
 end

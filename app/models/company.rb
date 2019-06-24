@@ -7,8 +7,14 @@ class Company < ApplicationRecord
 
   before_validation :strip_whitespace
 
+  after_create_commit :create_defaults
+
   private
     def strip_whitespace
       self.name.strip! if !name.nil?
+    end
+
+    def create_defaults
+      DockGroup.create(description: "Default", company_id: id)
     end
 end

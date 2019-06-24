@@ -4,6 +4,8 @@ class ApplicationRecord < ActiveRecord::Base
   attr_accessor :current_user
   attr_accessor :save_success
 
+  validate :company_check, if: :current_user_pre_check
+
   after_save :update_save_boolean
 
   private

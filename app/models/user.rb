@@ -19,7 +19,6 @@ class User < ApplicationRecord
   # Regex for 8-64 characters, must have at least one uppercase, lowercase, number, and special character.  No spaces
   VALID_PASSWORD_REGEX = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*)(?=.*\W.*)[a-zA-Z0-9\S]{8,64}\z/
   validates :password, presence: true, format: { with: VALID_PASSWORD_REGEX }, allow_blank: true, allow_nil: true
-  validate :company_check, if: :current_user_pre_check
   validate :regular_user_check, if: :current_user_pre_check
   validate :self_disable_check, if: :current_user_pre_check
   validate :self_unadmin_check, if: :current_user_pre_check

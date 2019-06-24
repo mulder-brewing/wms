@@ -43,6 +43,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     # Name of the user's company should be in the .lead jumbotron.
     assert_select '.lead', 'Average Joes'
     #Check the available links are right for a regular user.
+    assert_select "a#navbarAdministrationDropdown", false
     assert_select "a[href=?]", "/companies", false
     assert_select "a[href=?]", "/users", false
     # These links should exist for a user of any type.
@@ -56,6 +57,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(@company_admin)
     follow_redirect!
     #Check the available links are right for a admin user.
+    assert_select "a#navbarAdministrationDropdown", true
     assert_select "a[href=?]", "/companies", false
     assert_select "a[href=?]", "/users", true
   end
@@ -64,6 +66,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(@app_admin)
     follow_redirect!
     #Check the available links are right for a admin user.
+    assert_select "a#navbarAdministrationDropdown", true
     assert_select "a[href=?]", "/companies", true
     assert_select "a[href=?]", "/users", true
   end

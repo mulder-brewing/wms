@@ -10,3 +10,7 @@ dry:
 other_company:
   description: other
   company: other_company
+
+delete_me_dock_group:
+  description: delete_me_dock_group
+  company: company_to_delete

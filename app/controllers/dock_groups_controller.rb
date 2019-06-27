@@ -8,7 +8,7 @@ class DockGroupsController < ApplicationController
 
   def create
     @dock_group = DockGroup.new(dock_group_params)
-    @dock_group.update_attributes( :company_id => current_company_id)
+    @dock_group.update_attributes(:company_id => current_company_id)
     respond_to :js
   end
 
@@ -24,7 +24,7 @@ class DockGroupsController < ApplicationController
 
   def update
     find_dock_group
-    @dock_group.update_attributes(dock_group_params)
+    @dock_group.update_attributes(dock_group_params) if !@dock_group.nil?
     respond_to :js
   end
 

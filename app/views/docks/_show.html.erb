@@ -1,0 +1,11 @@
+<% width = 5 %>
+
+<div class="container">
+  <div class="row">
+    <%= render 'shared/show_field', { :label => 'Dock Group', :value => @dock.dock_group.description, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Number', :value => @dock.number, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Enabled', :value => human_boolean(@dock.enabled), :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Created', :value => local_time(@dock.created_at), :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Updated', :value => local_time(@dock.updated_at), :label_col => width } %>
+  </div>
+</div>

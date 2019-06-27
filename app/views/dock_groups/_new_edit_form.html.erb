@@ -4,7 +4,7 @@
     </div>
     <div class="mb-3">
       <%= f.input :description, as: :string %>
-      <% if form_type == 'update' && logged_in_admin? %>
+      <% if form_type == 'update' %>
         <div class="mb-2">
           <%= f.input :enabled, wrapper: :switch %>
         </div>

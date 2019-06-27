@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   end
 
   resources :dock_groups
+  resources :docks
 
   # Other routes
   root 'static_pages#home'

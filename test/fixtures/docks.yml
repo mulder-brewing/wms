@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+average_joe_dock:
+  number: one
+  enabled: true
+  dock_group: cooler
+  company: averagejoes
+
+other_dock:
+  number: other
+  enabled: true
+  dock_group: other_company
+  company: other_company
+
+delete_me_dock:
+  number: delete_me_dock
+  enabled: true
+  dock_group: delete_me_dock_group
+  company: company_to_delete

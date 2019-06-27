@@ -7,6 +7,10 @@ dry:
   description: dry
   company: averagejoes
 
+updated:
+  description: updated
+  company: averagejoes
+
 other_company:
   description: other
   company: other_company

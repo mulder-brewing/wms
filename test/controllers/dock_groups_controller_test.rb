@@ -5,11 +5,13 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @cooler_dock_group = dock_groups(:cooler)
     @other_company_dock_group = dock_groups(:other_company)
+    @delete_me_dock_group = dock_groups(:delete_me_dock_group)
     @regular_user = users(:regular_user)
     @company_admin = users(:company_admin_user)
     @app_admin = users(:app_admin_user)
     @other_user = users(:other_company_user)
     @other_admin = users(:other_company_admin)
+    @delete_me_admin = users(:delete_me_admin)
     @company_admin_company = @company_admin.company
     @other_company = @other_user.company
   end
@@ -176,7 +178,7 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to updating users.
+  # This function helps all the following tests to run related to updating dock groups.
   def update_dock_group_as(user, dock_group, parameter, validity)
     params = { dock_group: parameter }
     log_in_if_user(user)
@@ -193,7 +195,6 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
       assert_not_equal expected_description, actual_description
       assert_not_equal expected_enabled, actual_enabled
     end
-
   end
 
   update_description_hash = { description: "Updated for test", enabled: false}
@@ -241,7 +242,35 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
     index_dock_groups(@app_admin, true)
   end
 
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # tests for deleted dock group alerts on show, edit, update.
 
+  def check_if_dock_group_deleted(user, dock_group_to_test, try, validity)
+    log_in_if_user(user)
+    case try
+      when "show"
+        get dock_group_path(dock_group_to_test), xhr:true
+      when "update"
+        patch dock_group_path(dock_group_to_test), xhr: true, params: { dock_group: { description: "updated dock group" } }
+      when "edit"
+        get edit_dock_group_path(dock_group_to_test), xhr:true
+    end
+    if validity == true
+      assert_match /Dock group no longer exists/, @response.body
+    else
+      assert_no_match /Dock group no longer exists/, @response.body
+    end
+  end
 
+  test "if a dock group is deleted and a user trys to show, edit, or update it, they are warned the dock group no longer exists." do
+    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "show", false)
+    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "update", false)
+    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "edit", false)
+    @delete_me_dock_group.destroy
+    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "show", true)
+    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "update", true)
+    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "edit", true)
+  end
 
 end

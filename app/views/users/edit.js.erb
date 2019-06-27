@@ -1,6 +1,6 @@
-<% if @user.valid? %>
+<% if @user.nil? %>
+  alert_custom("warning","User no longer exists");
+<% elsif @user.valid? %>
   $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'update', :title => 'Edit User', :form_path => 'users/new_edit_form' } %>");
   $("#update-modal").modal('show');
-<% elsif !@user %>
-  alert_custom("warning","Company no longer exists")
 <% end %>

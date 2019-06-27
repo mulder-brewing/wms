@@ -8,6 +8,10 @@ class ApplicationRecord < ActiveRecord::Base
 
   after_save :update_save_boolean
 
+  def self.where_company(company_id)
+    where("company_id = ?", company_id)
+  end
+
   private
     # check that the current user's company matches the company of this instance
     def company_check

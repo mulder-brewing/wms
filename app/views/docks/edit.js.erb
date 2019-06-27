@@ -1,0 +1,6 @@
+<% if @dock.nil? %>
+  alert_custom("warning","Dock no longer exists");
+<% elsif @dock.valid? %>
+  $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'update', :title => 'Edit Dock', :form_path => 'docks/new_edit_form' } %>");
+  $("#update-modal").modal('show');
+<% end %>

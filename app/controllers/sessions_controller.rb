@@ -27,7 +27,12 @@ class SessionsController < ApplicationController
 
   def become_user
     user = find_user_by_id(params[:id])
-    log_in_redirect_root(user)
+    if user.nil?
+      flash[:warning] = 'User no longer exists'
+      redirect_to users_url
+    else
+      log_in_redirect_root(user)
+    end
   end
 
   private

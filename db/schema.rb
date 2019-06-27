@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_21_134052) do
+ActiveRecord::Schema.define(version: 2019_06_24_222536) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,6 +50,17 @@ ActiveRecord::Schema.define(version: 2019_06_21_134052) do
     t.index ["status"], name: "index_dock_requests_on_status"
   end
 
+  create_table "docks", force: :cascade do |t|
+    t.text "number"
+    t.boolean "enabled", default: true
+    t.bigint "dock_group_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "company_id"
+    t.index ["company_id"], name: "index_docks_on_company_id"
+    t.index ["dock_group_id"], name: "index_docks_on_dock_group_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.text "username"
     t.text "first_name"
@@ -70,5 +81,7 @@ ActiveRecord::Schema.define(version: 2019_06_21_134052) do
   add_foreign_key "dock_groups", "companies"
   add_foreign_key "dock_requests", "companies"
   add_foreign_key "dock_requests", "dock_groups"
+  add_foreign_key "docks", "companies"
+  add_foreign_key "docks", "dock_groups"
   add_foreign_key "users", "companies"
 end

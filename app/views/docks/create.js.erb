@@ -1,0 +1,8 @@
+<% if @dock.save_success %>
+$('#create-modal').modal('hide');
+$('#dock-table-body').prepend('<%= j render @dock, dock: @dock %>');
+$('#dock_<%= @dock.id %>').hide().fadeIn(1000);
+alert_custom("success","Dock created successfully!");
+<% else %>
+$("#create-form").replaceWith("<%=  j render 'new_edit_form', form_type: 'create' %>");
+<% end %>

@@ -1,18 +1,19 @@
-<% provide(:title, 'Dock Groups') %>
-<% provide(:icon_class, 'fas fa-layer-group') %>
-<%= provide(:new_link, new_dock_group_path) %>
+<% provide(:title, 'Docks') %>
+<% provide(:icon_class, 'fas fa-warehouse') %>
+<%= provide(:new_link, new_dock_path) %>
 
 <div class="table-responsive">
   <table class="table table-striped">
     <thead>
       <tr>
         <th scope="col">Actions</th>
-        <th scope="col">Description</th>
+        <th scope="col">Dock Group</th>
+        <th scope="col">Number</th>
         <th scope="col">Enabled</th>
       </tr>
     </thead>
-    <tbody id="dock-group-table-body">
-      <%= render @dock_groups %>
+    <tbody id="dock-table-body">
+      <%= render @docks %>
     </tbody>
   </table>
 </div>

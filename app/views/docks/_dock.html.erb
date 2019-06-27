@@ -1,0 +1,14 @@
+<tr id="dock_<%= dock.id %>">
+  <th scope="row">
+    <%= link_to 'Edit', edit_dock_path(dock), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => 'btn btn-primary btn-sm m-1'  %>
+  </th>
+  <td>
+    <%= dock.dock_group.description %>
+  </td>
+  <td>
+    <%= link_to dock.number, dock_path(dock),  {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#show-modal' }  %>
+  </td>
+  <td>
+    <%= human_boolean(dock.enabled) %>
+  </td>
+</tr>

@@ -17,6 +17,8 @@ Rails.application.routes.draw do
     member do
       get :dock_assignment_edit
       patch :dock_assignment_update
+      patch :unassign_dock
+      patch :check_out
     end
   end
 

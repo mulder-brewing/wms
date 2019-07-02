@@ -59,6 +59,9 @@ gem 'local_time', '~>2.1.0'
 # Masking for phone number fields etc.
 gem 'jquery_mask_rails', '~>0.1.0'
 
+#Amazon SNS for sending text message.
+gem 'aws-sdk-sns'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

@@ -8,11 +8,22 @@ class ApplicationRecord < ActiveRecord::Base
 
   after_save :update_save_boolean
 
+  scope :enabled, -> { where(enabled: true) }
+
   def self.where_company(company_id)
     where("company_id = ?", company_id)
   end
 
+  def self.enabled_where_company(current_company_id)
+    where_company(current_company_id).enabled
+  end
+
   private
+    # get only the digits from a string.
+    def digits_only(string)
+      string.to_s.scan(/\d/).join('')
+    end
+
     # check that the current user's company matches the company of this instance
     def company_check
       if company_id != current_user.company_id

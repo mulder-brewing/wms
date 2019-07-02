@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_06_24_222536) do
+ActiveRecord::Schema.define(version: 2019_07_02_122147) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,22 +33,8 @@ ActiveRecord::Schema.define(version: 2019_06_24_222536) do
     t.index ["description", "company_id"], name: "index_dock_groups_on_description_and_company_id", unique: true
   end
 
-  create_table "dock_requests", force: :cascade do |t|
-    t.text "primary_reference"
-    t.text "phone_number"
-    t.boolean "text_message"
-    t.text "dock"
-    t.text "note"
-    t.text "status"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "dock_group_id"
-    t.bigint "company_id"
-    t.index ["company_id"], name: "index_dock_requests_on_company_id"
-    t.index ["dock_group_id"], name: "index_dock_requests_on_dock_group_id"
-    t.index ["primary_reference"], name: "index_dock_requests_on_primary_reference"
-    t.index ["status"], name: "index_dock_requests_on_status"
-  end
+# Could not dump table "dock_requests" because of following StandardError
+#   Unknown type 'dock_request_status' for column 'status'
 
   create_table "docks", force: :cascade do |t|
     t.text "number"
@@ -81,6 +67,7 @@ ActiveRecord::Schema.define(version: 2019_06_24_222536) do
   add_foreign_key "dock_groups", "companies"
   add_foreign_key "dock_requests", "companies"
   add_foreign_key "dock_requests", "dock_groups"
+  add_foreign_key "dock_requests", "docks"
   add_foreign_key "docks", "companies"
   add_foreign_key "docks", "dock_groups"
   add_foreign_key "users", "companies"

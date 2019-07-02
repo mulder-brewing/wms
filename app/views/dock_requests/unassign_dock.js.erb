@@ -1,0 +1,4 @@
+<% if @dock_request.save_success %>
+  $("#dock_request_<%=@dock_request.id%>").replaceWith('<%= j render @dock_request, dock_request: @dock_request %>');
+  alert_custom("success", "Dock unassigned!")
+<% end %>

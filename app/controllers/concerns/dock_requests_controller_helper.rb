@@ -6,8 +6,14 @@ module DockRequestsControllerHelper
 
   # Returns the current user's dock request group (if any).
   def current_dock_group
-    if session[:dock_group_id]
-      @dock_group ||= DockGroup.find_by(id: session[:dock_group_id])
+    session_dock_group = session[:dock_group_id]
+    if session_dock_group
+      group_id = session_dock_group.to_i
+      if @dock_groups
+        @dock_group ||= @dock_groups.find { |d| d.id == group_id }
+      else
+        @dock_group ||= DockGroup.find_by(id: group_id)
+      end
     end
   end
 

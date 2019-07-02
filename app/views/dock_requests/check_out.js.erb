@@ -1,0 +1,6 @@
+<% if @dock_request.save_success %>
+  $('#dock_request_<%=@dock_request.id%>').fadeOut(500, function(){
+    $(this).remove();
+  });
+  alert_custom("success", "Dock request checked out successfully!")
+<% end %>

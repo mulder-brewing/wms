@@ -3,8 +3,8 @@
       <%= errors_for(f.object) %>
     </div>
     <div class="mb-3">
-      <%= f.input :dock_group_id, :collection => DockGroup.enabled_where_company(current_company_id).order(:description), :label_method => :description, :value_method => :id %>
       <%= f.input :number, as: :string %>
+      <%= f.input :dock_group_id, :collection => @dock_groups, :label_method => :description, :value_method => :id %>
       <% if form_type == 'update' %>
         <div class="mb-2">
           <%= f.input :enabled, wrapper: :switch %>

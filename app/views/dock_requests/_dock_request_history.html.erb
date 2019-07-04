@@ -1,0 +1,14 @@
+<tr id="dock_request_<%= dock_request.id %>">
+  <th scope="row">
+    <%= link_to dock_request.primary_reference, dock_request_path(dock_request),  {:remote => true, 'data-toggle' =>  "modal", 'data-target' => '#show-modal' }  %>
+  </th>
+  <td>
+    <%= dock_request.total_time %>
+  </td>
+  <td>
+    <%= local_time_if_not_blank(dock_request.created_at) %>
+  </td>
+  <td>
+    <%= local_time_if_not_blank(dock_request.checked_out_at) %>
+  </td>
+</tr>

@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       patch :check_out
     end
   end
+  get '/dock_requests_history', to: 'dock_requests#history'
 
   resources :dock_groups
   resources :docks

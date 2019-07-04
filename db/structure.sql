@@ -116,7 +116,9 @@ CREATE TABLE public.dock_requests (
     dock_group_id bigint,
     company_id bigint,
     status public.dock_request_status,
-    dock_id bigint
+    dock_id bigint,
+    dock_assigned_at timestamp without time zone,
+    checked_out_at timestamp without time zone
 );
 
 
@@ -485,6 +487,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190630131435'),
 ('20190630135224'),
 ('20190702121948'),
-('20190702122147');
+('20190702122147'),
+('20190702184412'),
+('20190702191432');
 
 

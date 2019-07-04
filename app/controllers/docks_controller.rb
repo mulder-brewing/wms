@@ -3,6 +3,11 @@ class DocksController < ApplicationController
 
   def new
     @dock = Dock.new
+    find_enabled_dock_groups
+    dock_groups_length = @dock_groups.length
+    if dock_groups_length == 1
+      @dock.dock_group_id = @dock_groups.first.id
+    end
     respond_to :js
   end
 
@@ -19,6 +24,7 @@ class DocksController < ApplicationController
 
   def edit
     find_dock
+    find_enabled_dock_groups
     respond_to :js
   end
 
@@ -39,5 +45,9 @@ class DocksController < ApplicationController
 
     def find_dock
       @dock = find_object_redirect_invalid(Dock)
+    end
+
+    def find_enabled_dock_groups
+      @dock_groups = DockGroup.enabled_where_company(current_company_id).order(:description)
     end
 end

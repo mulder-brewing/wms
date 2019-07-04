@@ -40,7 +40,7 @@ class DockRequestsController < ApplicationController
   end
 
   def new
-    @dock_request = DockRequest.new
+    @dock_request = DockRequest.new()
     respond_to :js
   end
 
@@ -48,6 +48,11 @@ class DockRequestsController < ApplicationController
     @dock_request = DockRequest.new(dock_request_params("create"))
     @dock_request.update_attributes( :company_id => current_company_id, :status => "checked_in", :dock_group_id => current_dock_group_id)
     @dock_request.save
+    respond_to :js
+  end
+
+  def show
+    find_dock_request
     respond_to :js
   end
 
@@ -71,7 +76,6 @@ class DockRequestsController < ApplicationController
   def dock_assignment_update
     find_dock_request
     @dock_request.context = "dock_assignment"
-    @dock_request.status = "dock_assigned"
     @dock_request.update_attributes(dock_request_params("dock_assignment"))
     if !@dock_request.save_success
       @docks = Dock.enabled_where_dock_group(current_dock_group_id)
@@ -87,8 +91,13 @@ class DockRequestsController < ApplicationController
 
   def check_out
     find_dock_request
+    @dock_request.context = "check_out"
     @dock_request.update_attributes(:status => "checked_out")
     respond_to :js
+  end
+
+  def history
+    @pagy, @dock_requests = pagy(DockRequest.where_company(current_company_id).order(created_at: :desc), items:25)
   end
 
 

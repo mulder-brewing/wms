@@ -42,5 +42,12 @@ module ApplicationHelper
     boolean ? 'Yes' : 'No'
   end
 
+  # Returns local time if not blank
+  def local_time_if_not_blank(date_time)
+    if !date_time.blank?
+      local_time(date_time)
+    end
+  end
+
 
 end

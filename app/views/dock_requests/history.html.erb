@@ -1,0 +1,22 @@
+<% provide(:title, 'Dock Queue History') %>
+<% provide(:icon_class, 'fas fa-history') %>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Primary Reference</th>
+        <th scope="col">Total Time</th>
+        <th scope="col">Checked In</th>
+        <th scope="col">Checked Out</th>
+      </tr>
+    </thead>
+    <tbody id="dock-requests-table-body">
+      <% @dock_requests.each do |dock_request| %>
+        <%= render :partial => "dock_requests/dock_request_history", :locals => { :dock_request => dock_request } %>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<%= render 'shared/pagination', pagy: @pagy %>

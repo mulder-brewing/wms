@@ -5,10 +5,12 @@
     </div>
     <div class="card-body">
       <% if dock_request.status == "checked_in" %>
-        <h5 class="card-title">Checked In</h5>
+        <h4 class="card-title">Checked In</h4>
         <p><%= local_time_ago(dock_request.created_at) %></p>
       <% elsif dock_request.status == "dock_assigned" %>
-        <h5 class="card-title">Dock <%= dock_request.dock.number %></h5>
+        <h4 class="card-title">Dock <%= dock_request.dock.number %></h4>
+        <p><%= local_time_ago(dock_request.dock_assigned_at) %></p>
+        <h5>Checked In</h5>
         <p><%= local_time_ago(dock_request.created_at) %></p>
       <% end %>
       <p class="card-text"><%= dock_request.note %></p>
@@ -16,7 +18,12 @@
     <div class="card-footer">
       <div class="container-fluid">
         <div class="row mb-2">
-          <%= link_to 'Edit', edit_dock_request_path(dock_request), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => 'btn btn-primary btn-sm btn-block'  %>
+          <div class="col">
+            <%= link_to 'Edit', edit_dock_request_path(dock_request), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => 'btn btn-primary btn-sm btn-block'  %>
+          </div>
+          <div class="col">
+            <%= link_to 'Details', dock_request_path(dock_request), :remote => true, 'data-toggle' =>  "modal", 'data-target' => '#show-modal', :class => 'btn btn-primary btn-sm btn-block'  %>
+          </div>
         </div>
         <% if dock_request.status == "checked_in" %>
           <div class="row mb-2">
@@ -25,7 +32,7 @@
         <% end %>
         <% if dock_request.status == "dock_assigned" %>
           <div class="row mb-2">
-            <%= link_to '&#10094; Unassign Dock'.html_safe, unassign_dock_dock_request_path(dock_request), :remote => true, method: :patch, :class => 'btn btn-primary btn-sm btn-block text-left'  %>
+            <%= link_to '&#10094; Unassign Dock'.html_safe, unassign_dock_dock_request_path(dock_request), :remote => true, method: :patch, :class => 'btn btn-danger btn-sm btn-block text-left'  %>
           </div>
           <div class="row mb-2">
             <%= link_to 'Check Out &#10097;'.html_safe, check_out_dock_request_path(dock_request), :remote => true, method: :patch, :class => 'btn btn-primary btn-sm btn-block text-right'  %>

@@ -21,6 +21,10 @@ class ActionDispatch::IntegrationTest
     'window.location = "http://www.example.com/"'
   end
 
+  def html_redirect
+    "<html><body>You are being <a href=\"http://www.example.com/\">redirected</a>.</body></html>"
+  end
+
   # Log in as a particular user.
   def log_in_as(user, password = "Password1$", swapcase = false)
     username = user.username
@@ -33,7 +37,7 @@ class ActionDispatch::IntegrationTest
   end
 
   def redirected?(response)
-    xhr_redirect == response.body
+    response.body == xhr_redirect || response.body == html_redirect
   end
 
   def log_in_if_user(user)

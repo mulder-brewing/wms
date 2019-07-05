@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       patch :dock_assignment_update
       patch :unassign_dock
       patch :check_out
+      patch :void
     end
   end
   get '/dock_requests_history', to: 'dock_requests#history'

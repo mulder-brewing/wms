@@ -7,6 +7,7 @@
       <%= f.input :phone_number, as: :string, input_html: { class: 'phone_us' } %>
       <%= f.input :text_message, label: 'Send text message when dock is assigned' %>
       <%= f.input :note %>
+      <%= f.hidden_field :dock_group_id %>
     </div>
     <script>
       mask_inputs()

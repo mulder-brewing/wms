@@ -19,8 +19,15 @@ module DockRequestsControllerHelper
 
   # Returns the current user's dock request group (if any).
   def current_dock_group_id
-    current_dock_group.id
+    current_dock_group.id if current_dock_group
   end
+
+  def current_dock_group_docks
+    if current_dock_group
+      Dock.enabled_where_dock_group(current_dock_group_id)
+    end
+  end
+
 
   def clear_dock_group
     session.delete(:dock_group_id)

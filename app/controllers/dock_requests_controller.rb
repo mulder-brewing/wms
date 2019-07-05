@@ -10,30 +10,23 @@ class DockRequestsController < ApplicationController
       @show_dock_group_selector = false
     end
     if params[:dock_request].present? && params[:dock_request][:dock_group_id].present?
-      stash_dock_group_id(params[:dock_request][:dock_group_id])
+      params_group_id = params[:dock_request][:dock_group_id]
+      find_dock_group_redirect_invalid(params_group_id)
+      stash_dock_group_id(params_group_id)
+    elsif current_dock_group
+      redirect_to dock_requests_url(dock_request: { dock_group_id: current_dock_group_id })
     end
     if current_dock_group
       @current_dock_group = current_dock_group
-      @dock_requests = DockRequest.where_company_and_group(current_company_id, current_dock_group_id).active.order(:created_at)
+      @dock_requests = DockRequest.where_company_and_group(current_company_id, current_dock_group_id).include_docks.active.order(:created_at)
     else
       @dock_requests = DockRequest.none
       if size == 0
         flash.now[:danger] = 'You need at least one enabled dock group before you can use the dock queue'
         @show_new = false
       elsif size == 1
-        @current_dock_group = @dock_groups.first
-        group_id = @current_dock_group.id
-        stash_dock_group_id(group_id)
-        @dock_requests = DockRequest.where_company_and_group(current_company_id, group_id).active.order(:created_at)
+        redirect_to dock_requests_url(dock_request: { dock_group_id: @dock_groups.first.id })
       else
-        @show_new = false
-      end
-    end
-    if @current_dock_group
-      @docks = Dock.enabled_where_dock_group(@current_dock_group.id)
-      docks_length = @docks.length
-      if docks_length == 0
-        flash.now[:danger] = 'You need at least one enabled dock in this dock group before you can create a new check-in'
         @show_new = false
       end
     end
@@ -41,13 +34,13 @@ class DockRequestsController < ApplicationController
 
   def new
     @dock_request = DockRequest.new()
+    find_current_dock_group
     respond_to :js
   end
 
   def create
     @dock_request = DockRequest.new(dock_request_params("create"))
-    @dock_request.update_attributes( :company_id => current_company_id, :status => "checked_in", :dock_group_id => current_dock_group_id)
-    @dock_request.save
+    @dock_request.update_attributes(:company_id => current_company_id)
     respond_to :js
   end
 
@@ -68,6 +61,14 @@ class DockRequestsController < ApplicationController
   end
 
   def dock_assignment_edit
+    # if @current_dock_group
+    #   @docks = Dock.enabled_where_dock_group(@current_dock_group.id)
+    #   docks_length = @docks.length
+    #   if docks_length == 0
+    #     flash.now[:danger] = 'You need at least one enabled dock in this dock group before you can create a new check-in'
+    #     @show_new = false
+    #   end
+    # end
     find_dock_request
     @docks = Dock.enabled_where_dock_group(current_dock_group_id)
     respond_to :js
@@ -85,16 +86,22 @@ class DockRequestsController < ApplicationController
 
   def unassign_dock
     find_dock_request
-    @dock_request.update_attributes(:status => "checked_in", :dock_id => nil)
+    @dock_request.update_attributes(:context => "dock_unassign")
     respond_to :js
   end
 
   def check_out
     find_dock_request
-    @dock_request.context = "check_out"
-    @dock_request.update_attributes(:status => "checked_out")
+    @dock_request.update_attributes(:context => "check_out")
     respond_to :js
   end
+
+  def void
+    find_dock_request
+    @dock_request.update_attributes(:context => "void")
+    respond_to :js
+  end
+
 
   def history
     @pagy, @dock_requests = pagy(DockRequest.where_company(current_company_id).order(created_at: :desc), items:25)
@@ -104,7 +111,7 @@ class DockRequestsController < ApplicationController
   private
     def dock_request_params(method)
       if %w(create update).include?(method)
-        params.require(:dock_request).permit(:primary_reference, :phone_number, :text_message, :note)
+        params.require(:dock_request).permit(:primary_reference, :phone_number, :text_message, :note, :dock_group_id)
       elsif method == "dock_assignment"
         params.require(:dock_request).permit(:dock_id, :text_message)
       end
@@ -113,4 +120,23 @@ class DockRequestsController < ApplicationController
     def find_dock_request
       @dock_request = find_object_redirect_invalid(DockRequest)
     end
+
+    def find_current_dock_group
+      @current_dock_group = current_dock_group
+    end
+
+    def find_current_dock_group_docks
+      @current_dock_group_docks = current_dock_group_docks
+    end
+
+    def find_current_dock_group_with_docks
+      find_current_dock_group
+      find_current_dock_group_docks
+    end
+
+    def find_dock_group_redirect_invalid(id)
+      dock_group = @dock_groups.find { |d| d.id == id.to_i }
+      all_formats_redirect_to(root_url) if dock_group.nil?
+    end
+
 end

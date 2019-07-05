@@ -1,15 +1,19 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  primary_reference: MyText
-  phone_number: MyText
+dock_request_1:
+  primary_reference: One
+  phone_number: 2523339988
   text_message: false
-  dock: MyText
-  note: MyText
+  note: My note
+  company: averagejoes
+  dock_group: cooler
 
-two:
-  primary_reference: MyText
-  phone_number: MyText
-  text_message: false
-  dock: MyText
-  note: MyText
+dock_request_2:
+  primary_reference: Two
+  company: other_company
+  dock_group: other_company
+
+dock_request_3:
+  primary_reference: Three
+  company: averagejoes
+  dock_group: dry

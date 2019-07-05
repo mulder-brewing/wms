@@ -9,6 +9,7 @@ class ApplicationRecord < ActiveRecord::Base
   after_save :update_save_boolean
 
   scope :enabled, -> { where(enabled: true) }
+  scope :disabled, -> { where(enabled: false) }
 
   def self.where_company(company_id)
     where("company_id = ?", company_id)
@@ -16,6 +17,10 @@ class ApplicationRecord < ActiveRecord::Base
 
   def self.enabled_where_company(current_company_id)
     where_company(current_company_id).enabled
+  end
+
+  def self.disabled_where_company(current_company_id)
+    where_company(current_company_id).disabled
   end
 
   private

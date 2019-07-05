@@ -3,16 +3,19 @@ class DockRequest < ApplicationRecord
   require 'action_view'
   include ActionView::Helpers::DateHelper
 
-  enum status: { checked_in: "checked_in", dock_assigned: "dock_assigned", checked_out: "checked_out" }, _prefix: :status
+  enum status: { checked_in: "checked_in", dock_assigned: "dock_assigned", checked_out: "checked_out", voided: "voided" }, _prefix: :status
 
   attr_accessor :context
 
+  belongs_to :company
   belongs_to :dock_group
   belongs_to :dock, optional: true
 
   before_validation :clean_phone_number
   before_validation :dock_assignment_update, if: :context_dock_assignment?
+  before_validation :dock_unassign_update, if: :context_dock_unassign?
   before_validation :check_out_update, if: :context_check_out?
+  before_validation :void_update, if: :context_void?
 
   validates :primary_reference, presence: true
   validates :dock_id, presence: true, if: :context_dock_assignment?
@@ -20,7 +23,8 @@ class DockRequest < ApplicationRecord
   validates :phone_number, length: { is: 10 }, format: { with: VALID_PHONE_REGEX }, allow_blank: true
   validate :phone_number_if_text_message
 
-  scope :active, -> { where("status != ?", "checked_out") }
+  scope :active, -> { where("status != ? AND status != ?", "checked_out", "voided") }
+  scope :include_docks, -> { includes(:dock) }
 
   after_update_commit :send_sms, if: :context_dock_assignment?
 
@@ -29,10 +33,12 @@ class DockRequest < ApplicationRecord
   end
 
   def total_time
-    if !checked_out_at.blank?
-      distance_of_time_in_words(created_at, checked_out_at)
+    if status_checked_out?
+      distance_of_time_in_words(created_at.beginning_of_minute, checked_out_at.beginning_of_minute)
+    elsif status_voided?
+      distance_of_time_in_words(created_at.beginning_of_minute, voided_at.beginning_of_minute)
     else
-      distance_of_time_in_words(created_at, DateTime.now)
+      distance_of_time_in_words(created_at.beginning_of_minute, DateTime.now.beginning_of_minute)
     end
   end
 
@@ -42,13 +48,34 @@ class DockRequest < ApplicationRecord
     end
   end
 
+  def status_human_readable
+    case status
+    when "checked_in"
+      "Checked In"
+    when "dock_assigned"
+      "Dock Assigned"
+    when "checked_out"
+      "Checked Out"
+    when "voided"
+      "Voided"
+    end
+  end
+
   private
     def context_dock_assignment?
       context == "dock_assignment"
     end
 
+    def context_dock_unassign?
+      context == "dock_unassign"
+    end
+
     def context_check_out?
       context == "check_out"
+    end
+
+    def context_void?
+      context == "void"
     end
 
     def phone_number_if_text_message
@@ -81,8 +108,19 @@ class DockRequest < ApplicationRecord
       self.dock_assigned_at = DateTime.now
     end
 
+    def dock_unassign_update
+      self.status = "checked_in"
+      self.dock_id = nil
+      self.dock_assigned_at = nil
+    end
+
     def check_out_update
       self.status = "checked_out"
       self.checked_out_at = DateTime.now
+    end
+
+    def void_update
+      self.status = "voided"
+      self.voided_at = DateTime.now
     end
 end

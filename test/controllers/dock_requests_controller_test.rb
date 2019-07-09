@@ -48,8 +48,8 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # This function will get the dock requests index page if boolean is true, this can set the current dock group if there's only one that's enabled.
-  def get_index(boolean)
-    get dock_requests_path if boolean
+  def get_index
+    get dock_requests_path
   end
 
   # This function will get the dock requests index page with a certain dock group (if that dock group isn't nil).  This sets current dock group if there's more than one that's enabled.
@@ -57,15 +57,29 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     get dock_requests_path(dock_request: { dock_group_id: dock_group.id }) if !dock_group.nil?
   end
 
+  # When there is only one enabled dock group, for the index page, the user is redirected to the URL for that dock group automatically.  Tests need to follow this redirect when that's the case.
+  def follow_redirect_if_necessary(user)
+    if !user.nil?
+      enabled_dock_groups_number = DockGroup.enabled_where_company(user.company_id).length
+      follow_redirect! if enabled_dock_groups_number == 1
+    end
+  end
+
+  # This function just combines two functions for the sake of convenience.
+  def get_index_page_redirect_if_necessary(get_index_page, user)
+    if get_index_page
+      get_index
+      follow_redirect_if_necessary(user)
+    end
+  end
+
 
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
   # This function helps all the following tests to run related to checking the index page errors.
-  def check_index_page_errors(user, error_message_regex, follow_redirect, validity)
+  def check_index_page_errors(user, error_message_regex, validity)
     log_in_if_user(user)
-    follow_redirect!
-    get dock_requests_path
-    follow_redirect! if follow_redirect
+    get_index_page_redirect_if_necessary(true, user)
     new_path = "/dock_requests/new"
     if validity == true
       assert_match error_message_regex, @response.body
@@ -80,24 +94,25 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
   error_message_no_enabled_docks = /You need at least one enabled dock in this dock group before you can create a new check-in/
 
   test "a company with no dock groups should get a error message and not have a link to create a new dock request" do
-    check_index_page_errors(@nothing_setup_company_user, error_message_no_enabled_dock_groups, false, true)
+    check_index_page_errors(@nothing_setup_company_user, error_message_no_enabled_dock_groups, true)
   end
 
   test "a company with at least one enabled dock group shouldn't get a error message and should have a link to create a new dock request" do
-    check_index_page_errors(@other_user, error_message_no_enabled_dock_groups, true, false)
+    check_index_page_errors(@other_user, error_message_no_enabled_dock_groups, false)
   end
 
   test "a company with only disabled dock groups should get a error message and not have a link to create a new dock request" do
     @other_company_dg.update_attribute(:enabled, false)
-    check_index_page_errors(@other_user, error_message_no_enabled_dock_groups, false, true)
+    check_index_page_errors(@other_user, error_message_no_enabled_dock_groups, true)
   end
 
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
   # This function helps all the following tests to run related to checking the index page for the dock group selector.
   def check_index_page_for_group_selector(user, validity)
+    new_path = "/dock_requests/new"
     log_in_if_user(user)
-    get dock_requests_path
+    get_index_page_redirect_if_necessary(true, user)
     if validity == true
       assert_select "form"
       assert_select "form select[id=dock_group_select]"
@@ -109,12 +124,13 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
       disabled_dock_groups.each do |dock_group|
         assert_select "form select[id=dock_group_select] option[value=#{dock_group.id}]", false
       end
+      assert_select "a[href=?]", new_path, false
     else
       assert_select "form", false
     end
   end
 
-  test "a company with more than one enabled dock group should get the dock group selector and only enabled dock groups should be in the selector" do
+  test "a company with more than one enabled dock group should get the dock group selector and only enabled dock groups should be in the selector.  Also shouldn't have new link." do
     @cooler.update_attribute(:enabled, false)
     check_index_page_for_group_selector(@regular_user, true)
   end
@@ -132,7 +148,7 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
   # This function helps all the following tests to run related to getting new dock request modal.
   def new_dock_request_modal(user, get_index_page, dock_group, validity)
     log_in_if_user(user)
-    get dock_requests_path if get_index_page
+    get_index_page_redirect_if_necessary(get_index_page, user)
     get dock_requests_path(dock_request: { dock_group_id: dock_group.id }) if !dock_group.nil?
     get new_dock_request_path, xhr:true
     if validity == true
@@ -163,7 +179,8 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a logged in user that visits the index page (1 dock group) should get the new dock request modal" do
-    new_dock_request_modal(@other_user, true, @other_company_dg, true)
+    new_dock_request_modal(@other_user, true, nil, true)
+
   end
 
   test "a logged in user that visits the index page (3 dock groups) should not get the new dock request modal because dock group needs selecting first" do
@@ -179,7 +196,7 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
   # These functions helps all the following tests to run related to creating a dock request
   def create_dock_request_as(user, params, get_index_page, dock_group, validity)
     log_in_if_user(user)
-    get_index(get_index_page)
+    get_index_page_redirect_if_necessary(get_index_page, user)
     get_index_with(dock_group)
     params[:dock_request][:dock_group_id] = dock_group.id if !dock_group.nil?
     if validity == true
@@ -200,6 +217,7 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test "a logged in user with no dock groups shouldn't be able to create a dock request" do
     create_dock_request_as(@nothing_setup_company_user, @dock_request_hash, true, nil, false)
+    assert_match /Dock group must exist/, @response.body
   end
 
   test "a logged in user (1 dock group) should be able to create a dock request" do
@@ -209,10 +227,12 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
   test "a logged in user (1 DISABLED dock group) shouldn't be able to create a dock request" do
     @other_company_dg.update_attribute(:enabled, false)
     create_dock_request_as(@other_user, @dock_request_hash, false, @other_company_dg, false)
+    assert_match /Dock group #{@other_company_dg.description} is disabled/, @response.body
   end
 
   test "a logged in user (3 dock groups) shuldn't be able to create a dock request without selecting a dock group." do
     create_dock_request_as(@regular_user, @dock_request_hash, true, nil, false)
+    assert_match /Dock group must exist/, @response.body
   end
 
   test "a logged in user (3 dock groups) should be able to create a dock request if a dock group is selected first" do
@@ -223,6 +243,11 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     create_dock_request_as(@regular_user, @dock_request_with_dock_hash, true, @cooler, true)
     created_dock = DockRequest.last
     assert_nil created_dock.dock_id
+  end
+
+  test "trying to create a dock request where the company id of the dock group doesn't match the company id of the dock request should fail" do
+    create_dock_request_as(@regular_user, @dock_request_hash, true, @other_company_dg, false)
+    assert_match /Dock group does not belong to your company/, @response.body
   end
 
   # tests for who can get the show dock request modal

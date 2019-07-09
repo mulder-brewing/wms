@@ -40,12 +40,14 @@ class DockRequestsController < ApplicationController
 
   def create
     @dock_request = DockRequest.new(dock_request_params("create"))
+    set_current_user_attribute
     @dock_request.update_attributes(:company_id => current_company_id)
     respond_to :js
   end
 
   def show
     find_dock_request
+    set_current_user_attribute
     respond_to :js
   end
 
@@ -56,6 +58,7 @@ class DockRequestsController < ApplicationController
 
   def update
     find_dock_request
+    set_current_user_attribute
     @dock_request.update_attributes(dock_request_params("update"))
     respond_to :js
   end
@@ -137,6 +140,10 @@ class DockRequestsController < ApplicationController
     def find_dock_group_redirect_invalid(id)
       dock_group = @dock_groups.find { |d| d.id == id.to_i }
       all_formats_redirect_to(root_url) if dock_group.nil?
+    end
+
+    def set_current_user_attribute
+      @dock_request.current_user = current_user
     end
 
 end

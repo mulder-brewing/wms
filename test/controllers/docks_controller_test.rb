@@ -74,7 +74,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     create_object_as(@app_admin, Dock, docks_path, @dock_hash, true)
   end
 
-  test "a user should not be able to create a dock group in another company" do
+  test "a user should not be able to create a dock in another company" do
     hash_other_company = { company_id: @other_company.id }
     dock_hash_other_company = @dock_hash.merge(hash_other_company)
     create_object_as(@company_admin, Dock, docks_path, @dock_hash, true)
@@ -99,7 +99,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "a company admin cannot create a dock for a dock group in another company" do
     create_object_as(@company_admin, Dock, docks_path, @other_dock_hash, false)
-    assert_match /Dock group doesn&#39;t belong to your company/, @response.body
+    assert_match /Dock group does not belong to your company/, @response.body
   end
 
   # tests for who can get the show dock modal

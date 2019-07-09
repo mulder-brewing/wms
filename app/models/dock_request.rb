@@ -22,6 +22,8 @@ class DockRequest < ApplicationRecord
   VALID_PHONE_REGEX = /\A\d{10}\z/
   validates :phone_number, length: { is: 10 }, format: { with: VALID_PHONE_REGEX }, allow_blank: true
   validate :phone_number_if_text_message
+  validate :dock_group_enabled, if: :dock_group_id_exists?
+  validate :dock_group_company_match, if: :dock_group_id_exists?
 
   scope :active, -> { where("status != ? AND status != ?", "checked_out", "voided") }
   scope :include_docks, -> { includes(:dock) }
@@ -122,5 +124,21 @@ class DockRequest < ApplicationRecord
     def void_update
       self.status = "voided"
       self.voided_at = DateTime.now
+    end
+
+    def dock_group_id_exists?
+      !dock_group_id.blank?
+    end
+
+    def dock_group_enabled
+      if dock_group.enabled == false
+        errors.add(:base, "Dock group #{dock_group.description} is disabled.")
+      end
+    end
+
+    def dock_group_company_match
+      if dock_group.company_id != company_id
+        errors.add(:dock_group_id, "does not belong to your company")
+      end
     end
 end

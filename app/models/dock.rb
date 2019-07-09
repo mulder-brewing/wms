@@ -21,12 +21,12 @@ class Dock < ApplicationRecord
 
   private
     def dock_group_pre_check
-      DockGroup.exists?(dock_group_id)
+      !dock_group_id.blank?
     end
 
     def dock_group_matches_current_user
-      if DockGroup.find_by(id: dock_group_id).company_id != company_id
-        errors.add(:dock_group_id, "doesn't belong to your company")
+      if dock_group.company_id != company_id
+        errors.add(:dock_group_id, "does not belong to your company")
       end
     end
 end

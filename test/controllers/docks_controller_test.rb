@@ -120,22 +120,22 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   # tests for who can get the edit dock modal.
   test "a logged out or regular user should not be able to get the edit dock modal" do
-    edit_object_as(nil, edit_dock_path(@average_joe_dock), false)
-    edit_object_as(@regular_user, edit_dock_path(@average_joe_dock), false)
+    edit_object_as(nil, edit_dock_path(@average_joe_dock), true, false)
+    edit_object_as(@regular_user, edit_dock_path(@average_joe_dock), true, false)
   end
 
   test "a company or app admin should be able to get the edit dock modal" do
-    edit_object_as(@company_admin, edit_dock_path(@average_joe_dock), true)
-    edit_object_as(@app_admin, edit_dock_path(@average_joe_dock), true)
+    edit_object_as(@company_admin, edit_dock_path(@average_joe_dock), false, true)
+    edit_object_as(@app_admin, edit_dock_path(@average_joe_dock), false, true)
   end
 
   test "a company or app admin should not be able to get edit dock modal for another company's dock" do
-    edit_object_as(@company_admin, edit_dock_path(@other_dock), false)
-    edit_object_as(@app_admin, edit_dock_path(@other_dock), false)
+    edit_object_as(@company_admin, edit_dock_path(@other_dock), true, false)
+    edit_object_as(@app_admin, edit_dock_path(@other_dock), true, false)
   end
 
   test "the enable/disable switch should be visible on the edit modal" do
-    edit_object_as(@company_admin, edit_dock_path(@average_joe_dock), true)
+    edit_object_as(@company_admin, edit_dock_path(@average_joe_dock), false, true)
     assert_match /dock_enabled/, @response.body
   end
 

@@ -40,47 +40,40 @@ class DockRequestsController < ApplicationController
 
   def create
     @dock_request = DockRequest.new(dock_request_params("create"))
-    set_current_user_attribute
     @dock_request.update_attributes(:company_id => current_company_id)
     respond_to :js
   end
 
   def show
     find_dock_request
-    set_current_user_attribute
     respond_to :js
   end
 
   def edit
     find_dock_request
+    set_context("edit")
     respond_to :js
   end
 
   def update
     find_dock_request
-    set_current_user_attribute
+    set_context("update")
     @dock_request.update_attributes(dock_request_params("update"))
     respond_to :js
   end
 
   def dock_assignment_edit
-    # if @current_dock_group
-    #   @docks = Dock.enabled_where_dock_group(@current_dock_group.id)
-    #   docks_length = @docks.length
-    #   if docks_length == 0
-    #     flash.now[:danger] = 'You need at least one enabled dock in this dock group before you can create a new check-in'
-    #     @show_new = false
-    #   end
-    # end
     find_dock_request
-    @docks = Dock.enabled_where_dock_group(current_dock_group_id)
+    @docks = Dock.enabled_where_dock_group(@dock_request.dock_group_id)
+    @dock_request.number_of_enabled_docks_within_dock_group = @docks.length
+    set_context("dock_assignment_edit")
     respond_to :js
   end
 
   def dock_assignment_update
     find_dock_request
-    @dock_request.context = "dock_assignment"
-    @dock_request.update_attributes(dock_request_params("dock_assignment"))
+    @dock_request.context = "dock_assignment_update"
+    @dock_request.update_attributes(dock_request_params("dock_assignment_update"))
     if !@dock_request.save_success
       @docks = Dock.enabled_where_dock_group(current_dock_group_id)
     end
@@ -115,7 +108,7 @@ class DockRequestsController < ApplicationController
     def dock_request_params(method)
       if %w(create update).include?(method)
         params.require(:dock_request).permit(:primary_reference, :phone_number, :text_message, :note, :dock_group_id)
-      elsif method == "dock_assignment"
+      elsif method == "dock_assignment_update"
         params.require(:dock_request).permit(:dock_id, :text_message)
       end
     end
@@ -142,8 +135,8 @@ class DockRequestsController < ApplicationController
       all_formats_redirect_to(root_url) if dock_group.nil?
     end
 
-    def set_current_user_attribute
-      @dock_request.current_user = current_user
+    def set_context(context)
+      @dock_request.context = context if !@dock_request.nil?
     end
 
 end

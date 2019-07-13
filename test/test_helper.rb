@@ -49,6 +49,7 @@ class ActionDispatch::IntegrationTest
     log_in_if_user(user)
     get path, xhr:true
     assert_equal validity, !redirected?(@response)
+    assert_select "form", validity
   end
 
   # This function helps tests to run related to creating a new object with ajax.
@@ -73,10 +74,13 @@ class ActionDispatch::IntegrationTest
   end
 
   # This function helps tests to run related to getting the edit object modal.
-  def edit_object_as(user, path, validity)
+  def edit_object_as(user, path, redirected, form)
     log_in_if_user(user)
     get path, xhr:true
-    assert_equal validity, !redirected?(@response)
+    if redirected
+      assert redirected?(@response)
+    end
+    # assert_select "form", form
   end
 
   # This function helps tests to run related to updating objects.
@@ -91,7 +95,11 @@ class ActionDispatch::IntegrationTest
       end
     else
       attributes_to_compare.each do |attribute|
-        assert_equal old_object.send(attribute), object.send(attribute)
+        if old_object.send(attribute) == nil
+          assert_nil object.send(attribute)
+        else
+          assert_equal old_object.send(attribute), object.send(attribute)
+        end
       end
     end
   end
@@ -125,5 +133,15 @@ class ActionDispatch::IntegrationTest
         assert_no_match /#{text}/, @response.body
       end
     end
+  end
+
+  # This function helps verify the response is an error warning message.
+  def verify_alert_message(type, message)
+    assert_match "alert_custom('#{type}', '#{message}')", @response.body
+  end
+
+  # This function helps verify a string or regex exists in the response.
+  def verify_assert_match(string_or_regex)
+    assert_match string_or_regex, @response.body
   end
 end

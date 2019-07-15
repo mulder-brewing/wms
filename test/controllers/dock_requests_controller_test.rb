@@ -191,7 +191,6 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  # a logged out user should be redirected.
   test "a logged out user should not get the new dock request modal" do
     new_object_modal_as(nil, new_dock_request_path, false)
   end
@@ -211,7 +210,6 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test "a logged in user that visits the index page (1 dock group) should get the new dock request modal" do
     new_dock_request_modal(@other_user, true, nil, true)
-
   end
 
   test "a logged in user that visits the index page (3 dock groups) should not get the new dock request modal because dock group needs selecting first" do
@@ -368,10 +366,14 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     assert redirected?(@response)
   end
 
-  test "a logged in user with more than one dock group should see dock requests only in their respective groups" do
+  test "a logged in user with more than one dock group should only see ACTIVE dock requests in their respective groups" do
     index_objects(@regular_user, dock_requests_path(dock_request: { dock_group_id: @cooler.id }), "dock_requests/index", true)
     # should see this dock request from cooler dock group
     assert_select "div#dock_request_#{@dock_request_1.id}"
+    # shouldn't see this dock request that is voided.
+    assert_select "div#dock_request_#{@dock_request_voided.id}", false
+    # shouldn't see this dock request that is checked out.
+    assert_select "div#dock_request_#{@dock_request_checked_out.id}", false
     # shouldn't see this dock request dry dock group.
     assert_select "div#dock_request_#{@dock_request_3.id}", false
     # shouldn't see this dock request from another company.
@@ -556,15 +558,41 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     verify_alert_message(@danger, @voided)
   end
 
+  # tests for dock request history
+  test "should see all dock requests from own company in any status within history but none from other companies." do
+    index_objects(@regular_user, dock_requests_history_path, "dock_requests/history", true)
+    # should see this dock request that is checked in
+    assert_select "tr#dock_request_#{@dock_request_1.id}"
+    # should see this dock request that is dock_assigned
+    assert_select "tr#dock_request_#{@dock_request_dock_assigned.id}"
+    # should see this dock request that is checked out.
+    assert_select "tr#dock_request_#{@dock_request_checked_out.id}"
+    # should see this dock request that is voided.
+    assert_select "tr#dock_request_#{@dock_request_voided.id}"
+    # should see this dock request dry dock group.
+    assert_select "tr#dock_request_#{@dock_request_3.id}"
+    # shouldn't see these dock requests from other companies.
+    assert_select "tr#dock_request_#{@dock_request_2.id}", false
+    assert_select "tr#dock_request_#{@delete_me_dock_request.id}", false
+  end
+
+  
+
   # tests notification of a stale dock request no longer existing because it was delteted.
   test "if a dock request is deleted and a user trys to show, edit, or update it, they are warned the dock request no longer exists." do
-    paths = { show: dock_request_path(@delete_me_dock_request), update: dock_request_path(@delete_me_dock_request), edit: edit_dock_request_path(@delete_me_dock_request), edit: dock_assignment_edit_dock_request_path(@delete_me_dock_request), update: dock_assignment_update_dock_request_path(@delete_me_dock_request), update: unassign_dock_dock_request_path(@delete_me_dock_request) }
+    controller_methods = { show: { get: dock_request_path(@delete_me_dock_request) }, update: { patch: dock_request_path(@delete_me_dock_request) },
+    edit: { get: edit_dock_request_path(@delete_me_dock_request) }, dock_assignment_edit: { get: dock_assignment_edit_dock_request_path(@delete_me_dock_request) },
+    dock_assignment_update: { patch: dock_assignment_update_dock_request_path(@delete_me_dock_request) }, unassign_dock: { patch: unassign_dock_dock_request_path(@delete_me_dock_request) },
+    check_out: { patch: check_out_dock_request_path(@delete_me_dock_request) }, void: { patch: void_dock_request_path(@delete_me_dock_request) } }
+
     hash = { dock_request: { primary_reference: "updated reference" } }
     text = DockRequest.no_longer_exists_alert_message
-    check_if_object_deleted(@delete_me_admin, paths, hash, text, false)
+    check_if_object_deleted(@delete_me_admin, controller_methods, hash, text, false)
     @delete_me_dock_request.destroy
-    check_if_object_deleted(@delete_me_admin, paths, hash, text, true)
+    check_if_object_deleted(@delete_me_admin, controller_methods, hash, text, true)
   end
+
+
 
 
 

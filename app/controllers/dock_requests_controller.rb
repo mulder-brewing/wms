@@ -64,7 +64,7 @@ class DockRequestsController < ApplicationController
 
   def dock_assignment_edit
     find_dock_request
-    if !@dock_request.nil?
+    if not_nil?
       @docks = Dock.enabled_where_dock_group(@dock_request.dock_group_id)
       @dock_request.number_of_enabled_docks_within_dock_group = @docks.length
     end
@@ -76,7 +76,7 @@ class DockRequestsController < ApplicationController
     find_dock_request
     set_context("dock_assignment_update")
     update_dock_request_with_params("dock_assignment_update")
-    if !@dock_request.nil? && !@dock_request.save_success
+    if not_nil? && !@dock_request.save_success
       @docks = Dock.enabled_where_dock_group(@dock_request.dock_group_id)
     end
     respond_to :js
@@ -84,27 +84,25 @@ class DockRequestsController < ApplicationController
 
   def unassign_dock
     find_dock_request
-    @dock_request.update_attributes(:context => "dock_unassign")
+    update_dock_request_with_context("dock_unassign")
     respond_to :js
   end
 
   def check_out
     find_dock_request
-    @dock_request.update_attributes(:context => "check_out")
+    update_dock_request_with_context("check_out")
     respond_to :js
   end
 
   def void
     find_dock_request
-    @dock_request.update_attributes(:context => "void")
+    update_dock_request_with_context("void")
     respond_to :js
   end
-
 
   def history
     @pagy, @dock_requests = pagy(DockRequest.where_company(current_company_id).order(created_at: :desc), items:25)
   end
-
 
   private
     def dock_request_params(method)
@@ -116,9 +114,19 @@ class DockRequestsController < ApplicationController
     end
 
     def update_dock_request_with_params(method)
-      if !@dock_request.nil?
-        @dock_request.update_attributes(dock_request_params(method))
-      end
+      @dock_request.update_attributes(dock_request_params(method)) if not_nil?
+    end
+
+    def update_dock_request_with_context(context)
+      @dock_request.update_attributes(:context => context) if not_nil?
+    end
+
+    def set_context(context)
+      @dock_request.context = context if not_nil?
+    end
+
+    def not_nil?
+      !@dock_request.nil?
     end
 
     def find_dock_request
@@ -129,22 +137,9 @@ class DockRequestsController < ApplicationController
       @current_dock_group = current_dock_group
     end
 
-    def find_current_dock_group_docks
-      @current_dock_group_docks = current_dock_group_docks
-    end
-
-    def find_current_dock_group_with_docks
-      find_current_dock_group
-      find_current_dock_group_docks
-    end
-
     def find_dock_group_redirect_invalid(id)
       dock_group = @dock_groups.find { |d| d.id == id.to_i }
       all_formats_redirect_to(root_url) if dock_group.nil?
-    end
-
-    def set_context(context)
-      @dock_request.context = context if !@dock_request.nil?
     end
 
 end

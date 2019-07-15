@@ -23,25 +23,24 @@ class DockRequest < ApplicationRecord
   attr_accessor :number_of_enabled_docks_within_dock_group
 
   enum status: { checked_in: "checked_in", dock_assigned: "dock_assigned", checked_out: "checked_out", voided: "voided" }, _prefix: :status
-  enum context: { dock_assignment_update: "dock_assignment_update" }
 
   belongs_to :company
   belongs_to :dock_group
   belongs_to :dock, optional: true
 
   before_validation :clean_phone_number
-  before_validation :dock_assignment_update, if: :context_dock_assignment_update?
-  before_validation :dock_unassign_update, if: :context_dock_unassign?
-  before_validation :check_out_update, if: :context_check_out?
-  before_validation :void_update, if: :context_void?
 
   validates :primary_reference, presence: true
   validates :dock_id, presence: true, if: :context_dock_assignment_update?
   VALID_PHONE_REGEX = /\A\d{10}\z/
   validates :phone_number, length: { is: 10 }, format: { with: VALID_PHONE_REGEX }, allow_blank: true
   validate :phone_number_if_text_message
-  validate :dock_assignment_edit, if: :context_dock_assignment_edit?
   validate :ok_to_update, if: :context_edit_or_update?
+  validate :dock_assignment_edit, if: :context_dock_assignment_edit?
+  validate :dock_assignment_update, if: :context_dock_assignment_update?
+  validate :dock_unassign_update, if: :context_dock_unassign?
+  validate :check_out_update, if: :context_check_out?
+  validate :void_update, if: :context_void?
 
 
   scope :active, -> { where("status != ? AND status != ?", "checked_out", "voided") }

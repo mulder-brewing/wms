@@ -116,21 +116,21 @@ class ActionDispatch::IntegrationTest
   end
 
   # This function helps tests to run related to notification of when a stale object has been deleted.
-  def check_if_object_deleted(user, paths, hash, text, validity)
+  def check_if_object_deleted(user, controller_methods, hash, text, validity)
     log_in_if_user(user)
-    paths.each do |key, value|
-      case key
-        when :show
-          get value, xhr:true
-        when :update
-          patch value, xhr: true, params: hash
-        when :edit
-          get value, xhr:true
-      end
-      if validity == true
-        assert_match /#{text}/, @response.body
-      else
-        assert_no_match /#{text}/, @response.body
+    controller_methods.each do |key, value|
+      value.each do |key, value|
+        case key
+          when :get
+            get value, xhr:true
+          when :patch
+            patch value, xhr: true, params: hash
+        end
+        if validity == true
+          assert_match /#{text}/, @response.body
+        else
+          assert_no_match /#{text}/, @response.body
+        end
       end
     end
   end

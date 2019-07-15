@@ -5,14 +5,19 @@ class DockRequest < ApplicationRecord
   include DockGroupChecks
 
   # Class instance variable
-  @checked_out_alert_message = "Already checked out."
-  @voided_alert_message = "Already voided."
-  @dock_assigned_alert_message = "Dock has already been assigned."
-  @no_enabled_docks_to_assign_alert_message = "There are no enabled docks for this dock group to assign."
-  @no_longer_exists_alert_message = "Dock request no longer exists"
-  @status_error_checked_out_or_voided = "Can't update a dock request that is checked out or voided."
-  @dock_id_error_message_zero_docks = "There are no enabled docks for this dock group."
-  @status_error_no_longer_checked_in = "Dock can't be assigned because the status is no longer checked in."
+    # Messages to the user in alert
+    @checked_out_alert_message = "Already checked out."
+    @voided_alert_message = "Already voided."
+    @dock_assigned_alert_message = "Dock has already been assigned."
+    @dock_unassigned_alert_message = "Dock has already been unassigned."
+    @no_enabled_docks_to_assign_alert_message = "There are no enabled docks for this dock group to assign."
+    @no_longer_exists_alert_message = "Dock request no longer exists."
+
+    # Errors added to the instance under certain circumstances.
+    @status_error_checked_out_or_voided = "Cannot update a dock request that is checked out or voided."
+    @dock_id_error_message_zero_docks = "There are no enabled docks for this dock group."
+    @status_error_no_longer_checked_in = "Status is no longer checked in."
+    @status_error_no_longer_dock_assigned = "Dock cannot be unassigned because the status is no longer dock assigned."
 
   attr_accessor :context
   attr_accessor :number_of_enabled_docks_within_dock_group
@@ -63,6 +68,11 @@ class DockRequest < ApplicationRecord
     @dock_assigned_alert_message
   end
 
+  # This is the text used in the alert message when a dock has already been unassigned.
+  def self.dock_unassigned_alert_message
+    @dock_unassigned_alert_message
+  end
+
   # This is the text used in the alert message when there are no enabled docks that could be assigned.
   def self.no_enabled_docks_to_assign_alert_message
     @no_enabled_docks_to_assign_alert_message
@@ -86,6 +96,11 @@ class DockRequest < ApplicationRecord
   # This is the error message added for status when the dock request is no longer checked in.
   def self.status_error_no_longer_checked_in
     @status_error_no_longer_checked_in
+  end
+
+  # This is the error message added for status when the dock request is no longer dock assigned.
+  def self.status_error_no_longer_dock_assigned
+    @status_error_no_longer_dock_assigned
   end
 
   def total_time
@@ -188,24 +203,36 @@ class DockRequest < ApplicationRecord
         self.status = "dock_assigned"
         self.dock_assigned_at = DateTime.now
       else
-        errors.add(:status, "must be checked in to assign a dock")
+        errors.add(:status, DockRequest.status_error_no_longer_checked_in)
       end
     end
 
     def dock_unassign_update
-      self.status = "checked_in"
-      self.dock_id = nil
-      self.dock_assigned_at = nil
+      if status_dock_assigned?
+        self.status = "checked_in"
+        self.dock_id = nil
+        self.dock_assigned_at = nil
+      else
+        errors.add(:status, DockRequest.status_error_no_longer_dock_assigned)
+      end
     end
 
     def check_out_update
-      self.status = "checked_out"
-      self.checked_out_at = DateTime.now
+      if status_dock_assigned?
+        self.status = "checked_out"
+        self.checked_out_at = DateTime.now
+      else
+        errors.add(:status, DockRequest.status_error_no_longer_dock_assigned)
+      end
     end
 
     def void_update
-      self.status = "voided"
-      self.voided_at = DateTime.now
+      if status_checked_in?
+        self.status = "voided"
+        self.voided_at = DateTime.now
+      else
+        errors.add(:status, DockRequest.status_error_no_longer_checked_in)
+      end
     end
 
     def ok_to_update

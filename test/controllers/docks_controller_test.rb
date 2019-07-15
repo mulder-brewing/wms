@@ -177,7 +177,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
   end
 
   # tests notification of a stale dock no longer existing because it was delteted.
-  test "if a dock group is deleted and a user trys to show, edit, or update it, they are warned the dock group no longer exists." do
+  test "if a dock is deleted and a user trys to show, edit, or update it, they are warned the dock no longer exists." do
     paths = { show: dock_path(@delete_me_dock), update: dock_path(@delete_me_dock), edit: edit_dock_path(@delete_me_dock) }
     hash = { dock: { number: "updated dock" } }
     text = "Dock no longer exists"

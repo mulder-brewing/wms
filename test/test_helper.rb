@@ -144,4 +144,9 @@ class ActionDispatch::IntegrationTest
   def verify_assert_match(string_or_regex)
     assert_match string_or_regex, @response.body
   end
+
+  # This function helps verify a string or regex does not exist in the response.
+  def verify_assert_no_match(string_or_regex)
+    assert_no_match string_or_regex, @response.body
+  end
 end

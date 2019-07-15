@@ -30,6 +30,7 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
       @other_dock = docks(:other_dock)
       # This dock belongs to averagejoes company
       @average_joe_dock = docks(:average_joe_dock)
+      @update_dock = docks(:update_dock)
 
     # dock_requests
       # These dock requests belongs to averagejoes company
@@ -41,15 +42,19 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
       @dock_request_no_docks = dock_requests(:dock_request_no_docks)
       # This dock request belongs to other company
       @dock_request_2 = dock_requests(:dock_request_2)
+      # This dock request eblongs to the company_to_delete
+      @delete_me_dock_request = dock_requests(:delete_me_dock_request)
 
     # hashes
       # dock request hash
       test_reference = "test123"
       @dock_request_hash = { dock_request: { primary_reference: test_reference, phone_number: "2122123636", text_message: false, note: "This is my note!" } }
-      @dock_request_with_dock_hash = { dock_request: { primary_reference: test_reference, dock_id: @average_joe_dock.id } }
+      @dock_request_with_dock_hash = { dock_request: { primary_reference: test_reference, dock_id: @update_dock.id } }
       @dock_request_update_hash = { dock_request: { primary_reference: "updated", phone_number: "0002223547", text_message: true, note: "I have been updated" } }
       @update_dock_request_array = ["primary_reference", "phone_number", "text_message", "note"]
-      @just_dock_id_array = ["dock_id"]
+      @dock_assign_unassign_array = ["status", "dock_id", "dock_assigned_at"]
+      @void_array = ["status", "voided_at"]
+      @check_out_array = ["status", "checked_out_at"]
 
     # error message types
       @danger = 'danger'
@@ -58,12 +63,17 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
       @voided = DockRequest.voided_alert_message
       @checked_out = DockRequest.checked_out_alert_message
       @already_assigned = DockRequest.dock_assigned_alert_message
+      @no_longer_dock_assigned = DockRequest.dock_unassigned_alert_message
       @no_enabled_docks = DockRequest.no_enabled_docks_to_assign_alert_message
+      @not_checked_in = DockRequest.status_error_no_longer_checked_in
+      @checked_out_or_voided = DockRequest.status_error_checked_out_or_voided
+
 
     # strings and regex for matching
       @dock_request_voided_remove = "remove('#dock_request_#{@dock_request_voided.id}')"
       @dock_request_checked_out_remove = "remove('#dock_request_#{@dock_request_checked_out.id}')"
       @dock_request_dock_assigned_replace = "$('#dock_request_#{@dock_request_dock_assigned.id}').replaceWith"
+      @dock_request_1_replace = "$('#dock_request_#{@dock_request_1.id}').replaceWith"
   end
 
   # This function will get the dock requests index page if boolean is true, this can set the current dock group if there's only one that's enabled.
@@ -331,12 +341,12 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test "a logged in user should not be able to update a dock request if it's already checked out" do
     update_object_as(@regular_user, @dock_request_checked_out ,dock_request_path(@dock_request_checked_out), @dock_request_update_hash, @update_dock_request_array, false)
-    verify_assert_match("Status Can&#39;t update a dock request that is checked out or voided.")
+    verify_assert_match(@checked_out_or_voided)
   end
 
   test "a logged in user should not be able to update a dock request if it's already voided" do
     update_object_as(@regular_user, @dock_request_voided ,dock_request_path(@dock_request_voided), @dock_request_update_hash, @update_dock_request_array, false)
-    verify_assert_match("Status Can&#39;t update a dock request that is checked out or voided.")
+    verify_assert_match(@checked_out_or_voided)
   end
 
   # tests for who can get the index of dock requests.
@@ -381,8 +391,11 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a logged in user should be able to get the assign dock modal" do
-    index_objects(@regular_user, dock_requests_path(dock_request: { dock_group_id: @dock_request_1.dock_group_id }), "dock_requests/index", true)
     edit_object_as(@regular_user, dock_assignment_edit_dock_request_path(@dock_request_1), false, true)
+  end
+
+  test "a logged in user should not be able to get the assign dock modal for a dock request that belongs to another company" do
+    edit_object_as(@other_user, dock_assignment_edit_dock_request_path(@dock_request_1), true, false)
   end
 
   test "a logged in user shouldn't be able to get the assign dock modal if the dock request is dock assigned already" do
@@ -409,15 +422,150 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     verify_alert_message(@danger, @no_enabled_docks)
   end
 
+  test "if there's a phone number, then there should be an option to send a text message when assigning a dock" do
+    edit_object_as(@regular_user, dock_assignment_edit_dock_request_path(@dock_request_1), false, true)
+    verify_assert_match("dock_request_text_message")
+    verify_assert_match(@dock_request_1.phone_number)
+  end
+
+  test "if there is no phone number, there should not be an option to send a text message when assigning a dock" do
+    @dock_request_1.update_attribute(:phone_number, nil)
+    edit_object_as(@regular_user, dock_assignment_edit_dock_request_path(@dock_request_1), false, true)
+    verify_assert_no_match("dock_request_text_message")
+    verify_assert_no_match(@dock_request_1.phone_number)
+  end
 
   # tests for assigning a dock to a dock request.
-  test "a user that is not logged in shouldn't be able to assign a dock" do
-    update_object_as(nil, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_hash, @just_dock_id_array , false)
+  test "a logged out user shouldn't be able to assign a dock" do
+    update_object_as(nil, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_hash, @dock_assign_unassign_array , false)
   end
 
   test "a logged in user should be able to assign a dock" do
-    update_object_as(@regular_user, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_hash, @just_dock_id_array , false)
+    update_object_as(@regular_user, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_hash, @dock_assign_unassign_array , true)
   end
+
+  test "a logged in user should not be able to assign a dock for a dock request that belongs to another company" do
+    update_object_as(@other_user, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_hash, @dock_assign_unassign_array , false)
+  end
+
+  test "a logged in user should not be able to assign a dock if the dock is already assigned" do
+    update_object_as(@regular_user, @dock_request_dock_assigned, dock_assignment_update_dock_request_path(@dock_request_dock_assigned), @dock_request_with_dock_hash, @dock_assign_unassign_array , false)
+    verify_assert_match(@not_checked_in)
+  end
+
+  test "a logged in user should not be able to assign a dock if it's already checked out" do
+    update_object_as(@regular_user, @dock_request_checked_out, dock_assignment_update_dock_request_path(@dock_request_checked_out), @dock_request_with_dock_hash, @dock_assign_unassign_array , false)
+    verify_assert_match(@not_checked_in)
+  end
+
+  test "a logged in user should not be able to assign a dock if it's already voided" do
+    update_object_as(@regular_user, @dock_request_voided, dock_assignment_update_dock_request_path(@dock_request_voided), @dock_request_with_dock_hash, @dock_assign_unassign_array , false)
+    verify_assert_match(@not_checked_in)
+  end
+
+  # tests for unassign dock.
+  test "a logged out user should not be able to unassign a dock" do
+    update_object_as(nil, @dock_request_dock_assigned, unassign_dock_dock_request_path(@dock_request_dock_assigned), nil, @dock_assign_unassign_array , false)
+  end
+
+  test "a logged in user should be able to unassign a dock" do
+    update_object_as(@regular_user, @dock_request_dock_assigned, unassign_dock_dock_request_path(@dock_request_dock_assigned), nil, @dock_assign_unassign_array , true)
+  end
+
+  test "a logged in user should not be able to unassign a dock for a dock request belonging to another company" do
+    update_object_as(@other_user, @dock_request_dock_assigned, unassign_dock_dock_request_path(@dock_request_dock_assigned), nil, @dock_assign_unassign_array , false)
+  end
+
+  test "a logged in user should not be able to unassign a dock if it's status is checked in" do
+    update_object_as(@regular_user, @dock_request_1, unassign_dock_dock_request_path(@dock_request_1), nil, @dock_assign_unassign_array , false)
+    verify_assert_match(@dock_request_1_replace)
+    verify_alert_message(@danger, @no_longer_dock_assigned)
+  end
+
+  test "a logged in user should not be able to unassign a dock if it's status is checked out" do
+    update_object_as(@regular_user, @dock_request_checked_out, unassign_dock_dock_request_path(@dock_request_checked_out), nil, @dock_assign_unassign_array , false)
+    verify_assert_match(@dock_request_checked_out_remove)
+    verify_alert_message(@danger, @checked_out)
+  end
+
+  test "a logged in user should not be able to unassign a dock if it's status is voided" do
+    update_object_as(@regular_user, @dock_request_voided, unassign_dock_dock_request_path(@dock_request_voided), nil, @dock_assign_unassign_array , false)
+    verify_assert_match(@dock_request_voided_remove)
+    verify_alert_message(@danger, @voided)
+  end
+
+  # tests for voiding
+  test "a logged out user should not be able to void a dock request" do
+    update_object_as(nil, @dock_request_1, void_dock_request_path(@dock_request_1), nil, @void_array , false)
+  end
+
+  test "a logged in user should be able to void a dock request" do
+    update_object_as(@regular_user, @dock_request_1, void_dock_request_path(@dock_request_1), nil, @void_array , true)
+  end
+
+  test "a logged in user should not be able to void a dock request belonging to another company" do
+    update_object_as(@other_user, @dock_request_1, void_dock_request_path(@dock_request_1), nil, @void_array , false)
+  end
+
+  test "a logged in user should not be able to void a dock request if it's status is dock assigned" do
+    update_object_as(@regular_user, @dock_request_dock_assigned, void_dock_request_path(@dock_request_dock_assigned), nil, @void_array , false)
+    verify_assert_match(@dock_request_dock_assigned_replace)
+    verify_alert_message(@danger, @already_assigned)
+  end
+
+  test "a logged in user should not be able to void a dock request if it's status is checked out" do
+    update_object_as(@regular_user, @dock_request_checked_out, void_dock_request_path(@dock_request_checked_out), nil, @void_array , false)
+    verify_assert_match(@dock_request_checked_out_remove)
+    verify_alert_message(@danger, @checked_out)
+  end
+
+  test "a logged in user should not be able to void a dock request if it's status is already voided" do
+    update_object_as(@regular_user, @dock_request_voided, void_dock_request_path(@dock_request_voided), nil, @void_array , false)
+    verify_assert_match(@dock_request_voided_remove)
+    verify_alert_message(@danger, @voided)
+  end
+
+  # tests for checking out
+  test "a logged out user should not be able to check out a dock request" do
+    update_object_as(nil, @dock_request_dock_assigned, check_out_dock_request_path(@dock_request_dock_assigned), nil, @check_out_array , false)
+  end
+
+  test "a logged in user should be able to check out a dock request" do
+    update_object_as(@regular_user, @dock_request_dock_assigned, check_out_dock_request_path(@dock_request_dock_assigned), nil, @check_out_array , true)
+  end
+
+  test "a logged in user should not be able to check out a dock request from another company" do
+    update_object_as(@other_user, @dock_request_dock_assigned, check_out_dock_request_path(@dock_request_dock_assigned), nil, @check_out_array , false)
+  end
+
+  test "a logged in user should not be able to check out a dock request that is status checked in" do
+    update_object_as(@regular_user, @dock_request_1, check_out_dock_request_path(@dock_request_1), nil, @check_out_array , false)
+    verify_assert_match(@dock_request_1_replace)
+    verify_alert_message(@danger, @no_longer_dock_assigned)
+  end
+
+  test "a logged in user should not be able to check out a dock request that is already checked out" do
+    update_object_as(@regular_user, @dock_request_checked_out, check_out_dock_request_path(@dock_request_checked_out), nil, @check_out_array , false)
+    verify_assert_match(@dock_request_checked_out_remove)
+    verify_alert_message(@danger, @checked_out)
+  end
+
+  test "a logged in user should not be able to check out a dock request that is already voided" do
+    update_object_as(@regular_user, @dock_request_voided, check_out_dock_request_path(@dock_request_voided), nil, @check_out_array , false)
+    verify_assert_match(@dock_request_voided_remove)
+    verify_alert_message(@danger, @voided)
+  end
+
+  # tests notification of a stale dock request no longer existing because it was delteted.
+  test "if a dock request is deleted and a user trys to show, edit, or update it, they are warned the dock request no longer exists." do
+    paths = { show: dock_request_path(@delete_me_dock_request), update: dock_request_path(@delete_me_dock_request), edit: edit_dock_request_path(@delete_me_dock_request), edit: dock_assignment_edit_dock_request_path(@delete_me_dock_request), update: dock_assignment_update_dock_request_path(@delete_me_dock_request), update: unassign_dock_dock_request_path(@delete_me_dock_request) }
+    hash = { dock_request: { primary_reference: "updated reference" } }
+    text = DockRequest.no_longer_exists_alert_message
+    check_if_object_deleted(@delete_me_admin, paths, hash, text, false)
+    @delete_me_dock_request.destroy
+    check_if_object_deleted(@delete_me_admin, paths, hash, text, true)
+  end
+
 
 
 

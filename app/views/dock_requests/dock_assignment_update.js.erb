@@ -1,4 +1,6 @@
-<% if @dock_request.save_success %>
+<% if @dock_request.nil? %>
+  alert_custom("danger","<%= DockRequest.no_longer_exists_alert_message %>")
+<% elsif @dock_request.save_success %>
   $('#update-modal').modal('hide');
   $("#dock_request_<%=@dock_request.id%>").replaceWith('<%= j render @dock_request, dock_request: @dock_request %>');
   alert_custom("success", "Dock <%= @dock_request.dock.number %> assigned successfully!")

@@ -1,5 +1,5 @@
 <% if @dock_request.nil? %>
-  alert_custom("warning","Dock Request no longer exists");
+  alert_custom("danger","<%= DockRequest.no_longer_exists_alert_message %>");
 <% elsif @dock_request.valid? %>
   $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'show', :title => 'Dock Request' } %>");
   $("#show-modal").modal('show');

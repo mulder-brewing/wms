@@ -37,6 +37,8 @@ dock_request_checked_out:
   company: averagejoes
   dock_group: cooler
   status: checked_out
+  dock: average_joe_dock
+  dock_assigned_at: <%= 4.day.ago.to_s(:db) %>
   checked_out_at: <%= 5.day.ago.to_s(:db) %>
 
 dock_request_voided:
@@ -56,3 +58,8 @@ dock_request_no_docks:
   note: My note
   company: averagejoes
   dock_group: no_docks
+
+delete_me_dock_request:
+  primary_reference: Delete Me
+  company: company_to_delete
+  dock_group: delete_me_dock_group

@@ -58,24 +58,26 @@ class DockRequestsController < ApplicationController
   def update
     find_dock_request
     set_context("update")
-    @dock_request.update_attributes(dock_request_params("update"))
+    update_dock_request_with_params("update")
     respond_to :js
   end
 
   def dock_assignment_edit
     find_dock_request
-    @docks = Dock.enabled_where_dock_group(@dock_request.dock_group_id)
-    @dock_request.number_of_enabled_docks_within_dock_group = @docks.length
+    if !@dock_request.nil?
+      @docks = Dock.enabled_where_dock_group(@dock_request.dock_group_id)
+      @dock_request.number_of_enabled_docks_within_dock_group = @docks.length
+    end
     set_context("dock_assignment_edit")
     respond_to :js
   end
 
   def dock_assignment_update
     find_dock_request
-    @dock_request.context = "dock_assignment_update"
-    @dock_request.update_attributes(dock_request_params("dock_assignment_update"))
-    if !@dock_request.save_success
-      @docks = Dock.enabled_where_dock_group(current_dock_group_id)
+    set_context("dock_assignment_update")
+    update_dock_request_with_params("dock_assignment_update")
+    if !@dock_request.nil? && !@dock_request.save_success
+      @docks = Dock.enabled_where_dock_group(@dock_request.dock_group_id)
     end
     respond_to :js
   end
@@ -110,6 +112,12 @@ class DockRequestsController < ApplicationController
         params.require(:dock_request).permit(:primary_reference, :phone_number, :text_message, :note, :dock_group_id)
       elsif method == "dock_assignment_update"
         params.require(:dock_request).permit(:dock_id, :text_message)
+      end
+    end
+
+    def update_dock_request_with_params(method)
+      if !@dock_request.nil?
+        @dock_request.update_attributes(dock_request_params(method))
       end
     end
 

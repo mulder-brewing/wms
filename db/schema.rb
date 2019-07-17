@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_05_171121) do
+ActiveRecord::Schema.define(version: 2019_07_16_131530) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,9 @@ ActiveRecord::Schema.define(version: 2019_07_05_171121) do
     t.index ["company_id"], name: "index_dock_groups_on_company_id"
     t.index ["description", "company_id"], name: "index_dock_groups_on_description_and_company_id", unique: true
   end
+
+# Could not dump table "dock_request_audit_histories" because of following StandardError
+#   Unknown type 'dock_request_audit_history_event' for column 'event'
 
 # Could not dump table "dock_requests" because of following StandardError
 #   Unknown type 'dock_request_status' for column 'status'
@@ -65,6 +68,9 @@ ActiveRecord::Schema.define(version: 2019_07_05_171121) do
   end
 
   add_foreign_key "dock_groups", "companies"
+  add_foreign_key "dock_request_audit_histories", "companies"
+  add_foreign_key "dock_request_audit_histories", "dock_requests"
+  add_foreign_key "dock_request_audit_histories", "docks"
   add_foreign_key "dock_requests", "companies"
   add_foreign_key "dock_requests", "dock_groups"
   add_foreign_key "dock_requests", "docks"

@@ -14,6 +14,15 @@ class ActiveSupport::TestCase
     page_title + ' | Mulder WMS'
   end
 
+  # This function helps verify that an object is invalid if a attribute is nil or empty string.
+  def invalid_without(object, attribute)
+    assert object.valid?
+    object.send("#{attribute}=", nil)
+    assert !object.valid?
+    object.send("#{attribute}=", "")
+    assert !object.valid?
+  end
+
 end
 
 class ActionDispatch::IntegrationTest

@@ -10,6 +10,21 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: dock_request_audit_history_event; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.dock_request_audit_history_event AS ENUM (
+    'checked_in',
+    'dock_assigned',
+    'dock_unassigned',
+    'text_message_sent',
+    'checked_out',
+    'voided',
+    'updated'
+);
+
+
+--
 -- Name: dock_request_status; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -100,6 +115,41 @@ CREATE SEQUENCE public.dock_groups_id_seq
 --
 
 ALTER SEQUENCE public.dock_groups_id_seq OWNED BY public.dock_groups.id;
+
+
+--
+-- Name: dock_request_audit_histories; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dock_request_audit_histories (
+    id bigint NOT NULL,
+    dock_request_id bigint,
+    phone_number text,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    event public.dock_request_audit_history_event,
+    company_id bigint,
+    dock_id bigint
+);
+
+
+--
+-- Name: dock_request_audit_histories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dock_request_audit_histories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dock_request_audit_histories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dock_request_audit_histories_id_seq OWNED BY public.dock_request_audit_histories.id;
 
 
 --
@@ -241,6 +291,13 @@ ALTER TABLE ONLY public.dock_groups ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: dock_request_audit_histories id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dock_request_audit_histories ALTER COLUMN id SET DEFAULT nextval('public.dock_request_audit_histories_id_seq'::regclass);
+
+
+--
 -- Name: dock_requests id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -283,6 +340,14 @@ ALTER TABLE ONLY public.companies
 
 ALTER TABLE ONLY public.dock_groups
     ADD CONSTRAINT dock_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dock_request_audit_histories dock_request_audit_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dock_request_audit_histories
+    ADD CONSTRAINT dock_request_audit_histories_pkey PRIMARY KEY (id);
 
 
 --
@@ -336,6 +401,27 @@ CREATE INDEX index_dock_groups_on_company_id ON public.dock_groups USING btree (
 --
 
 CREATE UNIQUE INDEX index_dock_groups_on_description_and_company_id ON public.dock_groups USING btree (description, company_id);
+
+
+--
+-- Name: index_dock_request_audit_histories_on_company_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dock_request_audit_histories_on_company_id ON public.dock_request_audit_histories USING btree (company_id);
+
+
+--
+-- Name: index_dock_request_audit_histories_on_dock_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dock_request_audit_histories_on_dock_id ON public.dock_request_audit_histories USING btree (dock_id);
+
+
+--
+-- Name: index_dock_request_audit_histories_on_dock_request_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dock_request_audit_histories_on_dock_request_id ON public.dock_request_audit_histories USING btree (dock_request_id);
 
 
 --
@@ -410,6 +496,14 @@ ALTER TABLE ONLY public.docks
 
 
 --
+-- Name: dock_request_audit_histories fk_rails_1a221f2a59; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dock_request_audit_histories
+    ADD CONSTRAINT fk_rails_1a221f2a59 FOREIGN KEY (dock_id) REFERENCES public.docks(id);
+
+
+--
 -- Name: dock_groups fk_rails_1a3a24c5f2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -434,6 +528,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: dock_request_audit_histories fk_rails_9d3d5cf4c3; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dock_request_audit_histories
+    ADD CONSTRAINT fk_rails_9d3d5cf4c3 FOREIGN KEY (dock_request_id) REFERENCES public.dock_requests(id);
+
+
+--
 -- Name: dock_requests fk_rails_aa5d061e79; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -455,6 +557,14 @@ ALTER TABLE ONLY public.dock_requests
 
 ALTER TABLE ONLY public.dock_requests
     ADD CONSTRAINT fk_rails_d6983c8259 FOREIGN KEY (company_id) REFERENCES public.companies(id);
+
+
+--
+-- Name: dock_request_audit_histories fk_rails_f9503f7f47; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dock_request_audit_histories
+    ADD CONSTRAINT fk_rails_f9503f7f47 FOREIGN KEY (company_id) REFERENCES public.companies(id);
 
 
 --
@@ -494,6 +604,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190702191432'),
 ('20190704162314'),
 ('20190704173742'),
-('20190705171121');
+('20190705171121'),
+('20190716122559'),
+('20190716122928'),
+('20190716124913'),
+('20190716131530');
 
 

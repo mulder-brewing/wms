@@ -50,6 +50,7 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
       test_reference = "test123"
       @dock_request_hash = { dock_request: { primary_reference: test_reference, phone_number: "2122123636", text_message: false, note: "This is my note!" } }
       @dock_request_with_dock_hash = { dock_request: { primary_reference: test_reference, dock_id: @update_dock.id } }
+      @dock_request_with_dock_and_send_text_message = { dock_request: { dock_id: @update_dock.id, text_message: true } }
       @dock_request_update_hash = { dock_request: { primary_reference: "updated", phone_number: "0002223547", text_message: true, note: "I have been updated" } }
       @update_dock_request_array = ["primary_reference", "phone_number", "text_message", "note"]
       @dock_assign_unassign_array = ["status", "dock_id", "dock_assigned_at"]
@@ -99,6 +100,18 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     if get_index_page
       get_index
       follow_redirect_if_necessary(user)
+    end
+  end
+
+  # This function helps test whether or not a audit history entry was added and if so, verify the details.
+  def verify_audit_history_entry(hash_to_verify)
+    audit_entry = DockRequestAuditHistory.last
+    hash_to_verify.each do |key, value|
+      if value.nil?
+        assert_nil audit_entry.send(key.to_s)
+      else
+        assert_equal value, audit_entry.send(key.to_s)
+      end
     end
   end
 
@@ -249,13 +262,19 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_match /Dock group must exist/, @response.body
   end
 
-  test "a logged in user (1 dock group) should be able to create a dock request" do
-    create_dock_request_as(@other_user, @dock_request_hash, false, @other_company_dg, true)
+  test "a logged in user (1 dock group) should be able to create a dock request.  Also it should get logged in the audit history." do
+    assert_difference 'DockRequestAuditHistory.count', 1 do
+      create_dock_request_as(@other_user, @dock_request_hash, false, @other_company_dg, true)
+    end
+    created_dock_request_id = DockRequest.last.id
+    verify_audit_history_entry({ :event => "checked_in", :company_id => @other_user.company_id, :dock_request_id => created_dock_request_id, :dock_id => nil, :phone_number => nil })
   end
 
-  test "a logged in user (1 DISABLED dock group) shouldn't be able to create a dock request" do
+  test "a logged in user (1 DISABLED dock group) shouldn't be able to create a dock request.  Also it should not get logged in the audit history." do
     @other_company_dg.update_attribute(:enabled, false)
-    create_dock_request_as(@other_user, @dock_request_hash, false, @other_company_dg, false)
+    assert_no_difference 'DockRequestAuditHistory.count' do
+      create_dock_request_as(@other_user, @dock_request_hash, false, @other_company_dg, false)
+    end
     assert_match /Dock group #{@other_company_dg.description} is disabled/, @response.body
   end
 
@@ -322,8 +341,11 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     update_object_as(nil, @dock_request_1 ,dock_request_path(@dock_request_1), @dock_request_update_hash, @update_dock_request_array, false)
   end
 
-  test "a logged in user should be able to update a dock request" do
-    update_object_as(@regular_user, @dock_request_1 ,dock_request_path(@dock_request_1), @dock_request_update_hash, @update_dock_request_array, true)
+  test "a logged in user should be able to update a dock request.  Also, a audit history entry should be created." do
+    assert_difference 'DockRequestAuditHistory.count', 1 do
+      update_object_as(@regular_user, @dock_request_1 ,dock_request_path(@dock_request_1), @dock_request_update_hash, @update_dock_request_array, true)
+    end
+    verify_audit_history_entry({ :event => "updated", :company_id => @dock_request_1.company_id, :dock_request_id => @dock_request_1.id, :dock_id => nil, :phone_number => nil })
   end
 
   test "a logged in user should not be able to update another company's dock request" do
@@ -337,9 +359,11 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_match /Dock group does not belong to your company/, @response.body
   end
 
-  test "a logged in user should not be able to update a dock request if it's already checked out" do
-    update_object_as(@regular_user, @dock_request_checked_out ,dock_request_path(@dock_request_checked_out), @dock_request_update_hash, @update_dock_request_array, false)
-    verify_assert_match(@checked_out_or_voided)
+  test "a logged in user should not be able to update a dock request if it's already checked out.  Also, no audit history entry should be created." do
+    assert_no_difference 'DockRequestAuditHistory.count' do
+      update_object_as(@regular_user, @dock_request_checked_out ,dock_request_path(@dock_request_checked_out), @dock_request_update_hash, @update_dock_request_array, false)
+      verify_assert_match(@checked_out_or_voided)
+    end
   end
 
   test "a logged in user should not be able to update a dock request if it's already voided" do
@@ -442,17 +466,22 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     update_object_as(nil, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_hash, @dock_assign_unassign_array , false)
   end
 
-  test "a logged in user should be able to assign a dock" do
-    update_object_as(@regular_user, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_hash, @dock_assign_unassign_array , true)
+  test "a logged in user should be able to assign a dock.  Also a audit history entry should be created." do
+    assert_difference 'DockRequestAuditHistory.count', 1 do
+      update_object_as(@regular_user, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_hash, @dock_assign_unassign_array , true)
+    end
+    verify_audit_history_entry({ :event => "dock_assigned", :company_id => @dock_request_1.company_id, :dock_request_id => @dock_request_1.id, :dock_id => @dock_request_1.dock_id, :phone_number => nil })
   end
 
   test "a logged in user should not be able to assign a dock for a dock request that belongs to another company" do
     update_object_as(@other_user, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_hash, @dock_assign_unassign_array , false)
   end
 
-  test "a logged in user should not be able to assign a dock if the dock is already assigned" do
-    update_object_as(@regular_user, @dock_request_dock_assigned, dock_assignment_update_dock_request_path(@dock_request_dock_assigned), @dock_request_with_dock_hash, @dock_assign_unassign_array , false)
-    verify_assert_match(@not_checked_in)
+  test "a logged in user should not be able to assign a dock if the dock is already assigned.  Also no audit history should be created." do
+    assert_no_difference 'DockRequestAuditHistory.count' do
+      update_object_as(@regular_user, @dock_request_dock_assigned, dock_assignment_update_dock_request_path(@dock_request_dock_assigned), @dock_request_with_dock_hash, @dock_assign_unassign_array , false)
+      verify_assert_match(@not_checked_in)
+    end
   end
 
   test "a logged in user should not be able to assign a dock if it's already checked out" do
@@ -465,13 +494,23 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     verify_assert_match(@not_checked_in)
   end
 
+  test "if a dock is assigned with phone_number and text_message, 2 audit history entries should be created" do
+    @dock_request_1.update_attribute(:phone_number, "0000000000")
+    assert_difference 'DockRequestAuditHistory.count', 2 do
+      update_object_as(@regular_user, @dock_request_1, dock_assignment_update_dock_request_path(@dock_request_1), @dock_request_with_dock_and_send_text_message, @dock_assign_unassign_array , true)
+    end
+    verify_audit_history_entry({ :event => "text_message_sent", :company_id => @dock_request_1.company_id, :dock_request_id => @dock_request_1.id, :dock_id => nil, :phone_number => "0000000000" })
+  end
   # tests for unassign dock.
   test "a logged out user should not be able to unassign a dock" do
     update_object_as(nil, @dock_request_dock_assigned, unassign_dock_dock_request_path(@dock_request_dock_assigned), nil, @dock_assign_unassign_array , false)
   end
 
   test "a logged in user should be able to unassign a dock" do
-    update_object_as(@regular_user, @dock_request_dock_assigned, unassign_dock_dock_request_path(@dock_request_dock_assigned), nil, @dock_assign_unassign_array , true)
+    assert_difference 'DockRequestAuditHistory.count', 1 do
+      update_object_as(@regular_user, @dock_request_dock_assigned, unassign_dock_dock_request_path(@dock_request_dock_assigned), nil, @dock_assign_unassign_array , true)
+    end
+    verify_audit_history_entry({ :event => "dock_unassigned", :company_id => @dock_request_dock_assigned.company_id, :dock_request_id => @dock_request_dock_assigned.id, :dock_id => nil, :phone_number => nil })
   end
 
   test "a logged in user should not be able to unassign a dock for a dock request belonging to another company" do
@@ -490,8 +529,10 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     verify_alert_message(@danger, @checked_out)
   end
 
-  test "a logged in user should not be able to unassign a dock if it's status is voided" do
-    update_object_as(@regular_user, @dock_request_voided, unassign_dock_dock_request_path(@dock_request_voided), nil, @dock_assign_unassign_array , false)
+  test "a logged in user should not be able to unassign a dock if it's status is voided.  Also, no audit history should be created." do
+    assert_no_difference 'DockRequestAuditHistory.count' do
+      update_object_as(@regular_user, @dock_request_voided, unassign_dock_dock_request_path(@dock_request_voided), nil, @dock_assign_unassign_array , false)
+    end
     verify_assert_match(@dock_request_voided_remove)
     verify_alert_message(@danger, @voided)
   end
@@ -501,18 +542,23 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     update_object_as(nil, @dock_request_1, void_dock_request_path(@dock_request_1), nil, @void_array , false)
   end
 
-  test "a logged in user should be able to void a dock request" do
-    update_object_as(@regular_user, @dock_request_1, void_dock_request_path(@dock_request_1), nil, @void_array , true)
+  test "a logged in user should be able to void a dock request.  Also a audit history entry should be created." do
+    assert_difference 'DockRequestAuditHistory.count', 1 do
+      update_object_as(@regular_user, @dock_request_1, void_dock_request_path(@dock_request_1), nil, @void_array , true)
+    end
+    verify_audit_history_entry({ :event => "voided", :company_id => @dock_request_1.company_id, :dock_request_id => @dock_request_1.id, :dock_id => nil, :phone_number => nil })
   end
 
   test "a logged in user should not be able to void a dock request belonging to another company" do
     update_object_as(@other_user, @dock_request_1, void_dock_request_path(@dock_request_1), nil, @void_array , false)
   end
 
-  test "a logged in user should not be able to void a dock request if it's status is dock assigned" do
-    update_object_as(@regular_user, @dock_request_dock_assigned, void_dock_request_path(@dock_request_dock_assigned), nil, @void_array , false)
-    verify_assert_match(@dock_request_dock_assigned_replace)
-    verify_alert_message(@danger, @already_assigned)
+  test "a logged in user should not be able to void a dock request if it's status is dock assigned.  Also a audit history entry should not be created." do
+    assert_no_difference 'DockRequestAuditHistory.count' do
+      update_object_as(@regular_user, @dock_request_dock_assigned, void_dock_request_path(@dock_request_dock_assigned), nil, @void_array , false)
+      verify_assert_match(@dock_request_dock_assigned_replace)
+      verify_alert_message(@danger, @already_assigned)
+    end
   end
 
   test "a logged in user should not be able to void a dock request if it's status is checked out" do
@@ -532,18 +578,23 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     update_object_as(nil, @dock_request_dock_assigned, check_out_dock_request_path(@dock_request_dock_assigned), nil, @check_out_array , false)
   end
 
-  test "a logged in user should be able to check out a dock request" do
-    update_object_as(@regular_user, @dock_request_dock_assigned, check_out_dock_request_path(@dock_request_dock_assigned), nil, @check_out_array , true)
+  test "a logged in user should be able to check out a dock request.  Also a audit history entry should be created." do
+    assert_difference 'DockRequestAuditHistory.count', 1 do
+      update_object_as(@regular_user, @dock_request_dock_assigned, check_out_dock_request_path(@dock_request_dock_assigned), nil, @check_out_array , true)
+    end
+    verify_audit_history_entry({ :event => "checked_out", :company_id => @dock_request_dock_assigned.company_id, :dock_request_id => @dock_request_dock_assigned.id, :dock_id => nil, :phone_number => nil })
   end
 
   test "a logged in user should not be able to check out a dock request from another company" do
     update_object_as(@other_user, @dock_request_dock_assigned, check_out_dock_request_path(@dock_request_dock_assigned), nil, @check_out_array , false)
   end
 
-  test "a logged in user should not be able to check out a dock request that is status checked in" do
-    update_object_as(@regular_user, @dock_request_1, check_out_dock_request_path(@dock_request_1), nil, @check_out_array , false)
-    verify_assert_match(@dock_request_1_replace)
-    verify_alert_message(@danger, @no_longer_dock_assigned)
+  test "a logged in user should not be able to check out a dock request that is status checked in.  Also no audit history should be created." do
+    assert_no_difference 'DockRequestAuditHistory.count' do
+      update_object_as(@regular_user, @dock_request_1, check_out_dock_request_path(@dock_request_1), nil, @check_out_array , false)
+      verify_assert_match(@dock_request_1_replace)
+      verify_alert_message(@danger, @no_longer_dock_assigned)
+    end
   end
 
   test "a logged in user should not be able to check out a dock request that is already checked out" do
@@ -575,8 +626,6 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     assert_select "tr#dock_request_#{@dock_request_2.id}", false
     assert_select "tr#dock_request_#{@delete_me_dock_request.id}", false
   end
-
-  
 
   # tests notification of a stale dock request no longer existing because it was delteted.
   test "if a dock request is deleted and a user trys to show, edit, or update it, they are warned the dock request no longer exists." do

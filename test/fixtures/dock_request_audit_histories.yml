@@ -1,0 +1,18 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+dock_request_audit_entry_checked_in:
+  dock_request: dock_request_1
+  company: averagejoes
+  event: "checked_in"
+
+dock_request_audit_entry_dock_assigned:
+  dock_request: dock_request_1
+  company: averagejoes
+  event: "dock_assigned"
+  dock: average_joe_dock
+
+dock_request_audit_entry_text_message_sent:
+  dock_request: dock_request_1
+  company: averagejoes
+  event: "text_message_sent"
+  phone_number: 6163334444

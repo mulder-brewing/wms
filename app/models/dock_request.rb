@@ -27,6 +27,7 @@ class DockRequest < ApplicationRecord
   belongs_to :company
   belongs_to :dock_group
   belongs_to :dock, optional: true
+  has_many :dock_request_audit_histories, dependent: :destroy
 
   before_validation :clean_phone_number
 
@@ -47,6 +48,9 @@ class DockRequest < ApplicationRecord
   scope :include_docks, -> { includes(:dock) }
 
   after_update_commit :send_sms, if: :context_dock_assignment_update?
+  after_commit :create_audit_history_entry, on: [:create, :update]
+
+
 
   def self.where_company_and_group(current_company_id, group_id)
     where("company_id = ? AND dock_group_id = ?", current_company_id, group_id)
@@ -182,7 +186,7 @@ class DockRequest < ApplicationRecord
     end
 
     def send_sms
-      if text_message
+      if text_message && !Rails.env.test?
         sns = Aws::SNS::Client.new(region: ENV["AWS_REGION"], access_key_id: ENV["AWS_ACCESS_KEY_ID"], secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"])
         sns.set_sms_attributes(attributes: { "DefaultSenderID" => "MulderWMS", "DefaultSMSType" => "Transactional" })
         sns.publish(phone_number: phone_number_for_sms, message: "Dock #{dock.number} is ready for you.  Please back in ASAP.")
@@ -237,6 +241,31 @@ class DockRequest < ApplicationRecord
     def ok_to_update
       if status_checked_out? || status_voided?
         errors.add(:status, DockRequest.status_error_checked_out_or_voided)
+      end
+    end
+
+    def create_audit_for_me_with(hash)
+      attributes = { :dock_request_id => id, :company_id => company_id }.merge(hash)
+      DockRequestAuditHistory.create(attributes)
+    end
+
+    def create_audit_history_entry
+      if !context.nil?
+        case context
+        when "create"
+          create_audit_for_me_with({ :event => "checked_in" })
+        when "update"
+          create_audit_for_me_with({ :event => "updated" })
+        when "dock_assignment_update"
+          create_audit_for_me_with({ :event => "dock_assigned", :dock_id => dock_id })
+          create_audit_for_me_with({ :event => "text_message_sent", :phone_number => phone_number }) if text_message
+        when "dock_unassign"
+          create_audit_for_me_with({ :event => "dock_unassigned" })
+        when "void"
+          create_audit_for_me_with({ :event => "voided" })
+        when "check_out"
+          create_audit_for_me_with({ :event => "checked_out" })
+        end
       end
     end
 end

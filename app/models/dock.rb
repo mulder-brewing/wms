@@ -4,6 +4,7 @@ class Dock < ApplicationRecord
   belongs_to :company
   belongs_to :dock_group
   has_many :dock_requests
+  has_many :dock_request_audit_histories
 
   validates :number, presence: true, length: { maximum: 50 }
   validates_uniqueness_of :number, scope: :dock_group_id

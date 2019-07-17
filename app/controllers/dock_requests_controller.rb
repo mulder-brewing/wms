@@ -40,6 +40,7 @@ class DockRequestsController < ApplicationController
 
   def create
     @dock_request = DockRequest.new(dock_request_params("create"))
+    set_context("create")
     @dock_request.update_attributes(:company_id => current_company_id)
     respond_to :js
   end

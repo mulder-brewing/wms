@@ -114,13 +114,17 @@ class ActionDispatch::IntegrationTest
   end
 
   # This function helps tests to run related to index of objects.
-  def index_objects(user, path, template, validity)
+  def index_objects(user, path, template, validity, options = {})
     log_in_if_user(user)
-    get path
+    if options[:xhr]
+      get path, xhr:true
+    else
+      get path
+    end
     if validity == true
       assert_template template
     else
-      assert_redirected_to root_url
+      assert redirected?(@response)
     end
   end
 

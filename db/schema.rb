@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_16_131530) do
+ActiveRecord::Schema.define(version: 2019_07_17_155721) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -71,6 +71,7 @@ ActiveRecord::Schema.define(version: 2019_07_16_131530) do
   add_foreign_key "dock_request_audit_histories", "companies"
   add_foreign_key "dock_request_audit_histories", "dock_requests"
   add_foreign_key "dock_request_audit_histories", "docks"
+  add_foreign_key "dock_request_audit_histories", "users"
   add_foreign_key "dock_requests", "companies"
   add_foreign_key "dock_requests", "dock_groups"
   add_foreign_key "dock_requests", "docks"

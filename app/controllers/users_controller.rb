@@ -11,7 +11,7 @@ class UsersController < ApplicationController
       @user = User.new(user_params)
       @user.company_id ||= current_user.company_id
       @user.send_what_email = "create"
-      set_current_user_attribute
+      set_current_user_attribute("user")
       @user.save
       respond_to :js
     end
@@ -73,9 +73,5 @@ class UsersController < ApplicationController
 
       def find_user
         @user = find_object_redirect_invalid(User)
-      end
-
-      def set_current_user_attribute
-        @user.current_user = current_user
       end
 end

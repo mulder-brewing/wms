@@ -58,4 +58,9 @@ class ApplicationController < ActionController::Base
       return object
     end
 
+    # This can be used to set the current user attribute for an object that is a instance variable.
+    def set_current_user_attribute(instance_variable)
+      instance_variable_get("@#{instance_variable}").current_user = current_user
+    end
+
 end

@@ -41,6 +41,7 @@ class DockRequestsController < ApplicationController
   def create
     @dock_request = DockRequest.new(dock_request_params("create"))
     set_context("create")
+    set_current_user_attribute("dock_request")
     @dock_request.update_attributes(:company_id => current_company_id)
     respond_to :js
   end
@@ -142,5 +143,7 @@ class DockRequestsController < ApplicationController
       dock_group = @dock_groups.find { |d| d.id == id.to_i }
       all_formats_redirect_to(root_url) if dock_group.nil?
     end
+
+    
 
 end

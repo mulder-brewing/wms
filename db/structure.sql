@@ -129,7 +129,8 @@ CREATE TABLE public.dock_request_audit_histories (
     updated_at timestamp without time zone NOT NULL,
     event public.dock_request_audit_history_event,
     company_id bigint,
-    dock_id bigint
+    dock_id bigint,
+    user_id bigint
 );
 
 
@@ -425,6 +426,13 @@ CREATE INDEX index_dock_request_audit_histories_on_dock_request_id ON public.doc
 
 
 --
+-- Name: index_dock_request_audit_histories_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dock_request_audit_histories_on_user_id ON public.dock_request_audit_histories USING btree (user_id);
+
+
+--
 -- Name: index_dock_requests_on_company_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -544,6 +552,14 @@ ALTER TABLE ONLY public.dock_requests
 
 
 --
+-- Name: dock_request_audit_histories fk_rails_bc04785038; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dock_request_audit_histories
+    ADD CONSTRAINT fk_rails_bc04785038 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: dock_requests fk_rails_caff2c10d7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -608,6 +624,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190716122559'),
 ('20190716122928'),
 ('20190716124913'),
-('20190716131530');
+('20190716131530'),
+('20190717155721');
 
 

@@ -9,6 +9,10 @@ class DockRequestAuditHistoryTest < ActiveSupport::TestCase
     @dock_request_audit_entry_text_message_sent = dock_request_audit_histories(:dock_request_audit_entry_text_message_sent)
   end
 
+  test "a dock request audit entry is invalid without a user_id" do
+    invalid_without(@dock_request_audit_entry_checked_in, "user_id")
+  end
+  
   test "a dock request audit entry is invalid without a dock_request_id" do
     invalid_without(@dock_request_audit_entry_checked_in, "dock_request_id")
   end

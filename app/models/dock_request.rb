@@ -245,7 +245,7 @@ class DockRequest < ApplicationRecord
     end
 
     def create_audit_for_me_with(hash)
-      attributes = { :dock_request_id => id, :company_id => company_id }.merge(hash)
+      attributes = { :dock_request_id => id, :company_id => company_id, :user_id => current_user.id }.merge(hash)
       DockRequestAuditHistory.create(attributes)
     end
 
@@ -255,7 +255,7 @@ class DockRequest < ApplicationRecord
         when "create"
           create_audit_for_me_with({ :event => "checked_in" })
         when "update"
-          create_audit_for_me_with({ :event => "updated" })
+          create_audit_for_me_with({ :event => "updated" }) if saved_changes?
         when "dock_assignment_update"
           create_audit_for_me_with({ :event => "dock_assigned", :dock_id => dock_id })
           create_audit_for_me_with({ :event => "text_message_sent", :phone_number => phone_number }) if text_message

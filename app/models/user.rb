@@ -5,6 +5,7 @@ class User < ApplicationRecord
 
 
   belongs_to :company
+  has_many :dock_request_audit_histories, dependent: :destroy
 
   before_validation :strip_whitespace
   validates :current_user, presence: true

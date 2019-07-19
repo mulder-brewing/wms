@@ -35,7 +35,6 @@ class DockRequestAuditHistoriesControllerTest < ActionDispatch::IntegrationTest
 
   test "a logged in user should not be able to get audit history for another company's dock request" do
     index_objects(@regular_user, dock_request_audit_histories_index_path(id: @dock_request_2.id), "dock_request_audit_histories/index", false, { :xhr => true })
-    pp @response.body
   end
 
   test "a logged in user should be able to get audit history for a dock request and only see entries for that dock request" do

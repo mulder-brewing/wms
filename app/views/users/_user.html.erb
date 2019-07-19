@@ -11,6 +11,6 @@
     <td><%= user.company.name %></td>
   <% end %>
   <td>
-    <%= user.enabled_yes_no? %>
+    <%= human_boolean(user.enabled) %>
   </td>
 </tr>

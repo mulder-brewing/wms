@@ -1,11 +1,11 @@
 class User < ApplicationRecord
-  attr_accessor :current_user
   attr_accessor :context_password_reset
   attr_accessor :send_email
   attr_accessor :send_what_email
-  attr_accessor :save_success
+
 
   belongs_to :company
+  has_many :dock_request_audit_histories, dependent: :destroy
 
   before_validation :strip_whitespace
   validates :current_user, presence: true
@@ -20,7 +20,6 @@ class User < ApplicationRecord
   # Regex for 8-64 characters, must have at least one uppercase, lowercase, number, and special character.  No spaces
   VALID_PASSWORD_REGEX = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*)(?=.*\W.*)[a-zA-Z0-9\S]{8,64}\z/
   validates :password, presence: true, format: { with: VALID_PASSWORD_REGEX }, allow_blank: true, allow_nil: true
-  validate :company_check, if: :current_user_pre_check
   validate :regular_user_check, if: :current_user_pre_check
   validate :self_disable_check, if: :current_user_pre_check
   validate :self_unadmin_check, if: :current_user_pre_check
@@ -33,25 +32,7 @@ class User < ApplicationRecord
   after_create_commit :send_welcome_email
   after_update_commit :send_password_reset_email
 
-  after_save :update_save_boolean
-
   has_secure_password
-
-  def enabled_yes_no?
-    if self.enabled
-      "Yes"
-    else
-      "No"
-    end
-  end
-
-  def company_admin_yes_no?
-    if self.company_admin
-      "Yes"
-    else
-      "No"
-    end
-  end
 
   def full_name
     self.first_name + ' ' + self.last_name
@@ -77,10 +58,12 @@ class User < ApplicationRecord
       self.email.strip! if self.email?
     end
 
-    def update_save_boolean
-      self.save_success = true
+    # check that the current user's company matches the company of this instance
+    def company_check
+      if company_id != current_user.company_id
+        errors.add(:company_id, "doesn't match your company") unless current_user.app_admin
+      end
     end
-
 
     # Returns the hash digest of the given string, used for user fixtures with minitest.
     def User.digest(string)
@@ -89,28 +72,8 @@ class User < ApplicationRecord
       BCrypt::Password.create(string, cost: cost)
     end
 
-    # Current user functions
-    def current_user_is_set
-      !current_user.nil?
-    end
-
-    def current_user_not_seed
-      current_user != "seed"
-    end
-
-    def current_user_pre_check
-      current_user_is_set && current_user_not_seed
-    end
-
     def self_equals_current_user?
       self == current_user
-    end
-
-    # check that the current user's company matches the company of this instance
-    def company_check
-      if company_id != current_user.company_id
-        errors.add(:company_id, "doesn't match your company") unless current_user.app_admin
-      end
     end
 
     def regular_user_check

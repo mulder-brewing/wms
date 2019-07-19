@@ -1,0 +1,65 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+dock_request_1:
+  primary_reference: One
+  phone_number: 2523339988
+  text_message: false
+  note: My note
+  company: averagejoes
+  dock_group: cooler
+
+dock_request_2:
+  primary_reference: Two
+  company: other_company
+  dock_group: other_company
+
+dock_request_3:
+  primary_reference: Three
+  company: averagejoes
+  dock_group: dry
+
+dock_request_dock_assigned:
+  primary_reference: One
+  phone_number: 2523339988
+  text_message: false
+  note: My note
+  company: averagejoes
+  dock_group: cooler
+  status: dock_assigned
+  dock: average_joe_dock
+  dock_assigned_at: <%= 5.day.ago.to_s(:db) %>
+
+dock_request_checked_out:
+  primary_reference: One
+  phone_number: 2523339988
+  text_message: false
+  note: My note
+  company: averagejoes
+  dock_group: cooler
+  status: checked_out
+  dock: average_joe_dock
+  dock_assigned_at: <%= 4.day.ago.to_s(:db) %>
+  checked_out_at: <%= 5.day.ago.to_s(:db) %>
+
+dock_request_voided:
+  primary_reference: One
+  phone_number: 2523339988
+  text_message: false
+  note: My note
+  company: averagejoes
+  dock_group: cooler
+  status: voided
+  voided_at: <%= 5.day.ago.to_s(:db) %>
+
+dock_request_no_docks:
+  primary_reference: One
+  phone_number: 2523339988
+  text_message: false
+  note: My note
+  company: averagejoes
+  dock_group: no_docks
+
+delete_me_dock_request:
+  primary_reference: Delete Me
+  company: company_to_delete
+  dock_group: delete_me_dock_group

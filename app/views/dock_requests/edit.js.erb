@@ -1,0 +1,15 @@
+<% if @dock_request.nil? %>
+  alert_custom("danger","<%= DockRequest.no_longer_exists_alert_message %>")
+<% elsif @dock_request.valid? %>
+  $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'update', :title => 'Edit Dock Request', :form_path => 'dock_requests/new_edit_form' } %>");
+  $("#update-modal").modal('show');
+<% elsif @dock_request.errors.added? :status, DockRequest.status_error_checked_out_or_voided%>
+  <% if @dock_request.status_checked_out? || @dock_request.status_voided? %>
+    remove('<%= @dock_request.target_for_jquery %>')
+    <% if @dock_request.status_checked_out? %>
+      alert_custom('danger', '<%= DockRequest.checked_out_alert_message %>')
+    <% elsif @dock_request.status_voided? %>
+      alert_custom('danger', '<%= DockRequest.voided_alert_message %>')
+    <% end %>
+  <% end %>
+<% end %>

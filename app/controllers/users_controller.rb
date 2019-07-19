@@ -11,25 +11,27 @@ class UsersController < ApplicationController
       @user = User.new(user_params)
       @user.company_id ||= current_user.company_id
       @user.send_what_email = "create"
-      set_current_user
+      set_current_user_attribute("user")
       @user.save
       respond_to :js
     end
 
     def show
-      find_user_redirect_invalid
+      find_user
       respond_to :js
     end
 
     def edit
-      find_user_redirect_invalid
+      find_user
       respond_to :js
     end
 
     def update
-      find_user_redirect_invalid
-      @user.send_what_email = "password-reset"
-      @user.update_attributes(user_params)
+      find_user
+      if !@user.nil?
+        @user.send_what_email = "password-reset"
+        @user.update_attributes(user_params)
+      end
       respond_to :js
     end
 
@@ -42,11 +44,11 @@ class UsersController < ApplicationController
     end
 
     def update_password
-      find_user_redirect_invalid
+      find_user
     end
 
     def update_password_commit
-      find_user_redirect_invalid
+      find_user
       @user.context_password_reset = true
       @user.update_attributes(user_params)
       if @user.password_reset == false
@@ -69,19 +71,7 @@ class UsersController < ApplicationController
         end
       end
 
-      def redirect_if_user_invalid
-        all_formats_redirect_to(root_url) if !@user.valid?
+      def find_user
+        @user = find_object_redirect_invalid(User)
       end
-
-      def set_current_user
-        @user.current_user = current_user
-      end
-
-      def find_user_redirect_invalid
-        find_user_by_id(params[:id])
-        set_current_user
-        redirect_if_user_invalid
-      end
-
-
 end

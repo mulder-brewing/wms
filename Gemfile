@@ -43,7 +43,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'jquery-rails', '4.3.1'
 
 #Pagination
-gem 'pagy', '~> 3.3.0'
+gem 'pagy', '~> 3.3.2'
 #Makes pagy run quicker
 gem 'oj', '~> 3.7.12'
 
@@ -55,6 +55,15 @@ gem 'simple_form', '~>4.1.0'
 
 # Format times in user's timezone
 gem 'local_time', '~>2.1.0'
+
+# Masking for phone number fields etc.
+gem 'jquery_mask_rails', '~>0.1.0'
+
+# Amazon SNS for sending text message.
+gem 'aws-sdk-sns'
+
+# Distance of time in words with more options and precision.
+gem 'dotiw', '~>4.0.1'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

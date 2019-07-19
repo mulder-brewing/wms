@@ -1,0 +1,20 @@
+<% if @dock_request.nil? %>
+  alert_custom("danger","<%= DockRequest.no_longer_exists_alert_message %>")
+<% elsif @dock_request.save_success %>
+  $('#dock_request_<%=@dock_request.id%>').fadeOut(500, function(){
+    $(this).remove();
+  });
+  alert_custom("success", "Dock request checked out successfully!")
+<% elsif @dock_request.errors.added? :status, DockRequest.status_error_no_longer_dock_assigned %>
+  <% if @dock_request.status_checked_in? %>
+    $('<%= @dock_request.target_for_jquery %>').replaceWith('<%= j render @dock_request, dock_request: @dock_request %>');
+    alert_custom('danger', '<%= DockRequest.dock_unassigned_alert_message %>')
+  <% elsif @dock_request.status_checked_out? || @dock_request.status_voided? %>
+      remove('<%= @dock_request.target_for_jquery %>')
+    <% if @dock_request.status_checked_out? %>
+      alert_custom('danger', '<%= DockRequest.checked_out_alert_message %>')
+    <% elsif @dock_request.status_voided? %>
+      alert_custom('danger', '<%= DockRequest.voided_alert_message %>')
+    <% end %>
+  <% end %>
+<% end %>

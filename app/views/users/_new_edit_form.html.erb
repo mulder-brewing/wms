@@ -3,7 +3,6 @@
       <%= errors_for(f.object) %>
     </div>
     <div class="mb-3">
-      <% not_self = !(@user == current_user) %>
       <%= f.input :company_id, :collection => Company.all.order(:name), :label_method => :name, :value_method => :id if current_user.app_admin %>
       <%= f.input :first_name, as: :string if logged_in_admin? %>
       <%= f.input :last_name, as: :string if logged_in_admin? %>
@@ -23,14 +22,14 @@
               <%= f.hint User.password_requirements %>
               <%= f.input :password_confirmation, required: true %>
       <% if form_type == 'update' %>
-              <%= f.input :send_email, as: :boolean, label: 'Send email with new password' if logged_in_admin? && not_self %>
+              <%= f.input :send_email, as: :boolean, label: 'Send email with new password' if logged_in_admin? && not_self?(@user) %>
             </div>
           </div>
         </div>
       <% end %>
-      <%= f.input :company_admin, label: 'Admin' if logged_in_admin? && not_self %>
+      <%= f.input :company_admin, label: 'Admin' if logged_in_admin? && not_self?(@user) %>
     </div>
-    <% if form_type == 'update' && logged_in_admin? && not_self %>
+    <% if form_type == 'update' && logged_in_admin? && not_self?(@user) %>
       <div class="mb-2">
         <%= f.input :enabled, wrapper: :switch %>
       </div>

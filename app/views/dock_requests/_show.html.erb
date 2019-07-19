@@ -1,0 +1,27 @@
+<% width = 5 %>
+
+<div class="container">
+  <div class="row">
+    <%= render 'shared/show_field', { :label => 'Primary Reference', :value => @dock_request.primary_reference, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Status', :value => @dock_request.status_human_readable, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Dock Group', :value => @dock_request.dock_group.description, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Phone Number', :value => number_to_phone(@dock_request.phone_number, area_code: true), :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Send Text', :value => human_boolean(@dock_request.text_message), :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Note', :value => @dock_request.note, :label_col => width } %>
+    <%= render 'shared/show_field', { :label => 'Checked In', :value => local_time_if_not_blank(@dock_request.created_at), :label_col => width } %>
+    <% if !@dock_request.status_voided? %>
+      <%= render 'shared/show_field', { :label => 'Dock Assigned', :value => local_time_if_not_blank(@dock_request.dock_assigned_at), :label_col => width } %>
+      <%= render 'shared/show_field', { :label => 'Dock', :value => @dock_request.dock_number_if_assigned, :label_col => width } %>
+      <%= render 'shared/show_field', { :label => 'Checked Out', :value => local_time_if_not_blank(@dock_request.checked_out_at), :label_col => width } %>
+    <% end %>
+    <% if @dock_request.status_voided? %>
+      <%= render 'shared/show_field', { :label => 'Voided', :value => local_time_if_not_blank(@dock_request.voided_at), :label_col => width } %>
+    <% end %>
+    <%= render 'shared/show_field', { :label => 'Total Time', :value => @dock_request.total_time, :label_col => width } %>
+  </div>
+</div>
+<%= link_to 'History', dock_request_audit_histories_index_path(id: @dock_request.id), :class => 'btn btn-primary btn-sm m-1', :id => 'button_show_audit_history', :remote => true %>
+
+<div id="dock_request_audit_history_wrapper">
+
+</div>

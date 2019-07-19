@@ -476,6 +476,40 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select 'div.alert-success', "Password successfully updated!"
   end
 
+  # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
+  # tests for deleted user alerts on show, edit, update.
+
+  def check_if_user_deleted(user, user_to_test, try, validity)
+    log_in_if_user(user)
+    case try
+      when "show"
+        get user_path(user_to_test), xhr:true
+      when "update"
+        patch user_path(user_to_test), xhr: true, params: { user: { email: "updated@updated.com" } }
+      when "edit"
+        get edit_user_path(user_to_test), xhr:true
+    end
+    if validity == true
+      assert_match /User no longer exists/, @response.body
+    else
+      assert_no_match /User no longer exists/, @response.body
+    end
+  end
+
+  test "if a user is deleted and a user trys to show, edit, or update that user, they are warned the user no longer exists." do
+    check_if_user_deleted(@company_admin, @delete_me_user, "show", false)
+    check_if_user_deleted(@company_admin, @delete_me_user, "update", false)
+    check_if_user_deleted(@company_admin, @delete_me_user, "edit", false)
+    @delete_me_user.destroy
+    check_if_user_deleted(@company_admin, @delete_me_user, "show", true)
+    check_if_user_deleted(@company_admin, @delete_me_user, "update", true)
+    check_if_user_deleted(@company_admin, @delete_me_user, "edit", true)
+  end
+
+
+
+
 
 
 

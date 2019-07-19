@@ -11,3 +11,7 @@ company_to_delete:
 other_company:
   name: Other Company
   enabled: true
+
+nothing_setup_company:
+  name: Nothing Setup Company
+  enabled: true

@@ -1,0 +1,20 @@
+<% provide(:title, 'Dock Groups') %>
+<% provide(:icon_class, 'fas fa-layer-group') %>
+<%= provide(:new_link, new_dock_group_path) %>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Actions</th>
+        <th scope="col">Description</th>
+        <th scope="col">Enabled</th>
+      </tr>
+    </thead>
+    <tbody id="dock-group-table-body">
+      <%= render @dock_groups %>
+    </tbody>
+  </table>
+</div>
+
+<%= render 'shared/pagination', pagy: @pagy  %>

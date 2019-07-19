@@ -1,0 +1,14 @@
+<%= simple_form_for @dock, remote:true, :html => { :id => form_type +'-form' } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :number, as: :string %>
+      <%= f.input :dock_group_id, :collection => @dock_groups, :label_method => :description, :value_method => :id %>
+      <% if form_type == 'update' %>
+        <div class="mb-2">
+          <%= f.input :enabled, wrapper: :switch %>
+        </div>
+      <% end %>
+    </div>
+<% end %>

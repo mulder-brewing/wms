@@ -18,14 +18,16 @@
       <% if !needs_password_reset? %>
         <div class="collapse navbar-collapse" id="navbarToggler">
           <div class="navbar-nav">
-            <!-- Need to build some more functionality!-->
-            <!-- surround with erb - link_to "Companies",   companies_path, class: "nav-item nav-link"-->
+            <%= link_to "Dock Queue", dock_requests_path, class: "nav-item nav-link" %>
+            <%= link_to "Dock Queue History", dock_requests_history_path, class: "nav-item nav-link" %>
             <% if admin? %>
               <div class="nav-item dropdown">
-                <%= link_to "Administration",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <%= link_to "Administration",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarAdministrationDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
+                <div class="dropdown-menu" aria-labelledby="navbarAdministrationDropdown">
                   <%= link_to "Companies",   companies_path, class: "dropdown-item" if app_admin? %>
-                  <%= link_to "Users", users_path, class: "dropdown-item" if admin? %>
+                  <%= link_to "Users", users_path, class: "dropdown-item" %>
+                  <%= link_to "Dock Groups", dock_groups_path, class: "dropdown-item" %>
+                  <%= link_to "Docks", docks_path, class: "dropdown-item" %>
                 </div>
               </div>
             <% end %>

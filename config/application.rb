@@ -11,6 +11,9 @@ module Wms
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2
 
+    # Use structure.sql instead of schema.rb.  Need this for Postgres enums to get created properly when rebuilding the database.
+    config.active_record.schema_format = :sql
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
@@ -22,6 +25,6 @@ module Wms
       end if File.exists?(env_file)
     end
 
-    config.version = 'v. 0.1.7'
+    config.version = 'v. 0.2.0'
   end
 end

@@ -1,0 +1,12 @@
+<%= simple_form_for @dock_request, :url => { :action => "dock_assignment_update" }, remote:true, :html => { :id => form_type +'-form' } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :dock_id, required: true, :collection => @docks, :label_method => :number, :value_method => :id, input_html: { id: "dock_select" } %>
+      <% if !@dock_request.phone_number.blank? %>
+        <%= f.input :text_message, label: 'Send text message with dock assignment' %>
+        <%= link_to number_to_phone(@dock_request.phone_number, area_code: true), "tel:#{@dock_request.phone_number}" %>
+      <% end %>
+    </div>
+<% end %>

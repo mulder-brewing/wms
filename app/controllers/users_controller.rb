@@ -30,7 +30,7 @@ class UsersController < ApplicationController
       find_user
       if !@user.nil?
         @user.send_what_email = "password-reset"
-        @user.update_attributes(user_params)
+        @user.update(user_params)
       end
       respond_to :js
     end
@@ -50,7 +50,7 @@ class UsersController < ApplicationController
     def update_password_commit
       find_user
       @user.context_password_reset = true
-      @user.update_attributes(user_params)
+      @user.update(user_params)
       if @user.password_reset == false
         flash[:success] = 'Password successfully updated!'
         all_formats_redirect_to(root_url)

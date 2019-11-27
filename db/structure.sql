@@ -38,8 +38,6 @@ CREATE TYPE public.dock_request_status AS ENUM (
 
 SET default_tablespace = '';
 
-SET default_with_oids = false;
-
 --
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
@@ -625,6 +623,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190716122928'),
 ('20190716124913'),
 ('20190716131530'),
-('20190717155721');
+('20190717155721'),
+('20191119182114');
 
 

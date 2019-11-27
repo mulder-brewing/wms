@@ -4,6 +4,8 @@ To seed prod database, ssh in then...
   bundle exec rake db:seed RAILS_ENV=production
 
 To get Rails console, ssh in then...
+  eb ssh production
+  sudo su
   cd /var/app/current
   rails c
 

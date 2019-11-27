@@ -13,7 +13,7 @@ class DocksController < ApplicationController
 
   def create
     @dock = Dock.new(dock_params)
-    @dock.update_attributes(:company_id => current_company_id)
+    @dock.update(:company_id => current_company_id)
     find_enabled_dock_groups
     respond_to :js
   end
@@ -32,7 +32,7 @@ class DocksController < ApplicationController
   def update
     find_dock
     find_enabled_dock_groups
-    @dock.update_attributes(dock_params) if !@dock.nil?
+    @dock.update(dock_params) if !@dock.nil?
     respond_to :js
   end
 

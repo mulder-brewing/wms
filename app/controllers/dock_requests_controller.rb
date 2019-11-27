@@ -42,7 +42,7 @@ class DockRequestsController < ApplicationController
     @dock_request = DockRequest.new(dock_request_params("create"))
     set_context("create")
     set_current_user_attribute("dock_request")
-    @dock_request.update_attributes(:company_id => current_company_id)
+    @dock_request.update(:company_id => current_company_id)
     respond_to :js
   end
 
@@ -116,11 +116,11 @@ class DockRequestsController < ApplicationController
     end
 
     def update_dock_request_with_params(method)
-      @dock_request.update_attributes(dock_request_params(method)) if not_nil?
+      @dock_request.update(dock_request_params(method)) if not_nil?
     end
 
     def update_dock_request_with_context(context)
-      @dock_request.update_attributes(:context => context) if not_nil?
+      @dock_request.update(:context => context) if not_nil?
     end
 
     def set_context(context)
@@ -144,6 +144,6 @@ class DockRequestsController < ApplicationController
       all_formats_redirect_to(root_url) if dock_group.nil?
     end
 
-    
+
 
 end

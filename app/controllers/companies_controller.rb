@@ -24,7 +24,7 @@ class CompaniesController < ApplicationController
 
   def update
     find_company_by_id
-    @company.update_attributes(company_params)
+    @company.update(company_params)
     respond_to :js
   end
 

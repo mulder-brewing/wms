@@ -1,16 +1,21 @@
 <% record = modal_form.record %>
+var modal_id = '<%= modal_form.modal_id %>';
 <% if record.nil? %>
-  $('#<%= modal_form.modal_id %>').modal('hide');
+  hideModal(modal_id);
   alert_custom('<%= Constants::Alert::WARNING %>','<%= t "alert.record.not_found" %>');
 <% elsif record.save_success %>
-  $('#<%= modal_form.modal_id %>').modal('hide');
+  hideModal(modal_id);
   <% if modal_form.type_co.create? %>
-    $('#<%= record.class.table_body_id %>').prepend('<%= j render record %>');
+    $('#<%= record.class.table_body_id %>').prepend(renderRecord());
     $('#<%= record.table_row_id %>').hide().fadeIn(1000);
   <% elsif modal_form.type_co.update? %>
-    $('#<%= record.table_row_id %>').replaceWith('<%= j render record %>');
+    $('#<%= record.table_row_id %>').replaceWith(renderRecord());
   <% end %>
   alert_custom('<%= Constants::Alert::SUCCESS %>', '<%= t "alert.save.success" %>');
 <% else %>
   $("#<%= modal_form.form_id %>").replaceWith("<%=  j render modal_form.form_path, modal_form: modal_form %>");
 <% end %>
+
+function renderRecord() {
+  return '<%= j render partial: Page::GenericPage::RECORD_HTML_PATH, locals: { record: record, table: table } %>'
+}

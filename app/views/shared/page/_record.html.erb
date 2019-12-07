@@ -1,0 +1,16 @@
+
+<tr id="<%= record.table_row_id %>">
+  <% table.columns.each do |column| %>
+    <td>
+      <% if column.name == :actions %>
+        <% if column.add_edit_button? %>
+          <%= link_to 'Edit', edit_polymorphic_path(record), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => 'btn btn-primary btn-sm m-1'  %>
+        <% end %>
+      <% elsif column.name == :enabled %>
+        <%= t human_boolean(record.enabled) %>
+      <% else %>
+        <%= record.send(column.name) %>
+      <% end %>
+    </td>
+  <% end %>
+</tr>

@@ -55,6 +55,10 @@ class ApplicationController < ActionController::Base
       all_formats_redirect_to(root_url) if !object.valid?
     end
 
+    def find_record
+      find_object_redirect_invalid(controller_name.classify.constantize)
+    end
+
     def set_current_user(object)
       object.current_user = current_user
       return object

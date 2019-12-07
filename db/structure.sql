@@ -50,7 +50,8 @@ CREATE TABLE public.access_policies (
     docks boolean,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    enabled boolean DEFAULT true
+    enabled boolean DEFAULT true,
+    everything boolean
 );
 
 
@@ -691,6 +692,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190717155721'),
 ('20191119182114'),
 ('20191129163607'),
-('20191129185733');
+('20191129185733'),
+('20191207203219');
 
 

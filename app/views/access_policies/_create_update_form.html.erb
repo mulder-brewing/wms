@@ -3,11 +3,22 @@
       <%= errors_for(f.object) %>
     </div>
     <div class="mb-3">
-      <%= f.input :description, as: :string %>
+      <%= f.input :description, label: "#{t_nf "global.description"}", as: :string %>
       <% if modal_form.type_co.update? %>
         <div class="mb-2">
-          <%= f.input :enabled, wrapper: :switch %>
+          <%= f.input :enabled, label: "#{t_nf "global.boolean.enabled_disabled.enabled"}", wrapper: :switch %>
         </div>
       <% end %>
+      <%= f.input :everything, label: "#{t_nf "access_policies.fields.everything"}",  wrapper: :switch %>
+      <div class="individual_permissions">
+        <%= f.input :dock_groups, label: "#{t_nf "dock_groups.title.index"}",  wrapper: :switch %>
+        <%= f.input :docks, label: "#{t_nf "docks.title.index"}",  wrapper: :switch %>
+      </div>
+
     </div>
 <% end %>
+
+<script type="text/javascript">
+  hideAccessPolicyPermissions();
+  $('#access_policy_everything').change(hideAccessPolicyPermissions);
+</script>

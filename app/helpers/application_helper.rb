@@ -39,7 +39,7 @@ module ApplicationHelper
 
   # Returns Yes for true and No for false.
   def human_boolean(boolean)
-    boolean ? 'Yes' : 'No'
+    boolean ? "global.boolean.yes_no.yes" : "global.boolean.yes_no.no"
   end
 
   # Returns local time if not blank
@@ -47,6 +47,10 @@ module ApplicationHelper
     if !date_time.blank?
       local_time(date_time)
     end
+  end
+
+  def t_nf(key)
+    I18n.t key, default: :text_key_not_found
   end
 
 

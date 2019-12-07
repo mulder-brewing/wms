@@ -13,7 +13,7 @@
         <% elsif modal_form.type_co.show? %>
           <%= render 'show' %>
         <% elsif modal_form.type_co.destroy? %>
-          Are you sure you want to delete this <%= entity %>?  This action is irreversible.
+          <%= t "modal.destroy.chicken_message" %>
         <% end %>
       </div>
       <div class="modal-footer">

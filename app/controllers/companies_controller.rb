@@ -1,5 +1,6 @@
 class CompaniesController < ApplicationController
   before_action :app_admin
+  before_action :skip_authorization
 
   def new
     @company = Company.new

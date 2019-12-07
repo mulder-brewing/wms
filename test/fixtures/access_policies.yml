@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  company: one
+  description: MyText
+  dock_groups: false
+  docks: false
+
+two:
+  company: two
+  description: MyText
+  dock_groups: false
+  docks: false

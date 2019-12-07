@@ -1,0 +1,16 @@
+<% record = modal_form.record %>
+<% if record.nil? %>
+  $('#<%= modal_form.modal_id %>').modal('hide');
+  alert_custom('<%= Constants::Alert::WARNING %>','<%= t "alert.record.not_found" %>');
+<% elsif record.save_success %>
+  $('#<%= modal_form.modal_id %>').modal('hide');
+  <% if modal_form.type_co.create? %>
+    $('#<%= record.class.table_body_id %>').prepend('<%= j render record %>');
+    $('#<%= record.table_row_id %>').hide().fadeIn(1000);
+  <% elsif modal_form.type_co.update? %>
+    $('#<%= record.table_row_id %>').replaceWith('<%= j render record %>');
+  <% end %>
+  alert_custom('<%= Constants::Alert::SUCCESS %>', '<%= t "alert.save.success" %>');
+<% else %>
+  $("#<%= modal_form.form_id %>").replaceWith("<%=  j render modal_form.form_path, modal_form: modal_form %>");
+<% end %>

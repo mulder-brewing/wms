@@ -13,6 +13,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :access_policies
+
   resources :dock_requests do
     member do
       get :dock_assignment_edit

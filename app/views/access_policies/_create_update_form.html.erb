@@ -1,0 +1,13 @@
+<%= simple_form_for modal_form.record, remote:true, :html => { :id => modal_form.form_id } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :description, as: :string %>
+      <% if modal_form.type_co.update? %>
+        <div class="mb-2">
+          <%= f.input :enabled, wrapper: :switch %>
+        </div>
+      <% end %>
+    </div>
+<% end %>

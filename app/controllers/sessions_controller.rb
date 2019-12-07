@@ -4,6 +4,7 @@ class SessionsController < ApplicationController
   skip_before_action :logged_in, :only => [:new, :create]
   skip_before_action :check_reset_password, :only => [:destroy]
   before_action :logged_in_app_admin_redirect, :only => [:become_user]
+  before_action :skip_authorization
 
   def new
     all_formats_redirect_to(root_url) if logged_in?

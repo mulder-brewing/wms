@@ -20,17 +20,25 @@
           <div class="navbar-nav">
             <%= link_to "Dock Queue", dock_requests_path, class: "nav-item nav-link" %>
             <%= link_to "Dock Queue History", dock_requests_history_path, class: "nav-item nav-link" %>
-            <% if admin? %>
+
               <div class="nav-item dropdown">
                 <%= link_to "Administration",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarAdministrationDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
                 <div class="dropdown-menu" aria-labelledby="navbarAdministrationDropdown">
-                  <%= link_to "Companies",   companies_path, class: "dropdown-item" if app_admin? %>
-                  <%= link_to "Users", users_path, class: "dropdown-item" %>
+                  <% if admin? %>
+                    <li>
+                      <%= link_to "Admin Only", '#', :class => "dropdown-item dropdown-toggle" %>
+                      <ul class="dropdown-menu">
+                        <li><%= link_to "Companies",   companies_path, class: "dropdown-item" if app_admin? %></li>
+                        <li><%= link_to "Users", users_path, class: "dropdown-item" %></li>
+                        <li><%= link_to "Access Policies", access_policies_path, class: "dropdown-item" %></li>
+                      </ul>
+                    </li>
+                  <% end %>
                   <%= link_to "Dock Groups", dock_groups_path, class: "dropdown-item" %>
                   <%= link_to "Docks", docks_path, class: "dropdown-item" %>
                 </div>
               </div>
-            <% end %>
+
           </div>
           <div class="navbar-nav ml-auto">
             <%= link_to current_user.username, edit_user_path(current_user), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => "nav-item nav-link mr-4" %>

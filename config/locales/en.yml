@@ -30,4 +30,19 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  access_policies:
+    title:
+      index: "Access Policies"
+      create: "New Access Policy"
+      update: "Edit Access Policy"
+
+  alert:
+    save:
+      success: "Saved successfully!"
+    record:
+      not_found: "Record not found"
+
+  global:
+    actions: "Actions"
+    description: "Description"
+    enabled: "Enabled"

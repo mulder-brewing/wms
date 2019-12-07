@@ -23,6 +23,21 @@ class ApplicationRecord < ActiveRecord::Base
     where_company(current_company_id).disabled
   end
 
+  # this is to uniquely id a table of records.
+  def self.table_body_id
+    self.name.tableize.dasherize + "-table-body";
+  end
+
+  # this is the uniquely id a record in a table of record.
+  def table_row_id
+    self.class.name.underscore.dasherize + "-" + self[:id].to_s;
+  end
+
+  # this is the path to the view folder, ready to append filename or subfolder.
+  def self.view_folder_path
+    self.name.tableize + "/"
+  end
+
   private
     # get only the digits from a string.
     def digits_only(string)

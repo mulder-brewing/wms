@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
     before_action :logged_in_admin, except: [:edit, :update, :update_password, :update_password_commit]
     skip_before_action :check_reset_password, :only => [:update_password_commit, :update_password]
+    before_action :skip_authorization
 
     def new
       @user = User.new

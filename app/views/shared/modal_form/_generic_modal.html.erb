@@ -1,27 +1,27 @@
-<div id="<%= form_type %>-modal" class="modal fade" tabindex="-1" role="dialog">
+<div id="<%= modal_form.modal_id %>" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><%= title %></h5>
+        <h5 class="modal-title"><%= t modal_form.modal_title %></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <% if %w(update create).include?(form_type) %>
-          <%= render form_path, { :form_type => form_type } %>
-        <% elsif form_type == 'show' %>
+        <% if modal_form.show_form? %>
+          <%= render modal_form.form_path, { :modal_form => modal_form } %>
+        <% elsif modal_form.type_co.show? %>
           <%= render 'show' %>
-        <% elsif form_type == 'destroy' %>
+        <% elsif modal_form.type_co.destroy? %>
           Are you sure you want to delete this <%= entity %>?  This action is irreversible.
         <% end %>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Close</button>
-        <% if %w(update create).include?(form_type) %>
-          <button type="submit" form="<%= form_type %>-form" class="btn btn-primary save">Save</button>
+        <% if modal_form.show_form? %>
+          <button type="submit" form="<%= modal_form.form_id %>" class="btn btn-primary save">Save</button>
         <% end %>
-        <% if form_type == 'destroy' %>
+        <% if modal_form.type_co.destroy? %>
           <%= link_to 'Delete', object,  method: :delete, remote: true, class: 'btn btn-danger'  %>
         <% end %>
       </div>

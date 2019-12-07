@@ -1,0 +1,19 @@
+<%= provide(:title, (t @GenericPage.title)) %>
+<%= provide(:new_link, new_access_policy_path) %>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col"><%= t "global.actions" %></th>
+        <th scope="col"><%= t "global.description" %></th>
+        <th scope="col"><%= t "global.enabled" %></th>
+      </tr>
+    </thead>
+    <tbody id=<%= @records.table_body_id %>>
+      <%= render @records %>
+    </tbody>
+  </table>
+</div>
+
+<%= render 'shared/pagination', pagy: @pagy %>

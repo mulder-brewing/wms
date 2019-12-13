@@ -15,6 +15,10 @@ class ApplicationRecord < ActiveRecord::Base
     where("company_id = ?", company_id)
   end
 
+  def self.where_enabled(enabled)
+    where("enabled = ?", enabled)
+  end
+
   def self.enabled_where_company(current_company_id)
     where_company(current_company_id).enabled
   end

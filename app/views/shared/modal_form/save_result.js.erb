@@ -4,6 +4,9 @@ var modal_id = '<%= modal_form.modal_id %>';
   hideModal(modal_id);
   alert_custom('<%= Constants::Alert::WARNING %>','<%= t "alert.record.not_found" %>');
 <% elsif record.save_success %>
+  function renderRecord() {
+    return '<%= j render partial: Page::GenericPage::RECORD_HTML_PATH, locals: { record: record, table: table } %>'
+  }
   hideModal(modal_id);
   <% if modal_form.type_co.create? %>
     $('#<%= record.class.table_body_id %>').prepend(renderRecord());
@@ -15,7 +18,3 @@ var modal_id = '<%= modal_form.modal_id %>';
 <% else %>
   $("#<%= modal_form.form_id %>").replaceWith("<%=  j render modal_form.form_path, modal_form: modal_form %>");
 <% end %>
-
-function renderRecord() {
-  return '<%= j render partial: Page::GenericPage::RECORD_HTML_PATH, locals: { record: record, table: table } %>'
-}

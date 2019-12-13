@@ -10,7 +10,9 @@ class Table::GenericTable
         column[:text_key_qualifier] || :global
         )
       new_column.add_edit_button = true if column[:edit_button] == true
+      new_column.add_become_button = true if column[:become_button] == true
       new_column.text_key = column[:text_key]
+      new_column.send_chain = column[:send_chain]
 
       @columns << new_column
     end

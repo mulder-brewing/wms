@@ -50,7 +50,7 @@ module ApplicationHelper
   end
 
   def t_nf(key)
-    I18n.t key, default: :text_key_not_found
+    I18n.t key, default: key
   end
 
 

@@ -2,7 +2,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title"><%= t modal_form.modal_title %></h5>
+        <h5 class="modal-title"><%= t_nf modal_form.modal_title %></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -13,19 +13,25 @@
         <% elsif modal_form.type_co.show? %>
           <%= render 'show' %>
         <% elsif modal_form.type_co.destroy? %>
-          <%= t "modal.destroy.chicken_message" %>
+          <%= t_nf "modal.destroy.chicken_message" %>
         <% end %>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">Close</button>
+        <% if modal_form.type_co.update? %>
+          <%= render modal_form.timestamps_html_path, modal_form: modal_form %>
+        <% end %>
+        <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">
+          <%= t_nf "modal.close" %>
+        </button>
         <% if modal_form.show_form? %>
-          <button type="submit" form="<%= modal_form.form_id %>" class="btn btn-primary save">Save</button>
+          <button type="submit" form="<%= modal_form.form_id %>" class="btn btn-primary save">
+            <%= t_nf "modal.save" %>
+          </button>
         <% end %>
         <% if modal_form.type_co.destroy? %>
-          <%= link_to 'Delete', object,  method: :delete, remote: true, class: 'btn btn-danger'  %>
+          <%= link_to t_nf "modal.delete", object,  method: :delete, remote: true, class: 'btn btn-danger'  %>
         <% end %>
       </div>
-
     </div>
   </div>
 </div>

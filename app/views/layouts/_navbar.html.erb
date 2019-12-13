@@ -29,12 +29,12 @@
                       <%= link_to "Admin Only", '#', :class => "dropdown-item dropdown-toggle" %>
                       <ul class="dropdown-menu">
                         <li><%= link_to "Companies",   companies_path, class: "dropdown-item" if app_admin? %></li>
-                        <li><%= link_to "Users", users_path, class: "dropdown-item" %></li>
-                        <li><%= link_to "Access Policies", access_policies_path, class: "dropdown-item" %></li>
+                        <li><%= link_to "Users", users_path(:enabled => "true"), class: "dropdown-item" %></li>
+                        <li><%= link_to "Access Policies", access_policies_path(:enabled => "true"), class: "dropdown-item" %></li>
                       </ul>
                     </li>
                   <% end %>
-                  <%= link_to "Dock Groups", dock_groups_path, class: "dropdown-item" %>
+                  <%= link_to "Dock Groups", dock_groups_path(:enabled => "true"), class: "dropdown-item" %>
                   <%= link_to "Docks", docks_path, class: "dropdown-item" %>
                 </div>
               </div>

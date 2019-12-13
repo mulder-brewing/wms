@@ -1,5 +1,9 @@
-<%= provide(:title, (t page.title)) %>
+<%= provide(:title, (t_nf page.title)) %>
 <%= provide(:new_link, send(page.new_path)) if page.show_new_link? %>
+
+<% if page.show_enabled_filter? %>
+  <%= render page.enabled_filter_html_path, page: page %>
+<% end %>
 
 <div class="table-responsive">
   <table class="table table-striped">

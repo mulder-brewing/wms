@@ -47,10 +47,6 @@ class User < ApplicationRecord
     where("id != ? AND company_id = ?", user.id, user.company_id)
   end
 
-  def User.password_requirements
-    '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
-  end
-
   private
     def strip_whitespace
       self.first_name.strip! if self.first_name?

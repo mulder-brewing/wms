@@ -7,6 +7,7 @@ class ModalForm::GenericModalForm
   SHARED_PATH = "shared/modal_form/"
 
   GENERIC_HTML_PATH = SHARED_PATH + "generic_modal"
+  TIMESTAMPS_HTML_PATH = SHARED_PATH + "timestamps"
 
   GENERIC_JS_PATH = SHARED_PATH + "generic_modal_js"
   NEW_JS_PATH = SHARED_PATH + "new"
@@ -41,6 +42,10 @@ class ModalForm::GenericModalForm
 
   def save_result_js_path
     SAVE_RESULT_JS_PATH
+  end
+
+  def timestamps_html_path
+    TIMESTAMPS_HTML_PATH
   end
 
   def modal_id

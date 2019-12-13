@@ -80,36 +80,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to getting the show user page/modal.
-  def show_user_as(user, show_user, validity)
-    log_in_if_user(user)
-    get user_path(show_user), xhr:true
-    assert_equal validity, !redirected?(@response)
-  end
-
-  test "only a app admin or company admin should be able to see a user's information" do
-    # try not logged in
-    show_user_as(nil, @regular_user, false)
-    # try logged in as a regular user
-    show_user_as(@regular_user, @regular_user, false)
-    # try logged in as a company admin user
-    show_user_as(@company_admin, @company_admin, true)
-    show_user_as(@company_admin, @regular_user, true)
-    # try logged in as a app admin
-    show_user_as(@app_admin, @app_admin, true)
-    show_user_as(@app_admin, @company_admin, true)
-  end
-
-  test "a company admin should not be able to see a user's information from another company." do
-    show_user_as(@company_admin, @other_user, false)
-  end
-
-  test "a app admin should be able to see user's information from another company" do
-    show_user_as(@app_admin, @other_user, true)
-  end
-
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
   # This function helps all the following tests to run related to getting the edit user page/modal.
   def edit_user_as(user, edit_user, validity)
     log_in_if_user(user)
@@ -350,7 +320,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     log_in_if_user(user)
     get users_path
     if validity == true
-      assert_template 'users/index'
+      assert_template Page::GenericPage::INDEX_HTML_PATH
     else
       assert_redirected_to root_url
     end
@@ -367,24 +337,24 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "a company admin should get the user index page and should only get users from own company except self." do
     index_users(@company_admin, true)
     # should see these users from same company
-    assert_select "tr#user_#{@regular_user.id}"
-    assert_select "tr#user_#{@app_admin.id}"
+    assert_select "tr##{@regular_user.table_row_id}"
+    assert_select "tr##{@app_admin.table_row_id}"
     # should not see self
-    assert_select "tr#user_#{@company_admin.id}", false
+    assert_select "tr##{@company_admin.table_row_id}", false
     # should not see users from other companies
-    assert_select "tr#user_#{@other_user.id}", false
-    assert_select "tr#user_#{@delete_me_user.id}", false
+    assert_select "tr##{@other_user.table_row_id}", false
+    assert_select "tr##{@delete_me_user.table_row_id}", false
   end
 
   test "a app admin should get the user index page and should get all users except self" do
     index_users(@app_admin, true)
     # should see these users from same company
-    assert_select "tr#user_#{@regular_user.id}"
-    assert_select "tr#user_#{@company_admin.id}"
-    assert_select "tr#user_#{@other_user.id}"
-    assert_select "tr#user_#{@delete_me_user.id}"
+    assert_select "tr##{@regular_user.table_row_id}"
+    assert_select "tr##{@company_admin.table_row_id}"
+    assert_select "tr##{@other_user.table_row_id}"
+    assert_select "tr##{@delete_me_user.table_row_id}"
     # should not see self
-    assert_select "tr#user_#{@app_admin.id}", false
+    assert_select "tr##{@app_admin.table_row_id}", false
   end
 
   # ----------------------------------------------------------------------------
@@ -483,26 +453,22 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   def check_if_user_deleted(user, user_to_test, try, validity)
     log_in_if_user(user)
     case try
-      when "show"
-        get user_path(user_to_test), xhr:true
       when "update"
         patch user_path(user_to_test), xhr: true, params: { user: { email: "updated@updated.com" } }
       when "edit"
         get edit_user_path(user_to_test), xhr:true
     end
     if validity == true
-      assert_match /User no longer exists/, @response.body
+      assert_match /Record not found/, @response.body
     else
-      assert_no_match /User no longer exists/, @response.body
+      assert_no_match /Record not found/, @response.body
     end
   end
 
   test "if a user is deleted and a user trys to show, edit, or update that user, they are warned the user no longer exists." do
-    check_if_user_deleted(@company_admin, @delete_me_user, "show", false)
     check_if_user_deleted(@company_admin, @delete_me_user, "update", false)
     check_if_user_deleted(@company_admin, @delete_me_user, "edit", false)
     @delete_me_user.destroy
-    check_if_user_deleted(@company_admin, @delete_me_user, "show", true)
     check_if_user_deleted(@company_admin, @delete_me_user, "update", true)
     check_if_user_deleted(@company_admin, @delete_me_user, "edit", true)
   end

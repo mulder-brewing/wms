@@ -1,10 +1,10 @@
-<%= simple_form_for @dock_group, remote:true, :html => { :id => form_type +'-form' } do |f| %>
+<%= simple_form_for modal_form.record, remote:true, :html => { :id => modal_form.form_id } do |f| %>
     <div id="feedback">
       <%= errors_for(f.object) %>
     </div>
     <div class="mb-3">
       <%= f.input :description, as: :string %>
-      <% if form_type == 'update' %>
+      <% if modal_form.type_co.update? %>
         <div class="mb-2">
           <%= f.input :enabled, wrapper: :switch %>
         </div>

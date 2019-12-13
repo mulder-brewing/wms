@@ -32,38 +32,80 @@
 en:
   access_policies:
     title:
-      index: "Access Policies"
-      create: "New Access Policy"
-      update: "Edit Access Policy"
+      index: Access Policies
+      create: New Access Policy
+      update: Edit Access Policy
     fields:
-      everything: "Everything"
+      everything: Everything
 
   alert:
     save:
-      success: "Saved successfully!"
+      success: Saved successfully!
+      password_success: 'Password successfully updated!'
     record:
-      not_found: "Record not found"
+      not_found: Record not found
+    not_authorized: Not Authorized
+
+  companies:
+    company: Company
+
 
   dock_groups:
     title:
-      index: "Dock Groups"
+      index: Dock Groups
+      create: New Dock Group
+      update: Edit Dock Group
 
   docks:
     title:
-      index: "Docks"
+      index: Docks
 
   global:
-    actions: "Actions"
+    actions: Actions
+    all: All
     boolean:
       yes_no:
-        yes: "Yes"
-        no: "No"
+        yes: Yes
+        no: No
       enabled_disabled:
-        enabled: "Enabled"
-    description: "Description"
+        enabled: Enabled
+        disabled: Disabled
+    description: Description
 
   modal:
     destroy:
-      chicken_message: "Are you sure you want to delete this?  This action is irreversible."
+      chicken_message: Are you sure you want to delete this?  This action is irreversible.
+    close: Close
+    save: Save
+    delete: Delete
+    edit: Edit
 
-  text_key_not_found: "Text Key Not Found"
+  timestamps:
+    created: Created
+    updated: Updated
+    title: Timestamps
+
+  users:
+    title:
+      index: Users
+      create: New User
+      update: Edit User
+      update_password: Update Password
+    name:
+      username: Username
+      first_name: First Name
+      last_name: Last Name
+    communication:
+      email: Email
+      send_email_login: Send email with login instructions
+      send_email_password: Send email with new password
+    hints:
+      username: lowercase, numbers, and underscore only with no spaces
+      password: '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
+      update_password: You must update your password before you can use Mulder WMS.
+    security:
+      admin: Admin
+      reset_password: Reset Password
+      password: Password
+      password_confirm: Password Confirmation
+    become: Become

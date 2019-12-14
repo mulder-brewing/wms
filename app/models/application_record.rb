@@ -15,12 +15,31 @@ class ApplicationRecord < ActiveRecord::Base
     where("company_id = ?", company_id)
   end
 
+  def self.where_enabled(enabled)
+    where("enabled = ?", enabled)
+  end
+
   def self.enabled_where_company(current_company_id)
     where_company(current_company_id).enabled
   end
 
   def self.disabled_where_company(current_company_id)
     where_company(current_company_id).disabled
+  end
+
+  # this is to uniquely id a table of records.
+  def self.table_body_id
+    self.name.tableize.dasherize + "-table-body";
+  end
+
+  # this is the uniquely id a record in a table of record.
+  def table_row_id
+    self.class.name.underscore.dasherize + "-" + self[:id].to_s;
+  end
+
+  # this is the path to the view folder, ready to append filename or subfolder.
+  def self.view_folder_path
+    self.name.tableize + "/"
   end
 
   private
@@ -32,7 +51,7 @@ class ApplicationRecord < ActiveRecord::Base
     # check that the current user's company matches the company of this instance
     def company_check
       if company_id != current_user.company_id
-        errors.add(:company_id, "doesn't match your company")
+        errors.add(:company_id, :mismatch)
       end
     end
 

@@ -1,0 +1,75 @@
+<%= simple_form_for modal_form.record,
+                                remote:true,
+                                :html => { :id => modal_form.form_id } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :company_id, label: t_nf("companies.company"),
+          :collection => Company.all.order(:name), :label_method => :name,
+          :value_method => :id if current_user.app_admin %>
+      <%= f.input :first_name, label: t_nf("users.name.first_name"),
+          as: :string if logged_in_admin? %>
+      <%= f.input :last_name, label: t_nf("users.name.last_name"),
+          as: :string if logged_in_admin? %>
+      <%= f.input :email, label: t_nf("users.communication.email"),
+          as: :string %>
+      <%= f.input :send_email, as: :boolean,
+          label: t_nf("users.communication.send_email_login")\
+          if logged_in_admin? && modal_form.type_co.create? %>
+      <%= f.input :username, label: t_nf("users.name.username"),
+          as: :string if logged_in_admin? %>
+      <%= f.hint t_nf("users.hints.username") %>
+      <% if modal_form.type_co.update? %>
+        <div class="my-3">
+          <button class="btn btn-primary" type="button" data-toggle="collapse"
+                  data-target="#collapseResetPassword" aria-expanded="false"
+                  aria-controls="collapseResetPassword">
+            <%= t_nf("users.security.reset_password") %>
+          </button>
+          <div class="collapse" id="collapseResetPassword">
+            <div class="card card-body">
+      <% end %>
+              <%= f.input :password, label: t_nf("users.security.password") %>
+              <%= f.hint t_nf("users.hints.password") %>
+              <%= f.input :password_confirmation,
+                  label: t_nf("users.security.password_confirm"),
+                  required: true %>
+      <% if modal_form.type_co.update? %>
+              <%= f.input :send_email, as: :boolean,
+                  label: t_nf("users.communication.send_email_password")\
+                  if logged_in_admin? && not_self?(modal_form.record) %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+      <%
+        if current_user.app_admin && modal_form.type_co.update?
+          access_policies = AccessPolicy.where_company(modal_form.record.company_id)
+        elsif logged_in_company_admin?
+          access_policies = AccessPolicy.where_company(current_company_id)
+        else
+          access_policies = AccessPolicy.none
+        end
+      %>
+      <%= f.input :access_policy_id, label: t_nf("access_policies.access_policy"),
+          :collection => access_policies
+          .order(:description), :label_method => :description,
+          :value_method => :id if logged_in_admin? %>
+      <%= f.input :company_admin, label: t_nf("users.security.admin")\
+          if logged_in_admin? && not_self?(modal_form.record) %>
+    </div>
+    <% if modal_form.type_co.update? && logged_in_admin? &&
+                                        not_self?(modal_form.record) %>
+      <div class="mb-2">
+        <%= f.input :enabled,
+            label: t_nf("global.boolean.enabled_disabled.enabled"),
+            wrapper: :switch %>
+      </div>
+    <% end %>
+<% end %>
+
+<script type="text/javascript">
+  showResetPassword();
+  populateAccessPoliciesSelect();
+</script>

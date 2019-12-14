@@ -4,6 +4,7 @@ class Company < ApplicationRecord
   has_many :docks, dependent: :destroy
   has_many :dock_requests, dependent: :destroy
   has_many :dock_request_audit_histories, dependent: :destroy
+  has_many :access_policies, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 50 }, uniqueness: { case_sensitive: false }
 
@@ -18,5 +19,6 @@ class Company < ApplicationRecord
 
     def create_defaults
       DockGroup.create(description: "Default", company_id: id)
+      AccessPolicy.create(description: "Everything", company_id: id, everything: true)
     end
 end

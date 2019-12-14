@@ -1,0 +1,29 @@
+<%= provide(:title, (t_nf page.title)) %>
+<%= provide(:new_link, send(page.new_path)) if page.show_new_link? %>
+
+<% if page.show_enabled_filter? %>
+  <%= render page.enabled_filter_html_path, page: page %>
+<% end %>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <% page.table.columns.each do |column| %>
+          <th scope="col"><%= t_nf column.header_text_key %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody id=<%= page.records.table_body_id %>>
+      <% page.records.each do |record| %>
+        <%= render partial: page.record_html_path,
+          locals: { record: record,
+                    table: page.table
+                  }
+        %>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<%= render page.pagination_html_path, pagy: pagy %>

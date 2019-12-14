@@ -122,33 +122,6 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
 
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to getting the show dock group modal.
-  def show_dock_group_as(user, dock_group, validity)
-    log_in_if_user(user)
-    get dock_group_path(dock_group), xhr:true
-    assert_equal validity, !redirected?(@response)
-  end
-
-  test "logged out user or regular user should not get show dock group model" do
-    show_dock_group_as(nil, @cooler_dock_group, false)
-    show_dock_group_as(@regular_user, @cooler_dock_group, false)
-  end
-
-  test "a company admin or app admin should get show dock group modal" do
-    show_dock_group_as(@company_admin, @cooler_dock_group, true)
-    show_dock_group_as(@app_admin, @cooler_dock_group, true)
-  end
-
-  test "a company_admin shouldn't be able to see a dock group from another company" do
-    show_dock_group_as(@company_admin, @other_company_dock_group, false)
-  end
-
-  test "a app admin shouldn't be able to see a dock group from another company" do
-    show_dock_group_as(@app_admin, @other_company_dock_group, false)
-  end
-
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
   # This function helps all the following tests to run related to getting the edit dock_group modal.
   def edit_dock_group_as(user, dock_group, validity)
     log_in_if_user(user)
@@ -219,7 +192,7 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
     log_in_if_user(user)
     get dock_groups_path
     if validity == true
-      assert_template 'dock_groups/index'
+      assert_template Page::IndexListPage::INDEX_HTML_PATH
     else
       assert_redirected_to root_url
     end
@@ -233,9 +206,9 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
   test "a company admin should get the dock groups index page and should only dock groups from own company." do
     index_dock_groups(@company_admin, true)
     # should see this dock group from own company
-    assert_select "tr#dock_group_#{@cooler_dock_group.id}"
+    assert_select "tr##{@cooler_dock_group.table_row_id}"
     # shouldn't see this dock group from another company.
-    assert_select "tr#dock_group_#{@other_company_dock_group.id}", false
+    assert_select "tr##{@other_company_dock_group.table_row_id}", false
   end
 
   test "a app admin should be able to get the dock groups index page." do
@@ -249,26 +222,22 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
   def check_if_dock_group_deleted(user, dock_group_to_test, try, validity)
     log_in_if_user(user)
     case try
-      when "show"
-        get dock_group_path(dock_group_to_test), xhr:true
       when "update"
         patch dock_group_path(dock_group_to_test), xhr: true, params: { dock_group: { description: "updated dock group" } }
       when "edit"
         get edit_dock_group_path(dock_group_to_test), xhr:true
     end
     if validity == true
-      assert_match /Dock group no longer exists/, @response.body
+      assert_match /Record not found/, @response.body
     else
-      assert_no_match /Dock group no longer exists/, @response.body
+      assert_no_match /Record not found/, @response.body
     end
   end
 
   test "if a dock group is deleted and a user trys to show, edit, or update it, they are warned the dock group no longer exists." do
-    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "show", false)
     check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "update", false)
     check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "edit", false)
     @delete_me_dock_group.destroy
-    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "show", true)
     check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "update", true)
     check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "edit", true)
   end

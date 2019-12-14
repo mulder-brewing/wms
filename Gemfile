@@ -68,6 +68,9 @@ gem 'dotiw', '~>4.0.1'
 # Webpacker - added when upgrading to rails 6.0
 gem 'webpacker', '~>4.2.0'
 
+# Pundit is to help with authorization/access profiles
+gem 'pundit', '~>2.1.0'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

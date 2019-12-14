@@ -1,10 +1,19 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
   include SessionsHelper
+  include Pundit
   before_action :logged_in
   before_action :check_reset_password
+  after_action :verify_authorized
+
+  NotAuthorized = Class.new(StandardError)
 
   rescue_from ActionController::InvalidAuthenticityToken do
+    all_formats_redirect_to(root_url)
+  end
+
+  rescue_from ApplicationController::NotAuthorized do |exception|
+    flash[:danger] = t("alert.not_authorized")
     all_formats_redirect_to(root_url)
   end
 
@@ -16,16 +25,20 @@ class ApplicationController < ActionController::Base
   end
 
   private
+    def not_authorized
+      raise ApplicationController::NotAuthorized
+    end
+
     def logged_in
-      all_formats_redirect_to(root_url) unless logged_in?
+      not_authorized unless logged_in?
     end
 
     def logged_in_admin
-      all_formats_redirect_to(root_url) unless logged_in_admin?
+      not_authorized unless logged_in_admin?
     end
 
-    def logged_in_app_admin_redirect
-      all_formats_redirect_to(root_url) unless logged_in_app_admin?
+    def logged_in_app_admin
+      not_authorized unless logged_in_app_admin?
     end
 
     def find_user_by_id(id)
@@ -50,7 +63,15 @@ class ApplicationController < ActionController::Base
     end
 
     def redirect_if_object_invalid(object)
-      all_formats_redirect_to(root_url) if !object.valid?
+      object.valid?
+      if  object.errors.added?(:company_id, :mismatch)  ||
+          object.errors.added?(:id, :mismatch)
+            not_authorized
+      end
+    end
+
+    def find_record
+      find_object_redirect_invalid(controller_model)
     end
 
     def set_current_user(object)
@@ -61,6 +82,14 @@ class ApplicationController < ActionController::Base
     # This can be used to set the current user attribute for an object that is a instance variable.
     def set_current_user_attribute(instance_variable)
       instance_variable_get("@#{instance_variable}").current_user = current_user
+    end
+
+    def enabled_only_params
+      params.permit(:enabled)
+    end
+
+    def controller_model
+      controller_name.classify.constantize
     end
 
 end

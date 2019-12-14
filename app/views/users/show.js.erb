@@ -1,6 +1,0 @@
-<% if @user.nil? %>
-  alert_custom("warning","User no longer exists");
-<% elsif @user.valid? %>
-  $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'show', :title => 'User' } %>");
-  $("#show-modal").modal('show');
-<% end %>

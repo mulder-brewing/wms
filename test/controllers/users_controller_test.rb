@@ -13,6 +13,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @company_admin_company = @company_admin.company
     @app_admin_company = @app_admin.company
     @other_company = @other_user.company
+    @averagejoe_access_policy = access_policies(:average_joe_access_policy_everything)
+    @other_access_policy = access_policies(:other_access_policy_everything)
   end
 
 
@@ -42,8 +44,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
   # This function helps all the following tests to run related to creating a user.
-  def create_user_as(user, username, company_id, validity)
-    params = { user: { first_name: "Test", last_name: "User", username: username, password: "Password1$", company_admin: false, app_admin: false, company_id: company_id } }
+  def create_user_as(user, username, company_id, access_policy_id, validity)
+    params = { user: { first_name: "Test", last_name: "User", username: username,
+      password: "Password1$", company_admin: false, app_admin: false,
+      company_id: company_id, access_policy_id: access_policy_id } }
     log_in_if_user(user)
     if validity == false
       assert_no_difference 'User.count' do
@@ -59,53 +63,23 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "only a app admin or company admin should be able to create a user" do
     # try not logged in
-    create_user_as(nil, "test1", @regular_user_company.id, false)
+    create_user_as(nil, "test1", @regular_user_company.id, @averagejoe_access_policy.id, false)
     # try logged in as a regular user
-    create_user_as(@regular_user, "test2",@regular_user_company.id, false)
+    create_user_as(@regular_user, "test2",@regular_user_company.id, @averagejoe_access_policy.id, false)
     # try logged in as a company admin user
-    create_user_as(@company_admin, "test3", @company_admin_company.id, true)
+    create_user_as(@company_admin, "test3", @company_admin_company.id, @averagejoe_access_policy.id, true)
     # try logged in as a app admin
-    create_user_as(@app_admin, "test4", @app_admin_company.id, true)
+    create_user_as(@app_admin, "test4", @app_admin_company.id, @averagejoe_access_policy.id, true)
   end
 
   test "if a company admin tries to create a user in another company, created user will still be same company as admin." do
-    create_user_as(@company_admin, "test1", @other_company.id, true)
+    create_user_as(@company_admin, "test1", @other_company.id, @averagejoe_access_policy.id, true)
     assert_equal @company_admin.company_id, User.find_by(username: "test1").company_id
   end
 
   test "app admin should be able to create user in other company" do
-    create_user_as(@app_admin, "test1", @other_company.id, true)
+    create_user_as(@app_admin, "test1", @other_company.id, @other_access_policy.id, true)
     assert_equal @other_user.company_id, User.find_by(username: "test1").company_id
-  end
-
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to getting the show user page/modal.
-  def show_user_as(user, show_user, validity)
-    log_in_if_user(user)
-    get user_path(show_user), xhr:true
-    assert_equal validity, !redirected?(@response)
-  end
-
-  test "only a app admin or company admin should be able to see a user's information" do
-    # try not logged in
-    show_user_as(nil, @regular_user, false)
-    # try logged in as a regular user
-    show_user_as(@regular_user, @regular_user, false)
-    # try logged in as a company admin user
-    show_user_as(@company_admin, @company_admin, true)
-    show_user_as(@company_admin, @regular_user, true)
-    # try logged in as a app admin
-    show_user_as(@app_admin, @app_admin, true)
-    show_user_as(@app_admin, @company_admin, true)
-  end
-
-  test "a company admin should not be able to see a user's information from another company." do
-    show_user_as(@company_admin, @other_user, false)
-  end
-
-  test "a app admin should be able to see user's information from another company" do
-    show_user_as(@app_admin, @other_user, true)
   end
 
   # ----------------------------------------------------------------------------
@@ -350,7 +324,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     log_in_if_user(user)
     get users_path
     if validity == true
-      assert_template 'users/index'
+      assert_template Page::IndexListPage::INDEX_HTML_PATH
     else
       assert_redirected_to root_url
     end
@@ -367,24 +341,24 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "a company admin should get the user index page and should only get users from own company except self." do
     index_users(@company_admin, true)
     # should see these users from same company
-    assert_select "tr#user_#{@regular_user.id}"
-    assert_select "tr#user_#{@app_admin.id}"
+    assert_select "tr##{@regular_user.table_row_id}"
+    assert_select "tr##{@app_admin.table_row_id}"
     # should not see self
-    assert_select "tr#user_#{@company_admin.id}", false
+    assert_select "tr##{@company_admin.table_row_id}", false
     # should not see users from other companies
-    assert_select "tr#user_#{@other_user.id}", false
-    assert_select "tr#user_#{@delete_me_user.id}", false
+    assert_select "tr##{@other_user.table_row_id}", false
+    assert_select "tr##{@delete_me_user.table_row_id}", false
   end
 
   test "a app admin should get the user index page and should get all users except self" do
     index_users(@app_admin, true)
     # should see these users from same company
-    assert_select "tr#user_#{@regular_user.id}"
-    assert_select "tr#user_#{@company_admin.id}"
-    assert_select "tr#user_#{@other_user.id}"
-    assert_select "tr#user_#{@delete_me_user.id}"
+    assert_select "tr##{@regular_user.table_row_id}"
+    assert_select "tr##{@company_admin.table_row_id}"
+    assert_select "tr##{@other_user.table_row_id}"
+    assert_select "tr##{@delete_me_user.table_row_id}"
     # should not see self
-    assert_select "tr#user_#{@app_admin.id}", false
+    assert_select "tr##{@app_admin.table_row_id}", false
   end
 
   # ----------------------------------------------------------------------------
@@ -430,7 +404,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "A newly created user should have it's password_reset flag set to true" do
-    new_user = User.create!(company: @company_admin_company, first_name: 'New', last_name: 'User', username: 'new_user_for_test789', password: 'Password1$', current_user: "seed" )
+    new_user = User.create!(company: @company_admin_company, first_name: 'New',
+      last_name: 'User', username: 'new_user_for_test789', password: 'Password1$',
+      current_user: "seed", access_policy_id: @averagejoe_access_policy.id )
     assert new_user.password_reset == true
   end
 
@@ -483,26 +459,22 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   def check_if_user_deleted(user, user_to_test, try, validity)
     log_in_if_user(user)
     case try
-      when "show"
-        get user_path(user_to_test), xhr:true
       when "update"
         patch user_path(user_to_test), xhr: true, params: { user: { email: "updated@updated.com" } }
       when "edit"
         get edit_user_path(user_to_test), xhr:true
     end
     if validity == true
-      assert_match /User no longer exists/, @response.body
+      assert_match /Record not found/, @response.body
     else
-      assert_no_match /User no longer exists/, @response.body
+      assert_no_match /Record not found/, @response.body
     end
   end
 
   test "if a user is deleted and a user trys to show, edit, or update that user, they are warned the user no longer exists." do
-    check_if_user_deleted(@company_admin, @delete_me_user, "show", false)
     check_if_user_deleted(@company_admin, @delete_me_user, "update", false)
     check_if_user_deleted(@company_admin, @delete_me_user, "edit", false)
     @delete_me_user.destroy
-    check_if_user_deleted(@company_admin, @delete_me_user, "show", true)
     check_if_user_deleted(@company_admin, @delete_me_user, "update", true)
     check_if_user_deleted(@company_admin, @delete_me_user, "edit", true)
   end

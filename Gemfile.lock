@@ -152,6 +152,8 @@ GEM
     popper_js (1.14.5)
     public_suffix (4.0.1)
     puma (3.12.1)
+    pundit (2.1.0)
+      activesupport (>= 3.0.0)
     rack (2.0.7)
     rack-proxy (0.6.5)
       rack
@@ -281,6 +283,7 @@ DEPENDENCIES
   pg (>= 0.18, < 2.0)
   popper_js
   puma (~> 3.11)
+  pundit (~> 2.1.0)
   rails (~> 6.0.0)
   rails-controller-testing (= 1.0.4)
   sass-rails (~> 5.0)

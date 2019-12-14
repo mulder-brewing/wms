@@ -1,8 +1,0 @@
-<% if @user.save_success %>
-$('#create-modal').modal('hide');
-$('#user-table-body').prepend('<%= j render @user, user: @user %>');
-$('#user_<%= @user.id %>').hide().fadeIn(1000);
-alert_custom("success","User created successfully!");
-<% else %>
-$("#create-form").replaceWith("<%=  j render 'new_edit_form', form_type: 'create' %>");
-<% end %>

@@ -1,0 +1,15 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col py-1">
+      <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+        <%= link_to t_nf("global.all"), send(page.index_path), class: "btn #{page.button_class(:all)}" %>
+        <%= link_to t_nf("global.boolean.enabled_disabled.enabled"),
+            send(page.index_path, :enabled => "true"), class: "btn #{page.button_class(:enabled)}"
+            %>
+        <%= link_to t_nf("global.boolean.enabled_disabled.disabled"),
+            send(page.index_path, :enabled => "false"), class: "btn #{page.button_class(:disabled)}"
+            %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,44 +1,44 @@
 class DockGroupsController < ApplicationController
+  include GenericModalFormPageHelper
+
   before_action :logged_in_admin
+  before_action :skip_authorization
 
   def new
-    @dock_group = DockGroup.new
-    respond_to :js
+    new_modal
   end
 
   def create
-    @dock_group = DockGroup.new(dock_group_params)
-    @dock_group.update(:company_id => current_company_id)
-    respond_to :js
-  end
-
-  def show
-    find_dock_group
-    respond_to :js
+    create_record
   end
 
   def edit
-    find_dock_group
-    respond_to :js
+    edit_modal
   end
 
   def update
-    find_dock_group
-    @dock_group.update(dock_group_params) if !@dock_group.nil?
-    respond_to :js
+    update_record
   end
 
   def index
-    @pagy, @dock_groups = pagy(DockGroup.where_company(current_company_id).order(:description), items:25)
+    index_page
   end
 
   private
-    def dock_group_params
+    def record_params
       params.require(:dock_group).permit(:description, :enabled)
     end
 
-    def find_dock_group
-      @dock_group = find_object_redirect_invalid(DockGroup)
+    def table_array_hash
+      [
+        { name: :actions, edit_button: true },
+        { name: :description },
+        { name: :enabled, text_key_qualifier: :enabled }
+      ]
     end
 
+    def recordsSendArray
+      array = []
+      array << [:order, :description]
+    end
 end

@@ -5,11 +5,13 @@ class User < ApplicationRecord
 
 
   belongs_to :company
+  belongs_to :access_policy
   has_many :dock_request_audit_histories, dependent: :destroy
 
   before_validation :strip_whitespace
   validates :current_user, presence: true
   validates :company_id, presence: true
+  validates :access_policy_id, presence: true
   # Regex for lowercase letters, numbers, and underscore.
   VALID_USERNAME_REGEX = /\A[a-z0-9_]*\z/
   validates :username, presence: true, length: { maximum: 50 }, format: { with: VALID_USERNAME_REGEX }, uniqueness: { case_sensitive: false }
@@ -26,6 +28,7 @@ class User < ApplicationRecord
   validate :password_repeat?
   validate :email_exists_if_send_email
   validate :password_changed_if_send_reset_email
+  validate :access_policy_matches_user_company
 
   before_save :check_password_digest, if: :current_user_pre_check
 
@@ -47,10 +50,6 @@ class User < ApplicationRecord
     where("id != ? AND company_id = ?", user.id, user.company_id)
   end
 
-  def User.password_requirements
-    '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
-  end
-
   private
     def strip_whitespace
       self.first_name.strip! if self.first_name?
@@ -61,7 +60,7 @@ class User < ApplicationRecord
     # check that the current user's company matches the company of this instance
     def company_check
       if company_id != current_user.company_id
-        errors.add(:company_id, "doesn't match your company") unless current_user.app_admin
+        errors.add(:company_id, :mismatch) unless current_user.app_admin
       end
     end
 
@@ -79,7 +78,7 @@ class User < ApplicationRecord
     def regular_user_check
       if !current_user.company_admin && !current_user.app_admin
         #you are a regular user
-        errors.add(:base, "can't edit users other than yourself") if !self_equals_current_user?
+        errors.add(:id, :mismatch) if !self_equals_current_user?
       end
     end
 
@@ -150,6 +149,12 @@ class User < ApplicationRecord
     def send_password_reset_email
       if change_after_commit?("password_digest") && send_email_of_type?("password-reset")
         UserMailer.password_reset(self).deliver_now unless self_equals_current_user?
+      end
+    end
+
+    def access_policy_matches_user_company
+      if !self.access_policy.nil? && self.access_policy.company_id != self.company_id
+        errors.add(:access_policy_id, "doesn't belong to user's company.")
       end
     end
 

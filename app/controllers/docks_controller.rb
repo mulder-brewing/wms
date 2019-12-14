@@ -1,5 +1,6 @@
 class DocksController < ApplicationController
   before_action :logged_in_admin
+  before_action :skip_authorization
 
   def new
     @dock = Dock.new

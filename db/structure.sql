@@ -288,7 +288,8 @@ CREATE TABLE public.users (
     password_digest character varying,
     company_admin boolean DEFAULT false,
     app_admin boolean DEFAULT false,
-    password_reset boolean DEFAULT true
+    password_reset boolean DEFAULT true,
+    access_policy_id bigint
 );
 
 
@@ -538,6 +539,13 @@ CREATE INDEX index_docks_on_dock_group_id ON public.docks USING btree (dock_grou
 
 
 --
+-- Name: index_users_on_access_policy_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_access_policy_id ON public.users USING btree (access_policy_id);
+
+
+--
 -- Name: index_users_on_company_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -581,6 +589,14 @@ ALTER TABLE ONLY public.dock_groups
 
 ALTER TABLE ONLY public.docks
     ADD CONSTRAINT fk_rails_2077bae5be FOREIGN KEY (company_id) REFERENCES public.companies(id);
+
+
+--
+-- Name: users fk_rails_2cc9dc4915; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_rails_2cc9dc4915 FOREIGN KEY (access_policy_id) REFERENCES public.access_policies(id);
 
 
 --
@@ -693,6 +709,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191119182114'),
 ('20191129163607'),
 ('20191129185733'),
-('20191207203219');
+('20191207203219'),
+('20191214150324');
 
 

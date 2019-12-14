@@ -51,7 +51,7 @@ class ApplicationRecord < ActiveRecord::Base
     # check that the current user's company matches the company of this instance
     def company_check
       if company_id != current_user.company_id
-        errors.add(:company_id, "doesn't match your company")
+        errors.add(:company_id, :mismatch)
       end
     end
 

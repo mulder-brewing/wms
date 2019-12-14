@@ -37,6 +37,7 @@ en:
       update: Edit Access Policy
     fields:
       everything: Everything
+    access_policy: Access Policy
 
   alert:
     save:

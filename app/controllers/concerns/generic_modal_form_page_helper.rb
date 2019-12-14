@@ -60,18 +60,31 @@ module GenericModalFormPageHelper
     end
   end
 
-  def index_page(recordSendArray = nil)
-    enabled = ActiveRecord::Type::Boolean.new.deserialize(params[:enabled])
-    records = controller_model.where_company(current_company_id)
-    records = records.where_enabled(enabled) unless enabled.nil?
-    records = Array(recordSendArray) \
-      .inject(records) { |o, a| o.send(*a) } unless recordSendArray.nil?
+  def index_page(page = nil)
+    page = Page::IndexListPage.new if page.nil?
+
+    records = page.records
+
+    # If the page doesn't have records set already, use this default.
+    records ||= controller_model.where_company(current_company_id)
+
+    if page.show_enabled_filter?
+      enabled = ActiveRecord::Type::Boolean.new.deserialize(params[:enabled])
+      records = records.where_enabled(enabled) unless enabled.nil?
+      page.enabled_param = enabled
+    end
+
+    # Can be used to run commands on the records, like further filtering or
+    # ordering the results.
+    records = Array(recordsSendArray) \
+      .inject(records) { |o, a| o.send(*a) } \
+      if self.respond_to?(:recordsSendArray, true)
 
     pagy, records = pagy(records, items:25)
 
-    page = Page::GenericPage.new(:index, records)
-    page.add_table(table_array_hash)
-    page.enabled_param = enabled
+    page.records = records
+    page.add_table(table_array_hash) \
+      if self.respond_to?(:table_array_hash, true) 
 
     respond_to do |format|
       format.html {

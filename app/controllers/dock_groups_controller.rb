@@ -21,23 +21,7 @@ class DockGroupsController < ApplicationController
   end
 
   def index
-    enabled = ActiveRecord::Type::Boolean.new.deserialize(enabled_only_params[:enabled])
-    records = controller_model.where_company(current_company_id).order(:description)
-    records = records.where_enabled(enabled) unless enabled.nil?
-    pagy, records = pagy(records, items:25)
-
-    page = Page::GenericPage.new(:index, records)
-    page.add_table(table_array_hash)
-    page.enabled_param = enabled
-
-    respond_to do |format|
-      format.html {
-        render  :template => page.index_html_path,
-                :locals => {  page: page,
-                              pagy: pagy
-                }
-      }
-    end
+    index_page
   end
 
   private
@@ -51,5 +35,10 @@ class DockGroupsController < ApplicationController
         { name: :description },
         { name: :enabled, text_key_qualifier: :enabled }
       ]
+    end
+
+    def recordsSendArray
+      array = []
+      array << [:order, :description]
     end
 end

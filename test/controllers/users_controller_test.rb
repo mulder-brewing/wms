@@ -13,6 +13,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @company_admin_company = @company_admin.company
     @app_admin_company = @app_admin.company
     @other_company = @other_user.company
+    @averagejoe_access_policy = access_policies(:average_joe_access_policy_everything)
+    @other_access_policy = access_policies(:other_access_policy_everything)
   end
 
 
@@ -42,8 +44,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
   # This function helps all the following tests to run related to creating a user.
-  def create_user_as(user, username, company_id, validity)
-    params = { user: { first_name: "Test", last_name: "User", username: username, password: "Password1$", company_admin: false, app_admin: false, company_id: company_id } }
+  def create_user_as(user, username, company_id, access_policy_id, validity)
+    params = { user: { first_name: "Test", last_name: "User", username: username,
+      password: "Password1$", company_admin: false, app_admin: false,
+      company_id: company_id, access_policy_id: access_policy_id } }
     log_in_if_user(user)
     if validity == false
       assert_no_difference 'User.count' do
@@ -59,22 +63,22 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "only a app admin or company admin should be able to create a user" do
     # try not logged in
-    create_user_as(nil, "test1", @regular_user_company.id, false)
+    create_user_as(nil, "test1", @regular_user_company.id, @averagejoe_access_policy.id, false)
     # try logged in as a regular user
-    create_user_as(@regular_user, "test2",@regular_user_company.id, false)
+    create_user_as(@regular_user, "test2",@regular_user_company.id, @averagejoe_access_policy.id, false)
     # try logged in as a company admin user
-    create_user_as(@company_admin, "test3", @company_admin_company.id, true)
+    create_user_as(@company_admin, "test3", @company_admin_company.id, @averagejoe_access_policy.id, true)
     # try logged in as a app admin
-    create_user_as(@app_admin, "test4", @app_admin_company.id, true)
+    create_user_as(@app_admin, "test4", @app_admin_company.id, @averagejoe_access_policy.id, true)
   end
 
   test "if a company admin tries to create a user in another company, created user will still be same company as admin." do
-    create_user_as(@company_admin, "test1", @other_company.id, true)
+    create_user_as(@company_admin, "test1", @other_company.id, @averagejoe_access_policy.id, true)
     assert_equal @company_admin.company_id, User.find_by(username: "test1").company_id
   end
 
   test "app admin should be able to create user in other company" do
-    create_user_as(@app_admin, "test1", @other_company.id, true)
+    create_user_as(@app_admin, "test1", @other_company.id, @other_access_policy.id, true)
     assert_equal @other_user.company_id, User.find_by(username: "test1").company_id
   end
 
@@ -320,7 +324,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     log_in_if_user(user)
     get users_path
     if validity == true
-      assert_template Page::GenericPage::INDEX_HTML_PATH
+      assert_template Page::IndexListPage::INDEX_HTML_PATH
     else
       assert_redirected_to root_url
     end
@@ -400,7 +404,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "A newly created user should have it's password_reset flag set to true" do
-    new_user = User.create!(company: @company_admin_company, first_name: 'New', last_name: 'User', username: 'new_user_for_test789', password: 'Password1$', current_user: "seed" )
+    new_user = User.create!(company: @company_admin_company, first_name: 'New',
+      last_name: 'User', username: 'new_user_for_test789', password: 'Password1$',
+      current_user: "seed", access_policy_id: @averagejoe_access_policy.id )
     assert new_user.password_reset == true
   end
 

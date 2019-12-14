@@ -21,7 +21,22 @@ class AccessPoliciesController < ApplicationController
   end
 
   def index
-    index_page(recordSendArray)
+    index_page
+  end
+
+  def company
+    if params[:company].present?  && logged_in_app_admin?
+      access_policies = AccessPolicy.where_company(params[:company])
+    else
+      access_policies = AccessPolicy.none
+    end
+    if request.xhr?
+      respond_to do |format|
+        format.json {
+          render json: { access_policies: access_policies }
+        }
+      end
+    end
   end
 
   private
@@ -37,7 +52,7 @@ class AccessPoliciesController < ApplicationController
 
     end
 
-    def recordSendArray
+    def recordsSendArray
       array = []
       array << [:order, :description]
     end

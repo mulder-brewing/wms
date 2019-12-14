@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
       not_authorized unless logged_in_admin?
     end
 
-    def logged_in_app_admin_redirect
+    def logged_in_app_admin
       not_authorized unless logged_in_app_admin?
     end
 
@@ -63,7 +63,11 @@ class ApplicationController < ActionController::Base
     end
 
     def redirect_if_object_invalid(object)
-      not_authorized if !object.valid?
+      object.valid?
+      if  object.errors.added?(:company_id, :mismatch)  ||
+          object.errors.added?(:id, :mismatch)
+            not_authorized
+      end
     end
 
     def find_record

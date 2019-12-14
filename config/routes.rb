@@ -13,7 +13,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :access_policies
+  resources :access_policies do
+    collection do
+      get :company
+    end
+  end
 
   resources :dock_requests do
     member do

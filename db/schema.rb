@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_07_203219) do
+ActiveRecord::Schema.define(version: 2019_12_14_150324) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -75,6 +75,8 @@ ActiveRecord::Schema.define(version: 2019_12_07_203219) do
     t.boolean "company_admin", default: false
     t.boolean "app_admin", default: false
     t.boolean "password_reset", default: true
+    t.bigint "access_policy_id"
+    t.index ["access_policy_id"], name: "index_users_on_access_policy_id"
     t.index ["company_id"], name: "index_users_on_company_id"
     t.index ["username"], name: "index_users_on_username", unique: true
   end
@@ -90,5 +92,6 @@ ActiveRecord::Schema.define(version: 2019_12_07_203219) do
   add_foreign_key "dock_requests", "docks"
   add_foreign_key "docks", "companies"
   add_foreign_key "docks", "dock_groups"
+  add_foreign_key "users", "access_policies"
   add_foreign_key "users", "companies"
 end

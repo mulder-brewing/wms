@@ -192,7 +192,7 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
     log_in_if_user(user)
     get dock_groups_path
     if validity == true
-      assert_template Page::GenericPage::INDEX_HTML_PATH
+      assert_template Page::IndexListPage::INDEX_HTML_PATH
     else
       assert_redirected_to root_url
     end

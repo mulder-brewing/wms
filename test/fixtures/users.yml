@@ -11,6 +11,7 @@ regular_user:
   company: averagejoes
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+  access_policy: average_joe_access_policy_everything
 
 company_admin_user:
   username: avaeragejoe_admin
@@ -23,6 +24,7 @@ company_admin_user:
   company: averagejoes
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+  access_policy: average_joe_access_policy_everything
 
 app_admin_user:
   username: avaeragejoe_app_admin
@@ -35,6 +37,7 @@ app_admin_user:
   company: averagejoes
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+  access_policy: average_joe_access_policy_everything
 
 delete_me_user:
   username: delete_me_user
@@ -47,6 +50,7 @@ delete_me_user:
   company: company_to_delete
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+  access_policy: delete_access_policy_everything
 
 delete_me_admin:
   username: delete_me_admin
@@ -59,6 +63,7 @@ delete_me_admin:
   company: company_to_delete
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+  access_policy: delete_access_policy_everything
 
 other_company_user:
   username: other_company_user
@@ -71,6 +76,7 @@ other_company_user:
   company: other_company
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+  access_policy: other_access_policy_everything
 
 other_company_admin:
   username: other_company_admin
@@ -83,6 +89,7 @@ other_company_admin:
   company: other_company
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+  access_policy: other_access_policy_everything
 
 nothing_setup_company_user:
   username: nothing_setup_company_user
@@ -95,6 +102,7 @@ nothing_setup_company_user:
   company: nothing_setup_company
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+  access_policy: nothing_setup_access_policy_everything
 
 nothing_setup_company_admin:
   username: nothing_setup_company_admin
@@ -107,3 +115,4 @@ nothing_setup_company_admin:
   company: nothing_setup_company
   password_digest: <%= User.digest('Password1$') %>
   password_reset: false
+  access_policy: nothing_setup_access_policy_everything

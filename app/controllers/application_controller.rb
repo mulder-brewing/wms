@@ -5,17 +5,17 @@ class ApplicationController < ActionController::Base
   before_action :logged_in
   before_action :check_reset_password
   after_action :verify_authorized
+  after_action :verify_policy_scoped, only: :index
 
-  NotAuthorized = Class.new(StandardError)
+
+  RecordNotFound = Class.new(StandardError)
+  rescue_from ApplicationController::RecordNotFound, with: :not_found
 
   rescue_from ActionController::InvalidAuthenticityToken do
     all_formats_redirect_to(root_url)
   end
 
-  rescue_from ApplicationController::NotAuthorized do |exception|
-    flash[:danger] = t("alert.not_authorized")
-    all_formats_redirect_to(root_url)
-  end
+  rescue_from Pundit::NotAuthorizedError, with: :not_authorized
 
   def all_formats_redirect_to(path)
     respond_to do |format|
@@ -25,20 +25,35 @@ class ApplicationController < ActionController::Base
   end
 
   private
+    def raise_not_authorized
+      raise Pundit::NotAuthorizedError
+    end
+
     def not_authorized
-      raise ApplicationController::NotAuthorized
+      flash[:danger] = t("alert.not_authorized")
+      all_formats_redirect_to(root_url)
+    end
+
+    def not_found
+      respond_to do |format|
+        format.html {
+                      flash[:warning] = t("alert.record.not_found")
+                      redirect_back(fallback_location: root_path)
+                    }
+        format.js { render :template => "shared/not_found" }
+      end
     end
 
     def logged_in
-      not_authorized unless logged_in?
+      raise_not_authorized unless logged_in?
     end
 
     def logged_in_admin
-      not_authorized unless logged_in_admin?
+      raise_not_authorized unless logged_in_admin?
     end
 
     def logged_in_app_admin
-      not_authorized unless logged_in_app_admin?
+      raise_not_authorized unless logged_in_app_admin?
     end
 
     def find_user_by_id(id)
@@ -49,12 +64,12 @@ class ApplicationController < ActionController::Base
       all_formats_redirect_to(update_password_user_url(current_user)) if logged_in? && needs_password_reset?
     end
 
-    # These functions help with locating a object for a model, setting current_user for the model, and redirecting to root url if that object is invalid.
-    def find_object_redirect_invalid(model)
+    # These functions help with locating a object for a model
+    # and setting current_user for the model.
+    def find_object_with_current_user(model)
       object = find_object_by_id(model)
       return nil if object.nil?
       object_with_current_user = set_current_user(object)
-      redirect_if_object_invalid(object_with_current_user)
       return object_with_current_user
     end
 
@@ -62,16 +77,8 @@ class ApplicationController < ActionController::Base
       return model.find_by(id: params[:id])
     end
 
-    def redirect_if_object_invalid(object)
-      object.valid?
-      if  object.errors.added?(:company_id, :mismatch)  ||
-          object.errors.added?(:id, :mismatch)
-            not_authorized
-      end
-    end
-
     def find_record
-      find_object_redirect_invalid(controller_model)
+      find_object_with_current_user(controller_model)
     end
 
     def set_current_user(object)
@@ -82,10 +89,6 @@ class ApplicationController < ActionController::Base
     # This can be used to set the current user attribute for an object that is a instance variable.
     def set_current_user_attribute(instance_variable)
       instance_variable_get("@#{instance_variable}").current_user = current_user
-    end
-
-    def enabled_only_params
-      params.permit(:enabled)
     end
 
     def controller_model

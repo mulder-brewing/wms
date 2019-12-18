@@ -4,6 +4,9 @@ require 'rails/test_help'
 require "minitest/reporters"
 Minitest::Reporters.use!
 require 'pp'
+# Require my custom generic test object, then the subclasses
+require "test_custom/TO/generic/generic_to.rb"
+Dir.glob(Rails.root.join("test/test_custom/TO/generic/sub/*.rb"), &method(:require))
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
@@ -34,6 +37,24 @@ class ActionDispatch::IntegrationTest
     "<html><body>You are being <a href=\"http://www.example.com/\">redirected</a>.</body></html>"
   end
 
+  def xhr_not_found
+    "hideModal('generic-modal');\n" +
+    "alert_custom('warning','#{I18n.t("alert.record.not_found")}');\n"
+  end
+
+  def not_found?(response)
+    case response.body
+    when xhr_not_found
+      return true
+    when html_redirect
+      follow_redirect!
+      assert_select "div.alert-warning", I18n.t("alert.record.not_found")
+      return true
+    else
+      return false
+    end
+  end
+
   # Log in as a particular user.
   def log_in_as(user, password = "Password1$", swapcase = false)
     username = user.username
@@ -51,6 +72,14 @@ class ActionDispatch::IntegrationTest
 
   def log_in_if_user(user)
     log_in_as(user) if !user.nil?
+  end
+
+  # This function helps tests to run related to getting new object page/moda with ajax.
+  def new_to_test(to)
+    log_in_if_user(to.user)
+    get to.new_path, xhr:true
+    assert_equal to.validity, !redirected?(@response)
+    assert_select "form", to.validity
   end
 
   # This function helps tests to run related to getting new object page/moda with ajax.

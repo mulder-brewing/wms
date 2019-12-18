@@ -3,7 +3,7 @@ module GenericModalFormPageHelper
   private
 
   def new_modal
-    record = controller_model.new
+    record = authorize controller_model.new
     modal_form = ModalForm::GenericModalForm.new(:create, record)
     respond_to do |format|
       format.js {
@@ -16,8 +16,11 @@ module GenericModalFormPageHelper
   def create_record(record = nil)
     if record.nil?
       record = controller_model.new(record_params)
-      record.company_id = current_company_id
+      record.company_id ||= current_company_id
+      record.current_user = current_user
+      record = record_callback(record, :create) if self.respond_to?(:record_callback, true)
     end
+    authorize record
     record.save
     modal_form = ModalForm::GenericModalForm.new(:create, record)
     table = Table::GenericTable.new(table_array_hash)
@@ -32,7 +35,7 @@ module GenericModalFormPageHelper
   end
 
   def edit_modal
-    record = find_record
+    record = authorize find_record
     modal_form = ModalForm::GenericModalForm.new(:update, record)
     respond_to do |format|
       format.js {
@@ -45,9 +48,13 @@ module GenericModalFormPageHelper
   def update_record(record = nil)
     if record.nil?
       record = find_record
-      record.assign_attributes(record_params) unless record.nil?
+      unless record.nil?
+        record.assign_attributes(record_params)
+        record = record_callback(record, :create) if self.respond_to?(:record_callback, true)
+      end
     end
-    record.save unless record.nil?
+    authorize record
+    record.save
     modal_form = ModalForm::GenericModalForm.new(:update, record)
     table = Table::GenericTable.new(table_array_hash)
     respond_to do |format|
@@ -66,7 +73,10 @@ module GenericModalFormPageHelper
     records = page.records
 
     # If the page doesn't have records set already, use this default.
-    records ||= controller_model.where_company(current_company_id)
+    records ||= controller_model.all
+
+    authorize records
+    records = policy_scope(records)
 
     if page.show_enabled_filter?
       enabled = ActiveRecord::Type::Boolean.new.deserialize(params[:enabled])
@@ -84,7 +94,7 @@ module GenericModalFormPageHelper
 
     page.records = records
     page.add_table(table_array_hash) \
-      if self.respond_to?(:table_array_hash, true) 
+      if self.respond_to?(:table_array_hash, true)
 
     respond_to do |format|
       format.html {

@@ -1,4 +1,6 @@
 class ApplicationPolicy
+  include SessionsHelper
+
   attr_reader :user, :record
 
   def initialize(user, record)
@@ -6,44 +8,51 @@ class ApplicationPolicy
     @record = record
   end
 
-  def index?
-    false
+  def current_user
+    user
   end
 
-  def show?
-    false
+  def index?
+    ap_check?(permission)
   end
 
   def create?
-    false
+    ap_check?(permission) && same_company_as_current_user?(record)
   end
 
   def new?
-    create?
+    ap_check?(permission)
   end
 
   def update?
-    false
+    ap_check?(permission) && same_company_as_current_user?(record)
   end
 
   def edit?
-    update?
+    ap_check?(permission) && same_company_as_current_user?(record)
   end
 
-  def destroy?
-    false
-  end
+  private
+    attr_reader :permission
 
   class Scope
-    attr_reader :user, :scope
+    include SessionsHelper
 
     def initialize(user, scope)
-      @user = user
+      @user  = user
       @scope = scope
     end
 
-    def resolve
-      scope.all
+    def current_user
+      user
     end
+
+    def resolve
+      scope.where_company(current_company_id)
+    end
+
+    private
+      attr_reader :user, :scope
   end
+
 end

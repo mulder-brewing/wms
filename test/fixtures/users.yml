@@ -39,6 +39,45 @@ app_admin_user:
   password_reset: false
   access_policy: average_joe_access_policy_everything
 
+nothing_ap_user:
+  username: nothing_ap
+  first_name: Nothing
+  last_name: Access Policy
+  email: joe@average.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: averagejoes
+  password_digest: <%= User.digest('Password1$') %>
+  password_reset: false
+  access_policy: average_joe_access_policy_nothing
+
+everything_ap_user:
+  username: everything_ap
+  first_name: Everything
+  last_name: Access Policy
+  email: joe@average.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: averagejoes
+  password_digest: <%= User.digest('Password1$') %>
+  password_reset: false
+  access_policy: average_joe_access_policy_everything
+
+dock_groups_ap_user:
+  username: dock_groups_ap
+  first_name: Dock Groups
+  last_name: Access Policy
+  email: joe@average.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: averagejoes
+  password_digest: <%= User.digest('Password1$') %>
+  password_reset: false
+  access_policy: average_joe_access_policy_dock_groups
+
 delete_me_user:
   username: delete_me_user
   first_name: Delete

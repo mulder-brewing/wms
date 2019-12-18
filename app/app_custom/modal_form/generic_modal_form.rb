@@ -49,7 +49,7 @@ class ModalForm::GenericModalForm
   end
 
   def modal_id
-    @modal.id(@type_s)
+    @modal.id
   end
 
   def modal_title

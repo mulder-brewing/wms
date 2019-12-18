@@ -1,9 +1,6 @@
 class DockGroupsController < ApplicationController
   include GenericModalFormPageHelper
 
-  before_action :logged_in_admin
-  before_action :skip_authorization
-
   def new
     new_modal
   end
@@ -35,10 +32,5 @@ class DockGroupsController < ApplicationController
         { name: :description },
         { name: :enabled, text_key_qualifier: :enabled }
       ]
-    end
-
-    def recordsSendArray
-      array = []
-      array << [:order, :description]
     end
 end

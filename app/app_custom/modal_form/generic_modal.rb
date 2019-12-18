@@ -1,10 +1,11 @@
 class ModalForm::GenericModal
   WRAPPER = "modal-wrapper"
+  ID = "generic-modal"
 
   attr_writer :title
 
-  def id(type_s)
-    type_s + "-modal"
+  def id
+    ID
   end
 
   def title(type_s, record)

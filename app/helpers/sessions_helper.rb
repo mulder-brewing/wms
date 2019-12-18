@@ -80,4 +80,13 @@ module SessionsHelper
   def not_self?(user)
     !(user == current_user)
   end
+
+  # Returns the current user's access policy
+  def current_access_policy
+     @current_access_policy ||= current_user.access_policy
+  end
+
+  def ap_check?(permission)
+    current_access_policy.check(permission)
+  end
 end

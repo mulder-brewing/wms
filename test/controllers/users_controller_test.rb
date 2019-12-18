@@ -9,6 +9,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @app_admin = users(:app_admin_user)
     @other_user = users(:other_company_user)
     @delete_me_user = users(:delete_me_user)
+    @delete_me_admin = users(:delete_me_admin)
     @regular_user_company = @regular_user.company
     @company_admin_company = @company_admin.company
     @app_admin_company = @app_admin.company
@@ -37,7 +38,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     new_user_modal(@company_admin, true)
     # try logged in as a app admin (should work and get modal)
     new_user_modal(@app_admin, true)
-    assert_match /create-modal/, @response.body
+    assert_match /#{ModalForm::GenericModal::ID}/, @response.body
     assert_match /New User/, @response.body
   end
 
@@ -472,11 +473,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "if a user is deleted and a user trys to show, edit, or update that user, they are warned the user no longer exists." do
-    check_if_user_deleted(@company_admin, @delete_me_user, "update", false)
-    check_if_user_deleted(@company_admin, @delete_me_user, "edit", false)
+    check_if_user_deleted(@delete_me_admin, @delete_me_user, "update", false)
+    check_if_user_deleted(@delete_me_admin, @delete_me_user, "edit", false)
     @delete_me_user.destroy
-    check_if_user_deleted(@company_admin, @delete_me_user, "update", true)
-    check_if_user_deleted(@company_admin, @delete_me_user, "edit", true)
+    check_if_user_deleted(@delete_me_admin, @delete_me_user, "update", true)
+    check_if_user_deleted(@delete_me_admin, @delete_me_user, "edit", true)
   end
 
 

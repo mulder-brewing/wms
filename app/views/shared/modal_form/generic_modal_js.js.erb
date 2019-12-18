@@ -1,6 +1,2 @@
-<% if modal_form.record.nil? %>
-  alert_custom('<%= Constants::Alert::WARNING %>','<%= t "alert.record.not_found" %>');
-<% else %>
-  $("#<%= modal_form.wrapper %>").html("<%= j render modal_form.generic_html_path, modal_form: modal_form %>");
-  $("#<%= modal_form.modal_id %>").modal('show');
-<% end %>
+$("#<%= modal_form.wrapper %>").html("<%= j render modal_form.generic_html_path, modal_form: modal_form %>");
+$("#<%= modal_form.modal_id %>").modal('show');

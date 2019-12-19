@@ -48,10 +48,8 @@ module GenericModalFormPageHelper
   def update_record(record = nil)
     if record.nil?
       record = find_record
-      unless record.nil?
-        record.assign_attributes(record_params)
-        record = record_callback(record, :create) if self.respond_to?(:record_callback, true)
-      end
+      record.assign_attributes(record_params)
+      record = record_callback(record, :create) if self.respond_to?(:record_callback, true)
     end
     authorize record
     record.save

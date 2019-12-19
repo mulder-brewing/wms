@@ -34,6 +34,10 @@ class ApplicationController < ActionController::Base
       all_formats_redirect_to(root_url)
     end
 
+    def raise_not_found
+      raise ApplicationController::RecordNotFound
+    end
+
     def not_found
       respond_to do |format|
         format.html {
@@ -68,7 +72,7 @@ class ApplicationController < ActionController::Base
     # and setting current_user for the model.
     def find_object_with_current_user(model)
       object = find_object_by_id(model)
-      return nil if object.nil?
+      raise_not_found if object.nil?
       object_with_current_user = set_current_user(object)
       return object_with_current_user
     end

@@ -29,7 +29,7 @@ class ApplicationRecord < ActiveRecord::Base
 
   # this is to uniquely id a table of records.
   def self.table_body_id
-    self.name.tableize.dasherize + "-table-body";
+    table_name.dasherize + "-table-body";
   end
 
   # this is the uniquely id a record in a table of record.
@@ -37,9 +37,25 @@ class ApplicationRecord < ActiveRecord::Base
     self.class.name.underscore.dasherize + "-" + self[:id].to_s;
   end
 
+  def self.record_name
+    self.name.underscore
+  end
+
+  def record_name
+    self.class.record_name
+  end
+
   # this is the path to the view folder, ready to append filename or subfolder.
   def self.view_folder_path
-    self.name.tableize + "/"
+    table_name + "/"
+  end
+
+  def self.table_name
+    self.name.tableize
+  end
+
+  def table_name
+    self.class.table_name
   end
 
   private

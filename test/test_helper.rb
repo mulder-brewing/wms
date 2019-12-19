@@ -6,6 +6,9 @@ Minitest::Reporters.use!
 require 'pp'
 # Require my custom generic test object, then the subclasses
 require "test_custom/TO/generic/generic_to.rb"
+require "test_custom/TO/generic/new_edit_to.rb"
+require "test_custom/TO/generic/create_update_to.rb"
+require "test_custom/TO/generic/not_found.rb"
 Dir.glob(Rails.root.join("test/test_custom/TO/generic/sub/*.rb"), &method(:require))
 
 class ActiveSupport::TestCase
@@ -74,12 +77,123 @@ class ActionDispatch::IntegrationTest
     log_in_as(user) if !user.nil?
   end
 
-  # This function helps tests to run related to getting new object page/moda with ajax.
+  # This function uses the NewTO to test the new modal.
   def new_to_test(to)
     log_in_if_user(to.user)
     get to.new_path, xhr:true
     assert_equal to.validity, !redirected?(@response)
     assert_select "form", to.validity
+    if to.test_enabled?
+      to_test_enabled(to)
+    end
+  end
+
+  # This function uses the CreateTO to test creating a record.
+  def create_to_test(to)
+    log_in_if_user(to.user)
+    if to.validity == true
+      assert_difference 'to.model_count', 1 do
+        post to.create_path, xhr: true, params: to.params
+      end
+      if to.test_company_id?
+        assert_equal to.user.company_id, to.model_last.company_id
+      end
+      if to.test_enabled_default?
+        assert_equal true, to.model_last.enabled
+      end
+    else
+      assert_no_difference 'to.model_count' do
+        post to.create_path, xhr: true, params: to.params
+      end
+      if to.test_uniqueness?
+        to.unique_fields_array.each do |f|
+          assert_match to.uniqueness_error(f), @response.body
+        end
+      end
+    end
+  end
+
+  # This function uses the EditTO to test the edit modal.
+  def edit_to_test(to)
+    log_in_if_user(to.user)
+    get to.edit_path, xhr:true
+    assert_equal to.validity, !redirected?(@response)
+    assert_select "form", to.validity
+    if to.test_enabled?
+      to_test_enabled(to)
+    end
+  end
+
+  # Both NewTo and EditTO need this to check for presence of enabled switch
+  def to_test_enabled(to)
+    if to.enabled_present?
+      verify_assert_match to.enabled_regex
+    else
+      verify_assert_no_match to.enabled_regex
+    end
+  end
+
+  # This function uses UpdateTO to test updating a record.
+  def update_to_test(to)
+    log_in_if_user(to.user)
+    patch to.update_path, xhr: true, params: to.params
+    object = to.model
+    old_object = object.dup
+    object.reload
+    if to.validity == true
+      to.update_fields.each do |attribute|
+        assert_not_equal old_object.send(attribute), object.send(attribute)
+      end
+    else
+      to.update_fields.each do |attribute|
+        if old_object.send(attribute) == nil
+          assert_nil object.send(attribute)
+        else
+          assert_equal old_object.send(attribute), object.send(attribute)
+        end
+      end
+    end
+  end
+
+  def not_found_to_test(to)
+    log_in_if_user(to.user)
+    nf = Proc.new {|x| assert_equal x, not_found?(@response) }
+    if to.instance_of? UpdateTO
+      path = to.update_path
+      patch = Proc.new { patch path, xhr: true, params: to.params }
+      patch.call
+      nf.call(false)
+      to.model.destroy
+      patch.call
+      nf.call(true)
+    elsif to.instance_of? EditTO
+      path = to.edit_path
+      get = Proc.new { get path, xhr:true }
+      get.call
+      nf.call(false)
+      to.model.destroy
+      get.call
+      nf.call(true)
+    end
+  end
+
+  # This function uses IndexTo to test index
+  def index_to_test(to)
+    log_in_if_user(to.user)
+    get to.index_path
+    if to.validity == true
+      assert_template to.index_template
+      if to.check_visibility?
+        to.visible_y_records.each do |record|
+          assert_select "tr##{record.table_row_id}"
+        end
+        to.visible_n_records.each do |record|
+          assert_select "tr##{record.table_row_id}", false
+        end
+      end
+    else
+      assert redirected?(@response)
+    end
   end
 
   # This function helps tests to run related to getting new object page/moda with ajax.

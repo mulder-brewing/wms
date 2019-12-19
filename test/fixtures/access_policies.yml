@@ -9,12 +9,6 @@ average_joe_access_policy_nothing:
   enabled: true
   company: averagejoes
 
-average_joe_access_policy_dock_groups:
-  description: Nothing
-  enabled: true
-  company: averagejoes
-  dock_groups: true
-
 other_access_policy_everything:
   description: Everything
   enabled: true

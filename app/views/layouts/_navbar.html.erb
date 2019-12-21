@@ -34,8 +34,11 @@
                       </ul>
                     </li>
                   <% end %>
-                  <%= link_to "Dock Groups", dock_groups_path(:enabled => "true"), class: "dropdown-item" if ap_check?(:dock_groups) %>
-                  <%= link_to "Docks", docks_path, class: "dropdown-item" %>
+                  <%= link_to "Dock Groups",
+                    dock_groups_path(:enabled => "true"),
+                    class: "dropdown-item" if ap_check?(:dock_groups) %>
+                  <%= link_to "Docks", docks_path(:enabled => "true"),
+                    class: "dropdown-item" if ap_check?(:docks) %>
                 </div>
               </div>
 

@@ -1,5 +1,10 @@
 class EditTO < NewEditTO
-  include NotFound
+  include Includes::NotFound
+
+  def initialize(user, model, validity)
+    @title_text_key = "update"
+    super(user, model, validity)
+  end
 
   def test(test)
     test.edit_to_test(self)

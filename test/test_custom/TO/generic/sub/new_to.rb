@@ -1,7 +1,9 @@
 class NewTO < NewEditTO
+  include Includes::NewPath
 
-  def new_path
-    new_polymorphic_path(@model)
+  def initialize(user, model, validity)
+    @title_text_key = "create"
+    super(user, model, validity)
   end
 
   def test(test)

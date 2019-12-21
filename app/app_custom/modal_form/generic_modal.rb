@@ -12,7 +12,7 @@ class ModalForm::GenericModal
     if !@title.blank?
       @title
     else
-      record.class.name.pluralize.underscore + ".title." + type_s
+      record.title(type_s)
     end
   end
 

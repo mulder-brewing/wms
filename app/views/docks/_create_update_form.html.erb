@@ -3,8 +3,10 @@
       <%= errors_for(f.object) %>
     </div>
     <div class="mb-3">
-      <%= f.input :description, label: t_nf("global.description"),
-        as: :string %>
+      <%= f.input :number, label: t_nf("global.number"), as: :string %>
+      <%= f.input :dock_group_id, label: t_nf("dock_groups.dock_group"),
+        :collection => @dock_groups, :label_method => :description,
+        :value_method => :id %>
       <% if modal_form.type_co.update? %>
         <div class="mb-2">
           <%= f.input :enabled,

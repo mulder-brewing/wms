@@ -50,6 +50,10 @@ class ApplicationRecord < ActiveRecord::Base
     table_name + "/"
   end
 
+  def title(type_s)
+    table_name + ".title." + type_s
+  end
+
   def self.table_name
     self.name.tableize
   end

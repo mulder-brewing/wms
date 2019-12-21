@@ -56,10 +56,13 @@ en:
       index: Dock Groups
       create: New Dock Group
       update: Edit Dock Group
+    dock_group: Dock Group
 
   docks:
     title:
       index: Docks
+      create: New Dock
+      update: Edit Dock
 
   global:
     actions: Actions
@@ -72,6 +75,7 @@ en:
         enabled: Enabled
         disabled: Disabled
     description: Description
+    number: Number
 
   modal:
     destroy:

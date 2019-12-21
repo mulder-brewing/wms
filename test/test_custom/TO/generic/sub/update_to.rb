@@ -1,5 +1,5 @@
 class UpdateTO < CreateUpdateTO
-  include NotFound
+  include Includes::NotFound
 
   attr_accessor :update_fields
 

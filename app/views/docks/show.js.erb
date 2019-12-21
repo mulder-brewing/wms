@@ -1,6 +1,0 @@
-<% if @dock.nil? %>
-  alert_custom("warning","Dock no longer exists");
-<% elsif @dock.valid? %>
-  $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'show', :title => 'Dock' } %>");
-  $("#show-modal").modal('show');
-<% end %>

@@ -1,56 +1,57 @@
 class DocksController < ApplicationController
-  before_action :logged_in_admin
-  before_action :skip_authorization
+  include GenericModalFormPageHelper
 
   def new
-    @dock = Dock.new
-    find_enabled_dock_groups
-    dock_groups_length = @dock_groups.length
-    if dock_groups_length == 1
-      @dock.dock_group_id = @dock_groups.first.id
-    end
-    respond_to :js
+    new_modal
   end
 
   def create
-    @dock = Dock.new(dock_params)
-    @dock.update(:company_id => current_company_id)
     find_enabled_dock_groups
-    respond_to :js
-  end
-
-  def show
-    find_dock
-    respond_to :js
+    create_record
   end
 
   def edit
-    find_dock
     find_enabled_dock_groups
-    respond_to :js
+    edit_modal
   end
 
   def update
-    find_dock
     find_enabled_dock_groups
-    @dock.update(dock_params) if !@dock.nil?
-    respond_to :js
+    update_record
   end
 
   def index
-    @pagy, @docks = pagy(Dock.where_company_includes_dock_group(current_company_id).order("dock_groups.description asc, docks.number asc"), items:25)
+    index_page
   end
 
   private
-    def dock_params
+    def record_params
       params.require(:dock).permit(:number, :dock_group_id, :enabled)
     end
 
-    def find_dock
-      @dock = find_object_redirect_invalid(Dock)
+    def table_array_hash
+      array = []
+      array << { name: :actions, edit_button: true }
+      array << { name: :number }
+      array << {  name: :dock_group, text_key: "dock_groups.dock_group",
+                  send_chain: ["dock_group", "description"]
+                }
+      array << { name: :enabled, text_key_qualifier: :enabled }
+    end
+
+    def record_callback(record, action)
+      case action
+        when :new
+          find_enabled_dock_groups
+          if @dock_groups.length == 1
+            record.dock_group_id = @dock_groups.first.id
+          end
+      end
+      return record
     end
 
     def find_enabled_dock_groups
-      @dock_groups = DockGroup.enabled_where_company(current_company_id).order(:description)
+      @dock_groups = DockGroup.enabled_where_company(current_company_id).
+        order(:description)
     end
 end

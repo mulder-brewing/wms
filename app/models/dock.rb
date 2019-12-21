@@ -21,4 +21,16 @@ class Dock < ApplicationRecord
     where_dock_group(dock_group_id).enabled
   end
 
+  def self.where_enabled(enabled)
+    where("docks.enabled = ?", enabled)
+  end
+
+  def self.where_company(company_id)
+    where("docks.company_id = ?", company_id)
+  end
+
+  def self.includes_dg
+    includes(:dock_group)
+  end
+
 end

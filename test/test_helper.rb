@@ -5,10 +5,10 @@ require "minitest/reporters"
 Minitest::Reporters.use!
 require 'pp'
 # Require my custom generic test object, then the subclasses
+require "test_custom/TO/generic/includes.rb"
 require "test_custom/TO/generic/generic_to.rb"
 require "test_custom/TO/generic/new_edit_to.rb"
 require "test_custom/TO/generic/create_update_to.rb"
-require "test_custom/TO/generic/not_found.rb"
 Dir.glob(Rails.root.join("test/test_custom/TO/generic/sub/*.rb"), &method(:require))
 
 class ActiveSupport::TestCase
@@ -86,6 +86,8 @@ class ActionDispatch::IntegrationTest
     if to.test_enabled?
       to_test_enabled(to)
     end
+    verify_modal_title(to) if to.test_title?
+    verify_modal_footer(to) if to.test_buttons? || to.test_timestamps?
   end
 
   # This function uses the CreateTO to test creating a record.
@@ -122,15 +124,8 @@ class ActionDispatch::IntegrationTest
     if to.test_enabled?
       to_test_enabled(to)
     end
-  end
-
-  # Both NewTo and EditTO need this to check for presence of enabled switch
-  def to_test_enabled(to)
-    if to.enabled_present?
-      verify_assert_match to.enabled_regex
-    else
-      verify_assert_no_match to.enabled_regex
-    end
+    verify_modal_title(to) if to.test_title?
+    verify_modal_footer(to) if to.test_buttons? || to.test_timestamps?
   end
 
   # This function uses UpdateTO to test updating a record.
@@ -191,8 +186,80 @@ class ActionDispatch::IntegrationTest
           assert_select "tr##{record.table_row_id}", false
         end
       end
+      assert_select "header h3", to.title if to.test_title?
+      assert_select "header a:match('href',?)", to.new_path if to.test_new?
+      if to.test_enabled_filter?
+        assert_select "main div.action-bar div.enabled-filter" do
+            to.query = nil
+            assert_select "a[href=?]", to.index_path
+            to.query = :enabled
+            assert_select "a[href=?]", to.index_path
+            to.query = :disabled
+            assert_select "a[href=?]", to.index_path
+        end
+      end
+      if to.test_edit?
+        to.visible_edit_records.each do |record|
+          assert_select "table.index-table tr##{record.table_row_id} a[href=?]",
+            edit_polymorphic_path(record), { :text => I18n.t("modal.edit") }
+        end
+      end
+      if to.test_pagination?
+        assert_select "main div.pagination-wrapper div.pagination-count",
+          /#{to.model.class.where_company(to.user.company_id).count}/
+      end
     else
       assert redirected?(@response)
+    end
+  end
+
+  # This function uses NavbarTO to test navbar links.
+  def navbar_to_test(to)
+    al = Proc.new {|x| assert_select "a[href=?]", to.index_path, x }
+    log_in_if_user(to.user)
+    get root_path
+    to.validity ? al.call(true) : al.call(false)
+  end
+
+  # Both NewTo and EditTO need this to check for presence of enabled switch
+  def to_test_enabled(to)
+    if to.enabled_present?
+      verify_assert_match to.enabled_regex
+    else
+      verify_assert_no_match to.enabled_regex
+    end
+  end
+
+  # This function helps verify the modal's title.
+  def verify_modal_title(to)
+    assert_select_jquery :html, "##{ModalForm::GenericModal::WRAPPER}" do
+      modal_title = "div##{ModalForm::GenericModal::ID} " +
+                    "div.modal-header h5.modal-title"
+      assert_select modal_title, to.title
+    end
+  end
+
+  # This function helps verify what's in the modal footer.
+  def verify_modal_footer(to)
+    assert_select_jquery :html, "##{ModalForm::GenericModal::WRAPPER}" do
+      modal_footer = "div##{ModalForm::GenericModal::ID} " +
+                    "div.modal-footer"
+      assert_select modal_footer do
+        if to.test_buttons?
+          assert_select "button", to.buttons.length
+          if to.check_save_button?
+            assert_select "button[type=submit]", I18n.t("modal.save")
+          end
+          if to.check_close_button?
+            assert_select "button[data-dismiss=modal]", I18n.t("modal.close")
+          end
+        end
+        if to.test_timestamps?
+          count = to.timestamps_visible ? 1 : 0
+          assert_select "a[href=?]", "#collapseTimestamps",
+            { :text => I18n.t("timestamps.title"), :count => count }
+        end
+      end
     end
   end
 

@@ -4,6 +4,7 @@ module GenericModalFormPageHelper
 
   def new_modal
     record = authorize controller_model.new
+    record = record_callback(record, :new) if self.respond_to?(:record_callback, true)
     modal_form = ModalForm::GenericModalForm.new(:create, record)
     respond_to do |format|
       format.js {

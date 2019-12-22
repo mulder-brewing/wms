@@ -34,10 +34,11 @@
                       </ul>
                     </li>
                   <% end %>
-                  <%= link_to "Dock Groups",
+                  <%= link_to t_nf("dock_groups.title.index"),
                     dock_groups_path(:enabled => "true"),
                     class: "dropdown-item" if ap_check?(:dock_groups) %>
-                  <%= link_to "Docks", docks_path(:enabled => "true"),
+                  <%= link_to t_nf("docks.title.index"),
+                    docks_path(:enabled => "true"),
                     class: "dropdown-item" if ap_check?(:docks) %>
                 </div>
               </div>

@@ -6,6 +6,9 @@ Minitest::Reporters.use!
 require 'pp'
 # Require my custom generic test object, then the subclasses
 require "test_custom/TO/generic/includes.rb"
+require "test_custom/TO/error/error_to.rb"
+require "test_custom/TO/input/input_to.rb"
+Dir.glob(Rails.root.join("test/test_custom/TO/input/sub/*.rb"), &method(:require))
 require "test_custom/TO/generic/generic_to.rb"
 require "test_custom/TO/generic/new_edit_to.rb"
 require "test_custom/TO/generic/create_update_to.rb"
@@ -88,6 +91,7 @@ class ActionDispatch::IntegrationTest
     end
     verify_modal_title(to) if to.test_title?
     verify_modal_footer(to) if to.test_buttons? || to.test_timestamps?
+    verify_form_inputs(to) if to.test_inputs?
   end
 
   # This function uses the CreateTO to test creating a record.
@@ -98,7 +102,7 @@ class ActionDispatch::IntegrationTest
         post to.create_path, xhr: true, params: to.params
       end
       if to.test_company_id?
-        assert_equal to.user.company_id, to.model_last.company_id
+        assert_equal to.expected_company_id, to.model_last.company_id
       end
       if to.test_enabled_default?
         assert_equal true, to.model_last.enabled
@@ -107,9 +111,9 @@ class ActionDispatch::IntegrationTest
       assert_no_difference 'to.model_count' do
         post to.create_path, xhr: true, params: to.params
       end
-      if to.test_uniqueness?
-        to.unique_fields_array.each do |f|
-          assert_match to.uniqueness_error(f), @response.body
+      if to.test_errors?
+        to.error_to_array.each do |f|
+          assert_match f.error_message, @response.body
         end
       end
     end
@@ -126,6 +130,7 @@ class ActionDispatch::IntegrationTest
     end
     verify_modal_title(to) if to.test_title?
     verify_modal_footer(to) if to.test_buttons? || to.test_timestamps?
+    verify_form_inputs(to) if to.test_inputs?
   end
 
   # This function uses UpdateTO to test updating a record.
@@ -258,6 +263,29 @@ class ActionDispatch::IntegrationTest
           count = to.timestamps_visible ? 1 : 0
           assert_select "a[href=?]", "#collapseTimestamps",
             { :text => I18n.t("timestamps.title"), :count => count }
+        end
+      end
+    end
+  end
+
+  # This function helps verify what's in a modal's selector
+  def verify_form_inputs(to)
+    assert_select_jquery :html, "##{ModalForm::GenericModal::WRAPPER}" do
+      form = "div##{ModalForm::GenericModal::ID} form"
+      assert_select form do
+        to.inputs.each do |input|
+          case input
+          when SelectTO
+            assert_select "select##{input.id}", input.visible? do
+              input.options.each do |option|
+                assert_select "option[value=#{option.id}]",
+                  { :text => option.label, :count => option.visible ? 1 : 0 }
+              end
+            end
+          when InputTO
+            pp "testing input"
+            assert_select "input##{input.id}", input.visible?
+          end
         end
       end
     end

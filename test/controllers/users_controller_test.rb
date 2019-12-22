@@ -16,112 +16,230 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @other_company = @other_user.company
     @averagejoe_access_policy = access_policies(:average_joe_access_policy_everything)
     @other_access_policy = access_policies(:other_access_policy_everything)
-  end
 
-
-
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to getting new user page/modal.
-  def new_user_modal(user, validity)
-    log_in_if_user(user)
-    get new_user_path, xhr:true
-    assert_equal validity, !redirected?(@response)
-  end
-
-  test "only a app admin or company admin should get new user modal" do
-    # try not logged in
-    new_user_modal(nil, false)
-    # try logged in as a regular user
-    new_user_modal(@regular_user, false)
-    # try logged in as a company admin user
-    new_user_modal(@company_admin, true)
-    # try logged in as a app admin (should work and get modal)
-    new_user_modal(@app_admin, true)
-    assert_match /#{ModalForm::GenericModal::ID}/, @response.body
-    assert_match /New User/, @response.body
-  end
-
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to creating a user.
-  def create_user_as(user, username, company_id, access_policy_id, validity)
-    params = { user: { first_name: "Test", last_name: "User", username: username,
+    @new = User.new
+    @ph = { first_name: "Test", last_name: "User", username: "new_user",
       password: "Password1$", company_admin: false, app_admin: false,
-      company_id: company_id, access_policy_id: access_policy_id } }
-    log_in_if_user(user)
-    if validity == false
-      assert_no_difference 'User.count' do
-        post users_path, xhr: true, params: params
-      end
-    else
-      assert_difference 'User.count', 1 do
-        post users_path, xhr: true, params: params
-      end
-    end
-  end
-
-
-  test "only a app admin or company admin should be able to create a user" do
-    # try not logged in
-    create_user_as(nil, "test1", @regular_user_company.id, @averagejoe_access_policy.id, false)
-    # try logged in as a regular user
-    create_user_as(@regular_user, "test2",@regular_user_company.id, @averagejoe_access_policy.id, false)
-    # try logged in as a company admin user
-    create_user_as(@company_admin, "test3", @company_admin_company.id, @averagejoe_access_policy.id, true)
-    # try logged in as a app admin
-    create_user_as(@app_admin, "test4", @app_admin_company.id, @averagejoe_access_policy.id, true)
-  end
-
-  test "if a company admin tries to create a user in another company, created user will still be same company as admin." do
-    create_user_as(@company_admin, "test1", @other_company.id, @averagejoe_access_policy.id, true)
-    assert_equal @company_admin.company_id, User.find_by(username: "test1").company_id
-  end
-
-  test "app admin should be able to create user in other company" do
-    create_user_as(@app_admin, "test1", @other_company.id, @other_access_policy.id, true)
-    assert_equal @other_user.company_id, User.find_by(username: "test1").company_id
+      access_policy_id: @averagejoe_access_policy.id }
+    @other_admin = users(:other_company_admin)
   end
 
   # ----------------------------------------------------------------------------
+  # Tests link in navbar.
+
+  test "logged out user can't see the link" do
+    to = NavbarTO.new(nil, @new, false)
+    to.query = :enabled
+    to.test(self)
+  end
+
+  test "regular user can't see the link" do
+    to = NavbarTO.new(@regular_user, @new, false)
+    to.query = :enabled
+    to.test(self)
+  end
+
+  test "company admin can see the link" do
+    to = NavbarTO.new(@company_admin, @new, true)
+    to.query = :enabled
+    to.test(self)
+  end
+
+  test "app admin can see the link" do
+    to = NavbarTO.new(@app_admin, @new, true)
+    to.query = :enabled
+    to.test(self)
+  end
+
   # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to getting the edit user page/modal.
-  def edit_user_as(user, edit_user, validity)
-    log_in_if_user(user)
-    get edit_user_path(edit_user), xhr:true
-    assert_equal validity, !redirected?(@response)
+  # Tests for new modal.
+
+  test "logged out user can't get new modal" do
+    NewTO.new(nil, @new, false).test(self)
   end
 
-  test "only a logged in user should get the edit user modal for themself" do
-    # try not logged in
-    edit_user_as(nil, @regular_user, false)
-    # try logged in as a regular user
-    edit_user_as(@regular_user, @regular_user, true)
-    # try logged in as a company admin user
-    edit_user_as(@company_admin, @company_admin, true)
-    # try logged in as a app admin (should work and get modal)
-    edit_user_as(@app_admin, @app_admin, true)
+  test "a regular user can't get new modal" do
+    NewTO.new(@regular_user, @new, false).test(self)
   end
 
-  test "a regular user should should not be able to edit other users" do
-    edit_user_as(@regular_user, @company_admin, false)
-    edit_user_as(@regular_user, @other_user, false)
+  test "new modal title" do
+    to = NewTO.new(@company_admin, @new, true)
+    to.test_title = true
+    to.test(self)
   end
 
-  test "a company admin should be able to edit a user in the same company." do
-    edit_user_as(@company_admin, @regular_user, true)
+  test "new modal buttons" do
+    to = NewTO.new(@company_admin, @new, true)
+    to.add_save_button
+    to.add_close_button
+    to.test(self)
   end
 
-  test "a company admin should not be able to edit a user in another company" do
-    edit_user_as(@company_admin, @other_user, false)
+  test "new modal timestamps aren't visible" do
+    to = NewTO.new(@company_admin, @new, true)
+    to.timestamps_visible = false
+    to.test(self)
   end
 
-  test "a app admin should be able to edit a user in the same company." do
-    edit_user_as(@app_admin, @company_admin, true)
+  test "a company admin can get new modal" do
+    NewTO.new(@company_admin, @new, true).test(self)
   end
 
-  test "a app admin should be able to edit a user in another company" do
-    edit_user_as(@app_admin, @other_user, true)
+  test "a app admin can get new modal" do
+    NewTO.new(@app_admin, @new, true).test(self)
+  end
+
+  test "the enable/disable switch should not be visible on the new modal" do
+    to = NewTO.new(@company_admin, @new, true)
+    to.test_enabled = true
+    to.test(self)
+  end
+
+  # ----------------------------------------------------------------------------
+  # Tests for creating a record.
+
+
+
+  test "a logged out user can't create" do
+    CreateTO.new(nil, @new, @ph, false).test(self)
+  end
+
+  test "a regular user can't create" do
+    CreateTO.new(@regular_user, @new, @ph, false).test(self)
+  end
+
+  test "a company admin can create" do
+    CreateTO.new(@company_admin, @new, @ph, true).test(self)
+  end
+
+  test "a app admin can create" do
+    CreateTO.new(@app_admin, @new, @ph, true).test(self)
+  end
+
+  test "company admin can only create own company user" do
+    to = CreateTO.new(@company_admin, @new, @ph, true)
+    to.merge_params_hash({ company_id: @other_admin.company_id })
+    to.test_company_id = true
+    to.test(self)
+  end
+
+  test "app admin can create user in any company" do
+    to = CreateTO.new(@app_admin, @new, @ph, true)
+    to.merge_params_hash({ company_id: @other_admin.company_id })
+    to.params_hash[:access_policy_id] = @other_access_policy.id
+    to.test_company_id = true
+    to.expected_company_id = @other_admin.company_id
+    to.test(self)
+  end
+
+  test "app admin can't create user with mismatch access policy" do
+    to = CreateTO.new(@app_admin, @new, @ph, false)
+    to.merge_params_hash({ company_id: @other_admin.company_id })
+    to.add_error_to ErrorTO.new(:does_not_belong, :access_policy_id)
+    to.test(self)
+  end
+
+  test "record should be enabled by default when it's created" do
+    to = CreateTO.new(@company_admin, @new, @ph, true)
+    to.test_enabled_default = true
+    to.test(self)
+  end
+
+  test "username should be unique across all companies" do
+    CreateTO.new(@company_admin, @new, @ph, true).test(self)
+    to = CreateTO.new(@other_admin, @new, @ph, false)
+    to.add_error_to ErrorTO.new(:unique, :username)
+    to.test(self)
+  end
+
+  # ----------------------------------------------------------------------------
+  # Tests for edit modal
+
+  test "logged out user can't get edit modal" do
+    EditTO.new(nil, @regular_user, false).test(self)
+  end
+
+  test "regular user can edit self" do
+    EditTO.new(@regular_user, @regular_user, true).test(self)
+  end
+
+  test "regular user can't edit others" do
+    EditTO.new(@regular_user, @company_admin, false).test(self)
+  end
+
+  test "edit modal title" do
+    to = EditTO.new(@regular_user, @regular_user, true)
+    to.test_title = true
+    to.test(self)
+  end
+
+  test "edit modal buttons" do
+    to = EditTO.new(@regular_user, @regular_user, true)
+    to.add_save_button
+    to.add_close_button
+    to.test(self)
+  end
+
+  test "edit modal timestamps are visible" do
+    to = EditTO.new(@regular_user, @regular_user, true)
+    to.timestamps_visible = true
+    to.test(self)
+  end
+
+  test "company admin can edit self" do
+    EditTO.new(@company_admin, @company_admin, true).test(self)
+  end
+
+  test "company admin can edit company user" do
+    EditTO.new(@company_admin, @regular_user, true).test(self)
+  end
+
+  test "company admin can't edit other company user" do
+    EditTO.new(@company_admin, @other_user, false).test(self)
+  end
+
+  test "app admin can edit self" do
+    EditTO.new(@app_admin, @app_admin, true).test(self)
+  end
+
+  test "app admin can edit company user" do
+    EditTO.new(@app_admin, @regular_user, true).test(self)
+  end
+
+  test "app admin can edit other company user" do
+    EditTO.new(@app_admin, @other_user, true).test(self)
+  end
+
+  test "the enable/disable switch is visible when editing user" do
+    to = EditTO.new(@company_admin, @regular_user, true)
+    to.test_enabled = true
+    to.test(self)
+  end
+
+  test "the enable/disable switch should not be visible if editing self" do
+    to = EditTO.new(@company_admin, @company_admin, true)
+    to.test_enabled = true
+    to.enabled_present = false
+    to.test(self)
+  end
+
+  test "the admin checkbox is visible when editing user" do
+    to = EditTO.new(@company_admin, @regular_user, true)
+    input = InputTO.new(@regular_user.form_input_id(:company_admin))
+    to.add_input(input)
+    to.test(self)
+  end
+
+  test "the admin checkbox isn't when editing self" do
+    to = EditTO.new(@company_admin, @company_admin, true)
+    input = InputTO.new(@company_admin.form_input_id(:company_admin), false)
+    to.add_input(input)
+    to.test(self)
+  end
+
+  test "user is warned about a deleted/not found record for edit modal" do
+    to = EditTO.new(@company_admin, @regular_user, nil)
+    to.test_nf(self)
   end
 
   # ----------------------------------------------------------------------------

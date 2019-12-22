@@ -2,6 +2,7 @@ class DocksController < ApplicationController
   include GenericModalFormPageHelper
 
   def new
+    find_enabled_dock_groups
     new_modal
   end
 
@@ -11,12 +12,10 @@ class DocksController < ApplicationController
   end
 
   def edit
-    find_enabled_dock_groups
     edit_modal
   end
 
   def update
-    find_enabled_dock_groups
     update_record
   end
 
@@ -42,16 +41,19 @@ class DocksController < ApplicationController
     def record_callback(record, action)
       case action
         when :new
-          find_enabled_dock_groups
           if @dock_groups.length == 1
             record.dock_group_id = @dock_groups.first.id
           end
+        when :edit, :update
+          find_enabled_dock_groups(record)
       end
       return record
     end
 
-    def find_enabled_dock_groups
-      @dock_groups = DockGroup.enabled_where_company(current_company_id).
-        order(:description)
+    def find_enabled_dock_groups(record = nil)
+      @dock_groups = !record.nil? ?
+        DockGroup.record_options(current_company_id, record.dock_group_id) :
+        DockGroup.enabled_where_company(current_company_id)
+      @dock_groups = @dock_groups.order(:description)
     end
 end

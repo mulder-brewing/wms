@@ -45,6 +45,10 @@ class ApplicationRecord < ActiveRecord::Base
     self.class.record_name
   end
 
+  def form_input_id(attribute)
+    record_name + "_" + attribute.to_s
+  end
+
   # this is the path to the view folder, ready to append filename or subfolder.
   def self.view_folder_path
     table_name + "/"

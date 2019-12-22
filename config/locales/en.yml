@@ -64,6 +64,13 @@ en:
       create: New Dock
       update: Edit Dock
 
+  form:
+    errors:
+      does_not_belong: does not belong to your company
+      disabled: is disabled
+      taken: has already been taken
+
+
   global:
     actions: Actions
     all: All

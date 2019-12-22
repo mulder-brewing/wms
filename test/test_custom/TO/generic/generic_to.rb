@@ -1,10 +1,9 @@
 include ActionDispatch::Routing::PolymorphicRoutes
-include Rails.application.routes.url_helpers
 include ActiveModel::Translation
 
 class GenericTO
 
-  attr_accessor :user, :validity, :model
+  attr_accessor :user, :validity, :model, :debug
 
   def initialize(user, model, validity)
     @user = user

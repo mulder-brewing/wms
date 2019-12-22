@@ -2,9 +2,14 @@ module GenericModalFormPageHelper
 
   private
 
+  def rc(record, action)
+    return record unless self.respond_to?(:record_callback, true)
+    record = record_callback(record, action)
+  end
+
   def new_modal
     record = authorize controller_model.new
-    record = record_callback(record, :new) if self.respond_to?(:record_callback, true)
+    record = rc(record, :new)
     modal_form = ModalForm::GenericModalForm.new(:create, record)
     respond_to do |format|
       format.js {
@@ -19,9 +24,9 @@ module GenericModalFormPageHelper
       record = controller_model.new(record_params)
       record.company_id ||= current_company_id
       record.current_user = current_user
-      record = record_callback(record, :create) if self.respond_to?(:record_callback, true)
     end
     authorize record
+    record = rc(record, :create)
     record.save
     modal_form = ModalForm::GenericModalForm.new(:create, record)
     table = Table::GenericTable.new(table_array_hash)
@@ -37,6 +42,7 @@ module GenericModalFormPageHelper
 
   def edit_modal
     record = authorize find_record
+    record = rc(record, :edit)
     modal_form = ModalForm::GenericModalForm.new(:update, record)
     respond_to do |format|
       format.js {
@@ -50,9 +56,9 @@ module GenericModalFormPageHelper
     if record.nil?
       record = find_record
       record.assign_attributes(record_params)
-      record = record_callback(record, :create) if self.respond_to?(:record_callback, true)
     end
     authorize record
+    record = rc(record, :update)
     record.save
     modal_form = ModalForm::GenericModalForm.new(:update, record)
     table = Table::GenericTable.new(table_array_hash)

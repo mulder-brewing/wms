@@ -1,13 +1,13 @@
 class CreateTO < CreateUpdateTO
 
-  attr_writer :test_company_id, :test_enabled_default
+  attr_writer :test_company_id, :test_enabled_default, :expected_company_id
 
   def test(test)
     test.create_to_test(self)
   end
 
   def create_path
-    polymorphic_path(@model)
+    Rails.application.routes.url_helpers.polymorphic_path(@model)
   end
 
   def model_count
@@ -20,6 +20,10 @@ class CreateTO < CreateUpdateTO
 
   def test_company_id?
     @test_company_id
+  end
+
+  def expected_company_id
+    @expected_company_id ||= @user.company_id
   end
 
   def test_enabled_default?

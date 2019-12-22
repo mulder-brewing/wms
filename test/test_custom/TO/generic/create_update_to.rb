@@ -1,6 +1,7 @@
 class CreateUpdateTO < GenericTO
+  
 
-  attr_accessor :params_hash, :unique_fields_array
+  attr_accessor :params_hash, :error_to_array
 
   def initialize(user, model, params_hash, validity)
     @params_hash = params_hash
@@ -15,18 +16,21 @@ class CreateUpdateTO < GenericTO
     @params_hash = @params_hash.merge(to_merge)
   end
 
-  def test_uniqueness?
-    !@unique_fields_array.blank?
+  def test_errors?
+    !@error_to_array.blank?
   end
 
-  def add_unique_field(field)
-    @unique_fields_array ||= []
-    @unique_fields_array << field
+  def add_error_to(error_to)
+    @error_to_array ||= []
+    @error_to_array << error_to
   end
 
-  def uniqueness_error(field)
-    /#{model_class.human_attribute_name(field) +
-      " has already been taken"}/
+  def error(error_to)
+    field_name = error_to.field.to_s.humanize
+    case error_to.type
+    when :unique
+      /#{ field_name + " " + I18n.t("form.errors.taken") }/
+    end
   end
 
 end

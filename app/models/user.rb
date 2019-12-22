@@ -154,11 +154,8 @@ class User < ApplicationRecord
 
     def access_policy_matches_user_company
       if !self.access_policy.nil? && self.access_policy.company_id != self.company_id
-        errors.add(:access_policy_id, "doesn't belong to user's company.")
+        errors.add(:access_policy_id, I18n.t("form.errors.does_not_belong"))
       end
     end
-
-
-
 
 end

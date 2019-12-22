@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   include Pagy::Backend
   include SessionsHelper
   include Pundit
+
   before_action :logged_in
   before_action :check_reset_password
   after_action :verify_authorized

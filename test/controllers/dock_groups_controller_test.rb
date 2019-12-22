@@ -173,7 +173,7 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
   test "description should be unique per company" do
     CreateTO.new(@everything_ap_user, @new, ph, true).test(self)
     to = CreateTO.new(@everything_ap_user, @new, ph, false)
-    to.add_unique_field :description
+    to.add_error_to ErrorTO.new(:unique, :description)
     to.test(self)
   end
 

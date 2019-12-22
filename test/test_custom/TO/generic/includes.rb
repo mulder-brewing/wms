@@ -11,7 +11,7 @@ module Includes
   module NewPath
 
     def new_path
-      new_polymorphic_path(@model)
+      Rails.application.routes.url_helpers.new_polymorphic_path(@model)
     end
 
   end
@@ -21,7 +21,7 @@ module Includes
     attr_accessor :query
 
     def index_path
-      path = polymorphic_path(@model)
+      path = Rails.application.routes.url_helpers.polymorphic_path(@model)
       case @query
       when nil
         return path
@@ -31,7 +31,7 @@ module Includes
         return path + "?enabled=false"
       end
     end
-    
+
   end
 
   module Title

@@ -3,7 +3,7 @@ class NewEditTO < GenericTO
 
   ENABLED_REGEX = /#{I18n.t("global.boolean.enabled_disabled.enabled")}/
 
-  attr_accessor :timestamps_visible
+  attr_accessor :timestamps_visible, :inputs
   attr_writer :test_enabled, :enabled_present
 
   def test_enabled?
@@ -46,6 +46,15 @@ class NewEditTO < GenericTO
 
   def test_timestamps?
     !@timestamps_visible.nil?
+  end
+
+  def add_input(input)
+    @inputs ||= []
+    @inputs << input
+  end
+
+  def test_inputs?
+    !@inputs.blank?
   end
 
 end

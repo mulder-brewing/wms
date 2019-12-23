@@ -117,7 +117,8 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
 
   test "the enable/disable switch should not be visible on the new modal" do
     to = NewTO.new(@everything_ap_user, @new, true)
-    to.test_enabled = true
+    input = InputTO.new(@new.form_input_id(:enabled),false)
+    to.add_input(input)
     to.test(self)
   end
 
@@ -241,7 +242,8 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
 
   test "the enable/disable switch should be visible on the edit modal" do
     to = EditTO.new(@everything_ap_user, @record_1, true)
-    to.test_enabled = true
+    input = InputTO.new(@record_1.form_input_id(:enabled))
+    to.add_input(input)
     to.test(self)
   end
 

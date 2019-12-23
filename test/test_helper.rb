@@ -86,9 +86,6 @@ class ActionDispatch::IntegrationTest
     get to.new_path, xhr:true
     assert_equal to.validity, !redirected?(@response)
     assert_select "form", to.validity
-    if to.test_enabled?
-      to_test_enabled(to)
-    end
     verify_modal_title(to) if to.test_title?
     verify_modal_footer(to) if to.test_buttons? || to.test_timestamps?
     verify_form_inputs(to) if to.test_inputs?
@@ -116,6 +113,7 @@ class ActionDispatch::IntegrationTest
           assert_match f.error_message, @response.body
         end
       end
+      verify_form_inputs(to) if to.test_inputs?
     end
   end
 
@@ -125,9 +123,6 @@ class ActionDispatch::IntegrationTest
     get to.edit_path, xhr:true
     assert_equal to.validity, !redirected?(@response)
     assert_select "form", to.validity
-    if to.test_enabled?
-      to_test_enabled(to)
-    end
     verify_modal_title(to) if to.test_title?
     verify_modal_footer(to) if to.test_buttons? || to.test_timestamps?
     verify_form_inputs(to) if to.test_inputs?
@@ -226,30 +221,33 @@ class ActionDispatch::IntegrationTest
     to.validity ? al.call(true) : al.call(false)
   end
 
-  # Both NewTo and EditTO need this to check for presence of enabled switch
-  def to_test_enabled(to)
-    if to.enabled_present?
-      verify_assert_match to.enabled_regex
-    else
-      verify_assert_no_match to.enabled_regex
+  # This function selects the modal and allows further selects to be yielded.
+  def select_modal
+    assert_select_jquery :html, "##{ModalForm::GenericModal::WRAPPER}" do
+      assert_select "div##{ModalForm::GenericModal::ID}"
+      yield
+    end
+  end
+
+  # This function selects the form after a failed create or update.
+  def select_form
+    assert_select_jquery :replaceWith, "##{ModalForm::GenericForm::ID}" do
+      yield
     end
   end
 
   # This function helps verify the modal's title.
   def verify_modal_title(to)
-    assert_select_jquery :html, "##{ModalForm::GenericModal::WRAPPER}" do
-      modal_title = "div##{ModalForm::GenericModal::ID} " +
-                    "div.modal-header h5.modal-title"
+    select_modal {
+      modal_title = "div.modal-header h5.modal-title"
       assert_select modal_title, to.title
-    end
+    }
   end
 
   # This function helps verify what's in the modal footer.
   def verify_modal_footer(to)
-    assert_select_jquery :html, "##{ModalForm::GenericModal::WRAPPER}" do
-      modal_footer = "div##{ModalForm::GenericModal::ID} " +
-                    "div.modal-footer"
-      assert_select modal_footer do
+    select_modal {
+      assert_select "div.modal-footer" do
         if to.test_buttons?
           assert_select "button", to.buttons.length
           if to.check_save_button?
@@ -265,30 +263,29 @@ class ActionDispatch::IntegrationTest
             { :text => I18n.t("timestamps.title"), :count => count }
         end
       end
-    end
+    }
   end
 
-  # This function helps verify what's in a modal's selector
+  # This function helps verify form inputs.
   def verify_form_inputs(to)
-    assert_select_jquery :html, "##{ModalForm::GenericModal::WRAPPER}" do
-      form = "div##{ModalForm::GenericModal::ID} form"
-      assert_select form do
+    self.send(to.select_jquery_method) {
+      assert_select "form" do
         to.inputs.each do |input|
           case input
           when SelectTO
             assert_select "select##{input.id}", input.visible? do
+              assert_select "option", input.options_count if input.check_count?
               input.options.each do |option|
                 assert_select "option[value=#{option.id}]",
                   { :text => option.label, :count => option.visible ? 1 : 0 }
               end
             end
           when InputTO
-            pp "testing input"
             assert_select "input##{input.id}", input.visible?
           end
         end
       end
-    end
+    }
   end
 
   # This function helps tests to run related to getting new object page/moda with ajax.

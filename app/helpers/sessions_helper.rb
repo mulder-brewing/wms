@@ -60,7 +60,7 @@ module SessionsHelper
 
   #Returns true if the user belongs to the same company as the current user
   def same_company_as_current_user?(object)
-    current_user.company == object.company
+    current_company_id == object.company_id
   end
 
   def redirect_if_company_mismatch(object)

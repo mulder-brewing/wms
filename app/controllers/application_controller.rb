@@ -8,7 +8,6 @@ class ApplicationController < ActionController::Base
   after_action :verify_authorized
   after_action :verify_policy_scoped, only: :index
 
-
   RecordNotFound = Class.new(StandardError)
   rescue_from ApplicationController::RecordNotFound, with: :not_found
 
@@ -98,6 +97,10 @@ class ApplicationController < ActionController::Base
 
     def controller_model
       controller_name.classify.constantize
+    end
+
+    def select_options(model, record_id = nil, company_id = current_company_id)
+      model.select_options(company_id, record_id).order(:description)
     end
 
 end

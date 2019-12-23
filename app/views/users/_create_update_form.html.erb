@@ -6,19 +6,19 @@
     </div>
     <div class="mb-3">
       <%= f.input :company_id, label: t_nf("companies.company"),
-          :collection => Company.all.order(:name), :label_method => :name,
-          :value_method => :id if current_user.app_admin %>
+          :collection => @companies, :label_method => :name,
+          :value_method => :id if app_admin? %>
       <%= f.input :first_name, label: t_nf("users.name.first_name"),
-          as: :string if logged_in_admin? %>
+          as: :string if admin? %>
       <%= f.input :last_name, label: t_nf("users.name.last_name"),
-          as: :string if logged_in_admin? %>
+          as: :string if admin? %>
       <%= f.input :email, label: t_nf("users.communication.email"),
           as: :string %>
       <%= f.input :send_email, as: :boolean,
           label: t_nf("users.communication.send_email_login")\
-          if logged_in_admin? && modal_form.type_co.create? %>
+          if admin? && modal_form.type_co.create? %>
       <%= f.input :username, label: t_nf("users.name.username"),
-          as: :string if logged_in_admin? %>
+          as: :string if admin? %>
       <%= f.hint t_nf("users.hints.username") %>
       <% if modal_form.type_co.update? %>
         <div class="my-3">
@@ -38,28 +38,18 @@
       <% if modal_form.type_co.update? %>
               <%= f.input :send_email, as: :boolean,
                   label: t_nf("users.communication.send_email_password")\
-                  if logged_in_admin? && not_self?(modal_form.record) %>
+                  if admin? && not_self?(modal_form.record) %>
             </div>
           </div>
         </div>
       <% end %>
-      <%
-        if current_user.app_admin && modal_form.type_co.update?
-          access_policies = AccessPolicy.where_company(modal_form.record.company_id)
-        elsif logged_in_company_admin?
-          access_policies = AccessPolicy.where_company(current_company_id)
-        else
-          access_policies = AccessPolicy.none
-        end
-      %>
       <%= f.input :access_policy_id, label: t_nf("access_policies.access_policy"),
-          :collection => access_policies
-          .order(:description), :label_method => :description,
-          :value_method => :id if logged_in_admin? %>
+          :collection => @access_policies, :label_method => :description,
+          :value_method => :id if admin? %>
       <%= f.input :company_admin, label: t_nf("users.security.admin")\
-          if logged_in_admin? && not_self?(modal_form.record) %>
+          if admin? && not_self?(modal_form.record) %>
     </div>
-    <% if modal_form.type_co.update? && logged_in_admin? &&
+    <% if modal_form.type_co.update? && admin? &&
                                         not_self?(modal_form.record) %>
       <div class="mb-2">
         <%= f.input :enabled,

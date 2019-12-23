@@ -48,4 +48,19 @@ module Includes
     end
 
   end
+
+  module Inputs
+
+    attr_accessor :inputs, :select_jquery_method
+
+    def add_input(input)
+      @inputs ||= []
+      @inputs << input
+    end
+
+    def test_inputs?
+      !@inputs.blank?
+    end
+
+  end
 end

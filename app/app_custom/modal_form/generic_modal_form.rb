@@ -61,7 +61,7 @@ class ModalForm::GenericModalForm
   end
 
   def form_id
-    @form.id(@type_s)
+    @form.id
   end
 
   def form_path

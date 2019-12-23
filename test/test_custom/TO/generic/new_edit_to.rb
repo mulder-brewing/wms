@@ -1,21 +1,12 @@
 class NewEditTO < GenericTO
   include Includes::Title
+  include Includes::Inputs
 
-  ENABLED_REGEX = /#{I18n.t("global.boolean.enabled_disabled.enabled")}/
+  attr_accessor :timestamps_visible
 
-  attr_accessor :timestamps_visible, :inputs
-  attr_writer :test_enabled, :enabled_present
-
-  def test_enabled?
-    @test_enabled
-  end
-
-  def enabled_regex
-    ENABLED_REGEX
-  end
-
-  def test_buttons?
-    @test_buttons
+  def initialize(user, model, validity)
+    @select_jquery_method = "select_modal"
+    super
   end
 
   def add_save_button
@@ -46,15 +37,6 @@ class NewEditTO < GenericTO
 
   def test_timestamps?
     !@timestamps_visible.nil?
-  end
-
-  def add_input(input)
-    @inputs ||= []
-    @inputs << input
-  end
-
-  def test_inputs?
-    !@inputs.blank?
   end
 
 end

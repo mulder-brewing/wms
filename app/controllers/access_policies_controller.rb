@@ -25,8 +25,9 @@ class AccessPoliciesController < ApplicationController
   end
 
   def company
-    if params[:company].present?  && logged_in_app_admin?
-      access_policies = AccessPolicy.where_company(params[:company])
+    if params[:company].present?  && app_admin?
+      access_policies = AccessPolicy.enabled_where_company(params[:company])
+                                    .order(:description)
     else
       access_policies = AccessPolicy.none
     end

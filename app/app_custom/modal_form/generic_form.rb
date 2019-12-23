@@ -1,9 +1,10 @@
 class ModalForm::GenericForm
 
   CREATE_UPDATE_FORM_FILE_NAME = "create_update_form"
+  ID = "generic-form"
 
-  def id(type_s)
-    type_s + "-form"
+  def id
+    ID
   end
 
   def path(type_co, record)

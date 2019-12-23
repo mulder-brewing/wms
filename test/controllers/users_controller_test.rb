@@ -62,6 +62,73 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     NewTO.new(@regular_user, @new, false).test(self)
   end
 
+  test "a company admin can get new modal" do
+    NewTO.new(@company_admin, @new, true).test(self)
+  end
+
+  test "company admin field visibility new modal" do
+    to = NewTO.new(@company_admin, @new, true)
+    to.add_input(SelectTO.new(@new.form_input_id(:company_id), false))
+    to.add_input(InputTO.new(@new.form_input_id(:first_name)))
+    to.add_input(InputTO.new(@new.form_input_id(:last_name)))
+    to.add_input(InputTO.new(@new.form_input_id(:email)))
+    to.add_input(InputTO.new(@new.form_input_id(:username)))
+    to.add_input(InputTO.new(@new.form_input_id(:password)))
+    to.add_input(InputTO.new(@new.form_input_id(:password_confirmation)))
+    to.add_input(InputTO.new(@new.form_input_id(:send_email)))
+    to.add_input(SelectTO.new(@new.form_input_id(:access_policy_id)))
+    to.add_input(InputTO.new(@new.form_input_id(:company_admin)))
+    to.add_input(InputTO.new(@new.form_input_id(:enabled), false))
+    to.test(self)
+  end
+
+  test "access policy selector has enabled policies for company admin" do
+    to = NewTO.new(@company_admin, @new, true)
+    select = SelectTO.new(@new.form_input_id(:access_policy_id))
+    select.options_count = AccessPolicy
+      .enabled_where_company(@company_admin.company_id).count
+    to.add_input(select)
+    to.test(self)
+  end
+
+  test "access policy selector doesn't have disabled policies" do
+    to = NewTO.new(@company_admin, @new, true)
+    @averagejoe_access_policy.update_column(:enabled, false)
+    select = SelectTO.new(@new.form_input_id(:access_policy_id))
+    select.add_option(@averagejoe_access_policy.description,
+                      @averagejoe_access_policy.id, false)
+    to.add_input(select)
+    to.test(self)
+  end
+
+  test "a app admin can get new modal" do
+    NewTO.new(@app_admin, @new, true).test(self)
+  end
+
+  test "app admin field visibility new modal" do
+    to = NewTO.new(@app_admin, @new, true)
+    to.add_input(SelectTO.new(@new.form_input_id(:company_id)))
+    to.add_input(InputTO.new(@new.form_input_id(:first_name)))
+    to.add_input(InputTO.new(@new.form_input_id(:last_name)))
+    to.add_input(InputTO.new(@new.form_input_id(:email)))
+    to.add_input(InputTO.new(@new.form_input_id(:username)))
+    to.add_input(InputTO.new(@new.form_input_id(:password)))
+    to.add_input(InputTO.new(@new.form_input_id(:password_confirmation)))
+    to.add_input(InputTO.new(@new.form_input_id(:send_email)))
+    to.add_input(SelectTO.new(@new.form_input_id(:access_policy_id)))
+    to.add_input(InputTO.new(@new.form_input_id(:company_admin)))
+    to.add_input(InputTO.new(@new.form_input_id(:enabled), false))
+    to.test(self)
+  end
+
+  test "access policy selector is empty for app admin" do
+    to = NewTO.new(@app_admin, @new, true)
+    select = SelectTO.new(@new.form_input_id(:access_policy_id))
+    select.options_count = 0
+    to.add_input(select)
+    to.test(self)
+  end
+
   test "new modal title" do
     to = NewTO.new(@company_admin, @new, true)
     to.test_title = true
@@ -81,24 +148,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     to.test(self)
   end
 
-  test "a company admin can get new modal" do
-    NewTO.new(@company_admin, @new, true).test(self)
-  end
-
-  test "a app admin can get new modal" do
-    NewTO.new(@app_admin, @new, true).test(self)
-  end
-
-  test "the enable/disable switch should not be visible on the new modal" do
-    to = NewTO.new(@company_admin, @new, true)
-    to.test_enabled = true
-    to.test(self)
-  end
-
   # ----------------------------------------------------------------------------
   # Tests for creating a record.
-
-
 
   test "a logged out user can't create" do
     CreateTO.new(nil, @new, @ph, false).test(self)
@@ -129,6 +180,21 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     to.params_hash[:access_policy_id] = @other_access_policy.id
     to.test_company_id = true
     to.expected_company_id = @other_admin.company_id
+    to.test(self)
+  end
+
+  test "access policy select should have options for record's company" do
+    to = CreateTO.new(@app_admin, @new, @ph, false)
+    to.merge_params_hash({ company_id: @other_admin.company_id })
+    # Setting this to nil so create fails.
+    to.params_hash[:access_policy_id] = nil
+    select = SelectTO.new(@new.form_input_id(:access_policy_id))
+    select.add_option(@other_access_policy.description,
+                      @other_access_policy.id,
+                      true)
+    select.options_count = AccessPolicy
+      .enabled_where_company(@other_access_policy.company_id).count
+    to.add_input(select)
     to.test(self)
   end
 
@@ -167,25 +233,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     EditTO.new(@regular_user, @company_admin, false).test(self)
   end
 
-  test "edit modal title" do
-    to = EditTO.new(@regular_user, @regular_user, true)
-    to.test_title = true
-    to.test(self)
-  end
-
-  test "edit modal buttons" do
-    to = EditTO.new(@regular_user, @regular_user, true)
-    to.add_save_button
-    to.add_close_button
-    to.test(self)
-  end
-
-  test "edit modal timestamps are visible" do
-    to = EditTO.new(@regular_user, @regular_user, true)
-    to.timestamps_visible = true
-    to.test(self)
-  end
-
   test "company admin can edit self" do
     EditTO.new(@company_admin, @company_admin, true).test(self)
   end
@@ -210,29 +257,81 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     EditTO.new(@app_admin, @other_user, true).test(self)
   end
 
-  test "the enable/disable switch is visible when editing user" do
-    to = EditTO.new(@company_admin, @regular_user, true)
-    to.test_enabled = true
+  test "edit modal title" do
+    to = EditTO.new(@regular_user, @regular_user, true)
+    to.test_title = true
     to.test(self)
   end
 
-  test "the enable/disable switch should not be visible if editing self" do
+  test "edit modal buttons" do
+    to = EditTO.new(@regular_user, @regular_user, true)
+    to.add_save_button
+    to.add_close_button
+    to.test(self)
+  end
+
+  test "edit modal timestamps are visible" do
+    to = EditTO.new(@regular_user, @regular_user, true)
+    to.timestamps_visible = true
+    to.test(self)
+  end
+
+  test "company admin field visibility" do
+    to = EditTO.new(@company_admin, @regular_user, true)
+    to.add_input(InputTO.new(@new.form_input_id(:company_id), false))
+    to.add_input(InputTO.new(@new.form_input_id(:first_name)))
+    to.add_input(InputTO.new(@new.form_input_id(:last_name)))
+    to.add_input(InputTO.new(@new.form_input_id(:email)))
+    to.add_input(InputTO.new(@new.form_input_id(:username)))
+    to.add_input(InputTO.new(@new.form_input_id(:password)))
+    to.add_input(InputTO.new(@new.form_input_id(:password_confirmation)))
+    to.add_input(InputTO.new(@new.form_input_id(:send_email)))
+    to.add_input(SelectTO.new(@new.form_input_id(:access_policy_id)))
+    to.add_input(InputTO.new(@new.form_input_id(:company_admin)))
+    to.add_input(InputTO.new(@new.form_input_id(:enabled)))
+    to.test(self)
+  end
+
+  test "regular user field visibility" do
+    to = EditTO.new(@regular_user, @regular_user, true)
+    to.add_input(InputTO.new(@new.form_input_id(:company_id), false))
+    to.add_input(InputTO.new(@new.form_input_id(:first_name), false))
+    to.add_input(InputTO.new(@new.form_input_id(:last_name), false))
+    to.add_input(InputTO.new(@new.form_input_id(:email)))
+    to.add_input(InputTO.new(@new.form_input_id(:username), false))
+    to.add_input(InputTO.new(@new.form_input_id(:password)))
+    to.add_input(InputTO.new(@new.form_input_id(:password_confirmation)))
+    to.add_input(InputTO.new(@new.form_input_id(:send_email), false))
+    to.add_input(SelectTO.new(@new.form_input_id(:access_policy_id), false))
+    to.add_input(InputTO.new(@new.form_input_id(:company_admin), false))
+    to.add_input(InputTO.new(@new.form_input_id(:enabled), false))
+    to.test(self)
+  end
+
+  test "the enable/disable switch isn't visible when editing self" do
     to = EditTO.new(@company_admin, @company_admin, true)
-    to.test_enabled = true
-    to.enabled_present = false
-    to.test(self)
-  end
-
-  test "the admin checkbox is visible when editing user" do
-    to = EditTO.new(@company_admin, @regular_user, true)
-    input = InputTO.new(@regular_user.form_input_id(:company_admin))
+    input = InputTO.new(@regular_user.form_input_id(:enabled), false)
     to.add_input(input)
     to.test(self)
   end
 
-  test "the admin checkbox isn't when editing self" do
+  test "the admin checkbox isn't visible when editing self" do
     to = EditTO.new(@company_admin, @company_admin, true)
     input = InputTO.new(@company_admin.form_input_id(:company_admin), false)
+    to.add_input(input)
+    to.test(self)
+  end
+
+  test "the send email isn't visible when editing self" do
+    to = EditTO.new(@company_admin, @company_admin, true)
+    input = InputTO.new(@regular_user.form_input_id(:send_email), false)
+    to.add_input(input)
+    to.test(self)
+  end
+
+  test "the company selector is visible for app admin edit modal" do
+    to = EditTO.new(@app_admin, @company_admin, true)
+    input = SelectTO.new(@app_admin.form_input_id(:company_id))
     to.add_input(input)
     to.test(self)
   end

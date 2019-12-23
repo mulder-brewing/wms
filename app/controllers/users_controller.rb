@@ -65,12 +65,25 @@ class UsersController < ApplicationController
       end
 
       def record_callback(record, action)
+        ap = -> (x = nil, y = current_company_id) {
+          @access_policies = (y.nil? ? AccessPolicy.none
+                                    : select_options(AccessPolicy, x, y))
+                                    .order(:description) }
+        d = -> { ap.(record.access_policy_id, record.company_id) }
+        cmp = -> { @companies = Company.all.order(:name) if app_admin? }
+        e = -> (x) { record.send_what_email = x }
         case action
+        when :new
+          app_admin? ? ap.(nil, nil) : ap.()
+          cmp.()
         when :create
-          record.send_what_email = "password-reset"
+          e.("create"); d.(); cmp.()
+        when :edit
+          d.(); cmp.()
         when :update
-          record.send_what_email = "password-reset"
+          e.("password-reset"); d.(); cmp.()
         end
         return record
       end
+
 end

@@ -13,6 +13,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :password_forms, only: [:new, :create]
+
   resources :access_policies do
     collection do
       get :company

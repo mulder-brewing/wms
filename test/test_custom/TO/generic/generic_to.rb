@@ -3,12 +3,13 @@ include ActiveModel::Translation
 
 class GenericTO
 
-  attr_accessor :user, :validity, :model, :debug
+  attr_accessor :user, :validity, :model, :debug, :path, :xhr
 
   def initialize(user, model, validity)
     @user = user
     @model = model
     @validity = validity
+    @xhr = true
   end
 
   def disable_user_access_policy
@@ -26,6 +27,11 @@ class GenericTO
 
   def model_class
     @model_class ||= @model.class
+  end
+
+  def xhr_switch_params(p = {})
+    p = { xhr: true }.merge(p) if xhr
+    return p
   end
 
 end

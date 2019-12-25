@@ -179,13 +179,13 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
   test "Create with other company id will still save with user's company id" do
     to = CreateTO.new(@everything_ap_user, @new, @ph, true)
     to.merge_params_hash({ company_id: @other_admin.company_id })
-    to.test_company_id = true
+    to.attributes = { :company_id => @everything_ap_user.company_id }
     to.test(self)
   end
 
   test "record should be enabled by default when it's created" do
     to = CreateTO.new(@everything_ap_user, @new, @ph, true)
-    to.test_enabled_default = true
+    to.attributes = { :enabled => true }
     to.test(self)
   end
 

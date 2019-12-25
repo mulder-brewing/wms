@@ -65,7 +65,7 @@ class ApplicationController < ActionController::Base
     end
 
     def check_reset_password
-      all_formats_redirect_to(update_password_user_url(current_user)) if logged_in? && needs_password_reset?
+      all_formats_redirect_to new_password_form_path if logged_in? && needs_password_reset?
     end
 
     # These functions help with locating a object for a model

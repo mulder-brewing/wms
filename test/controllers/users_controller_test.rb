@@ -7,21 +7,25 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @regular_user = users(:regular_user)
     @company_admin = users(:company_admin_user)
     @app_admin = users(:app_admin_user)
+    @other_admin = users(:other_company_admin)
     @other_user = users(:other_company_user)
     @delete_me_user = users(:delete_me_user)
-    @delete_me_admin = users(:delete_me_admin)
-    @regular_user_company = @regular_user.company
-    @company_admin_company = @company_admin.company
-    @app_admin_company = @app_admin.company
-    @other_company = @other_user.company
+
+    @new = User.new
+
     @averagejoe_access_policy = access_policies(:average_joe_access_policy_everything)
     @other_access_policy = access_policies(:other_access_policy_everything)
 
-    @new = User.new
     @ph = { first_name: "Test", last_name: "User", username: "new_user",
       password: "Password1$", company_admin: false, app_admin: false,
       access_policy_id: @averagejoe_access_policy.id }
-    @other_admin = users(:other_company_admin)
+    @pu = { password: "NewPassword123$" }
+    @pu2 = { password: "NewPassword123456$#2" }
+
+    @email = [:email]
+    @password = [:password_digest]
+    @names = [:first_name, :last_name, :username]
+    @enabled_admin = [:enabled, :company_admin]
   end
 
   # ----------------------------------------------------------------------------
@@ -170,7 +174,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "company admin can only create own company user" do
     to = CreateTO.new(@company_admin, @new, @ph, true)
     to.merge_params_hash({ company_id: @other_admin.company_id })
-    to.test_company_id = true
+    to.attributes = { :company_id => @company_admin.company_id }
     to.test(self)
   end
 
@@ -178,8 +182,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     to = CreateTO.new(@app_admin, @new, @ph, true)
     to.merge_params_hash({ company_id: @other_admin.company_id })
     to.params_hash[:access_policy_id] = @other_access_policy.id
-    to.test_company_id = true
-    to.expected_company_id = @other_admin.company_id
+    to.attributes = { :company_id => @other_admin.company_id }
     to.test(self)
   end
 
@@ -207,7 +210,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "record should be enabled by default when it's created" do
     to = CreateTO.new(@company_admin, @new, @ph, true)
-    to.test_enabled_default = true
+    to.attributes = { :enabled => true }
     to.test(self)
   end
 
@@ -215,6 +218,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     CreateTO.new(@company_admin, @new, @ph, true).test(self)
     to = CreateTO.new(@other_admin, @new, @ph, false)
     to.add_error_to ErrorTO.new(:unique, :username)
+    to.test(self)
+  end
+
+  test "password_reset flag is true when user created" do
+    to = CreateTO.new(@company_admin, @new, @ph, true)
+    to.attributes = { :password_reset => true }
     to.test(self)
   end
 
@@ -342,298 +351,399 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to updating users.
-  def update_user_as(user, update_user, parameter, test_what, validity)
-    params = { user: parameter }
-    log_in_if_user(user)
-    old_user = update_user.dup
-    patch user_path(update_user), xhr: true, params: params
-    update_user.reload
-    case test_what
-      when "email"
-        if validity == true
-          assert_equal parameter[:email], update_user.email
-        else
-          assert_not_equal parameter[:email], update_user.email
-        end
-      when "password"
-        if validity == true
-          assert_not_equal old_user.password_digest, update_user.password_digest
-        else
-          assert_equal old_user.password_digest, update_user.password_digest
-        end
-      when "names"
-        if validity == true
-          assert_equal parameter[:username], update_user.username
-          assert_equal parameter[:first_name], update_user.first_name
-          assert_equal parameter[:last_name], update_user.last_name
-        else
-          assert_equal old_user.username, update_user.username
-          assert_equal old_user.first_name, update_user.first_name
-          assert_equal old_user.last_name, update_user.last_name
-        end
-      when "enabled"
-        if validity == true
-          assert_equal parameter[:enabled], update_user.enabled
-          assert_equal parameter[:company_admin], update_user.company_admin
-        else
-          assert_equal old_user.enabled, update_user.enabled
-          assert_equal old_user.company_admin, update_user.company_admin
-        end
-      when "app_admin"
-        if validity == true
-          assert_equal parameter[:app_admin], update_user.app_admin
-        else
-          assert_equal !parameter[:app_admin], update_user.app_admin
-        end
-    end
+  # Tests for updating a record
 
-  end
-
-  # ----------------------------------------------------------------------------
   # test who can and can't update email addresses
-  email_hash = { email: "updated@updated.com" }
-  test "a logged out user should not be able to update a email address" do
-    update_user_as(nil, @regular_user, email_hash, "email", false)
+
+  emu = { email: "updated@updated.com" }
+
+  test "a logged out user can't update email" do
+    to = UpdateTO.new(nil, @regular_user, emu, false)
+    to.update_fields = @email
+    to.test(self)
   end
 
-  test "all logged in users should be able to update their email" do
-    # try logged in as a regular user
-    update_user_as(@regular_user, @regular_user, email_hash, "email", true)
-    # try logged in as a company admin user
-    update_user_as(@company_admin, @company_admin, email_hash, "email", true)
-    # try logged in as a app admin
-    update_user_as(@app_admin, @app_admin, email_hash, "email", true)
+  test "regular user can update email for self" do
+    to = UpdateTO.new(@regular_user, @regular_user, emu, true)
+    to.update_fields = @email
+    to.test(self)
   end
 
-  test "a regular use should not be able to update anyone elses email address" do
-    update_user_as(@regular_user, @company_admin, email_hash, "email", false)
-    update_user_as(@regular_user, @app_admin, email_hash, "email", false)
-    update_user_as(@regular_user, @other_user, email_hash, "email", false)
+  test "company admin can update email for self" do
+    to = UpdateTO.new(@company_admin, @company_admin, emu, true)
+    to.update_fields = @email
+    to.test(self)
   end
 
-  test "a company admin should be able to update email of another user in same company" do
-    update_user_as(@company_admin, @regular_user, email_hash, "email", true)
+  test "app admin can update email for self" do
+    to = UpdateTO.new(@app_admin, @app_admin, emu, true)
+    to.update_fields = @email
+    to.test(self)
   end
 
-  test "a company admin should not be able to update email of user in another company" do
-    update_user_as(@company_admin, @other_user, email_hash, "email", false)
+  test "regular user can't update email for user" do
+    to = UpdateTO.new(@regular_user, @company_admin, emu, false)
+    to.update_fields = @email
+    to.test(self)
   end
 
-  test "app admin should be able to update email of any user" do
-    update_user_as(@app_admin, @company_admin, email_hash, "email", true)
-    update_user_as(@app_admin, @other_user, email_hash, "email", true)
+  test "company admin can update email for user in company" do
+    to = UpdateTO.new(@company_admin, @regular_user, emu, true)
+    to.update_fields = @email
+    to.test(self)
   end
 
-  # ----------------------------------------------------------------------------
+  test "company admin can't update email for user in other company" do
+    to = UpdateTO.new(@company_admin, @other_user, emu, false)
+    to.update_fields = @email
+    to.test(self)
+  end
+
+  test "app admin can update email for user in other company" do
+    to = UpdateTO.new(@app_admin, @other_user, emu, true)
+    to.update_fields = @email
+    to.test(self)
+  end
+
   # test who can and can't update passwords
-  password_hash = { password: "NewPassword123$" }
-  test "a logged out user should not be able to update a password" do
-    update_user_as(nil, @regular_user, password_hash, "password", false)
+
+  test "logged out user should not be able to update password" do
+    to = UpdateTO.new(nil, @regular_user, @pu, false)
+    to.update_fields = @password
+    to.test(self)
   end
 
-  test "all users should be able to update their own password" do
-    # try logged in as a regular user
-    update_user_as(@regular_user, @regular_user, password_hash, "password", true)
-    # try logged in as a company admin user
-    update_user_as(@company_admin, @company_admin, password_hash, "password", true)
-    # try logged in as a app admin
-    update_user_as(@app_admin, @app_admin, password_hash, "password", true)
+  test "regular user can update password for self" do
+    to = UpdateTO.new(@regular_user, @regular_user, @pu, true)
+    to.update_fields = @password
+    to.test(self)
   end
 
-  test "only a company admin or app admin should be able to update another user's password" do
-    # try logged in as a regular user
-    update_user_as(@regular_user, @company_admin, password_hash, "password", false)
-    # try logged in as a company admin user
-    update_user_as(@company_admin, @regular_user, password_hash, "password", true)
-    # try logged in as a app admin
-    update_user_as(@app_admin, @regular_user, password_hash, "password", true)
+  test "company admin can update password for self" do
+    to = UpdateTO.new(@company_admin, @company_admin, @pu, true)
+    to.update_fields = @password
+    to.test(self)
   end
 
-  test "a company admin should not be able to update the password of a user outside it's company" do
-    update_user_as(@company_admin, @other_user, password_hash, "password", false)
+  test "app admin can update password for self" do
+    to = UpdateTO.new(@app_admin, @app_admin, @pu, true)
+    to.update_fields = @password
+    to.test(self)
   end
 
-  test "a app admin should be able to update the password of any user in any company" do
-    update_user_as(@app_admin, @other_user, password_hash, "password", true)
+  test "regular user can't update password for user" do
+    to = UpdateTO.new(@regular_user, @company_admin, @pu, false)
+    to.update_fields = @password
+    to.test(self)
   end
 
-  # ----------------------------------------------------------------------------
+  test "company admin can update password for user in same company" do
+    to = UpdateTO.new(@company_admin, @regular_user, @pu, true)
+    to.update_fields = @password
+    to.test(self)
+  end
+
+  test "app admin can update password for user in same company" do
+    to = UpdateTO.new(@app_admin, @regular_user, @pu, true)
+    to.update_fields = @password
+    to.test(self)
+  end
+
+  test "company admin can't update password for user in other company" do
+    to = UpdateTO.new(@company_admin, @other_user, @pu, false)
+    to.update_fields = @password
+    to.test(self)
+  end
+
+  test "app admin can update password for user in other company" do
+    to = UpdateTO.new(@app_admin, @other_user, @pu, true)
+    to.update_fields = @password
+    to.test(self)
+  end
+
+  test "sending password reset email fails without email address" do
+    to = UpdateTO.new(@company_admin, @regular_user, @pu, false)
+    to.update_fields = @password
+    to.params_hash[:send_email] = 1
+    to.params_hash[:email] = ""
+    to.add_error_to(ErrorTO.new("form.errors.email.blank", :email))
+    to.add_error_to(ErrorTO.new("form.errors.email.send.email_blank", :send_email))
+    to.test(self)
+  end
+
+  test "sending password reset email fails if password does not change" do
+    to = UpdateTO.new(@company_admin, @regular_user, @pu, false)
+    to.update_fields = @password
+    to.params_hash[:send_email] = 1
+    to.params_hash[:password] = ""
+    to.add_error_to(ErrorTO.new("form.errors.email.password.no_change", :password))
+    to.add_error_to(ErrorTO.new("form.errors.email.send.password_no_change", :send_email))
+    to.test(self)
+  end
+
   # test who can and can't update username, first_name, and last_name.
-  names_hash = { username: "updated", first_name: "updated", last_name: "updated" }
-  test "a logged out user should not be able to update username or name of any user." do
-    update_user_as(nil, @regular_user, names_hash, "names", false)
+
+  nu = { username: "updated", first_name: "updated", last_name: "updated" }
+
+  test "logged out user can't update names" do
+    to = UpdateTO.new(nil, @regular_user, nu, false)
+    to.update_fields = @names
+    to.test(self)
   end
 
-  test "a regular user should not be able to update username or name of any user" do
-    update_user_as(@regular_user, @regular_user, names_hash, "names", false)
-    update_user_as(@regular_user, @company_admin, names_hash, "names", false)
-    update_user_as(@regular_user, @app_admin, names_hash, "names", false)
-    update_user_as(@regular_user, @other_user, names_hash, "names", false)
+  test "regular user can't update names for self" do
+    to = UpdateTO.new(@regular_user, @regular_user, nu, false)
+    to.update_fields = @names
+    to.test(self)
   end
 
-  test "a company admin should be able to update own username and name" do
-    update_user_as(@company_admin, @company_admin, names_hash, "names", true)
+  test "regular user can't update names for user" do
+    to = UpdateTO.new(@regular_user, @company_admin, nu, false)
+    to.update_fields = @names
+    to.test(self)
   end
 
-  test "a company admin should be able to update username and name of other users in same company" do
-    update_user_as(@company_admin, @regular_user, names_hash, "names", true)
-  end
-  test "a company admin should not be able to update username and name of users in other company" do
-    update_user_as(@company_admin, @other_user, names_hash, "names", false)
-  end
-
-  test "app admin should be able to update own username and name" do
-    update_user_as(@app_admin, @app_admin, names_hash, "names", true)
+  test "company admin can update names for self" do
+    to = UpdateTO.new(@company_admin, @company_admin, nu, true)
+    to.update_fields = @names
+    to.test(self)
   end
 
-  test "app admin should be able to update username and name of users in same company" do
-    update_user_as(@app_admin, @company_admin, names_hash, "names", true)
+  test "company admin can update names for user in same company" do
+    to = UpdateTO.new(@company_admin, @regular_user, nu, true)
+    to.update_fields = @names
+    to.test(self)
   end
 
-  test "app admin should be able to update username and name of users in other company" do
-    update_user_as(@app_admin, @other_user, names_hash, "names", true)
+  test "company admin can't update names for user in other company" do
+    to = UpdateTO.new(@company_admin, @other_user, nu, false)
+    to.update_fields = @names
+    to.test(self)
   end
 
+  test "app admin can update names for self" do
+    to = UpdateTO.new(@app_admin, @app_admin, nu, true)
+    to.update_fields = @names
+    to.test(self)
+  end
 
-  # ----------------------------------------------------------------------------
+  test "app admin can update names for user in same company" do
+    to = UpdateTO.new(@app_admin, @regular_user, nu, true)
+    to.update_fields = @names
+    to.test(self)
+  end
+
+  test "app admin can update names for user in other company" do
+    to = UpdateTO.new(@app_admin, @other_user, nu, true)
+    to.update_fields = @names
+    to.test(self)
+  end
+
   # test who can and can't update enabled and company admin booleans
-  disable_and_become_admin = { enabled: false, company_admin: true }
-  disable_and_lose_admin = { enabled: false, company_admin: false }
-  test "a logged out user shouldn't be able to update enabled or admin" do
-    update_user_as(nil, @regular_user, disable_and_become_admin, "enabled", false)
-    update_user_as(nil, @company_admin, disable_and_lose_admin, "enabled", false)
-    update_user_as(nil, @app_admin, disable_and_lose_admin, "enabled", false)
+
+  disadm1 = { enabled: false, company_admin: true }
+  disadm0 = { enabled: false, company_admin: false }
+
+  test "a logged out user can't update enabled/admin" do
+    to = UpdateTO.new(nil, @regular_user, disadm1, false)
+    to.update_fields = @enabled_admin
+    to.test(self)
   end
 
-  test "a regular user shouldn't be able to update enabled or admin" do
-    update_user_as(@regular_user, @regular_user, disable_and_become_admin, "enabled", false)
-    update_user_as(@regular_user, @company_admin, disable_and_lose_admin, "enabled", false)
-    update_user_as(@regular_user, @app_admin, disable_and_lose_admin, "enabled", false)
+  test "regular user can't update enabled/admin for self" do
+    to = UpdateTO.new(@regular_user, @regular_user, disadm1, false)
+    to.update_fields = @enabled_admin
+    to.test(self)
   end
 
-  test "a company admin should be able to update enabled or admin for users in same company" do
-    update_user_as(@company_admin, @regular_user, disable_and_become_admin, "enabled", true)
-    update_user_as(@company_admin, @app_admin, disable_and_lose_admin, "enabled", true)
+  test "regular user can't update enabled/admin for user" do
+    to = UpdateTO.new(@regular_user, @company_admin, disadm0, false)
+    to.update_fields = @enabled_admin
+    to.test(self)
   end
 
-  test "a company admin should not be able to update enabled or admin for users in another company" do
-    update_user_as(@company_admin, @other_user, disable_and_become_admin, "enabled", false)
+  test "company admin can update enabled/admin for user" do
+    to = UpdateTO.new(@company_admin, @regular_user, disadm1, true)
+    to.update_fields = @enabled_admin
+    to.test(self)
   end
 
-  test "a app admin should be able to update enabled or admin for users in any company" do
-    update_user_as(@app_admin, @other_user, disable_and_become_admin, "enabled", true)
-    update_user_as(@app_admin, @company_admin, disable_and_lose_admin, "enabled", true)
+  test "company admin can't update enabled/admin for self" do
+    to = UpdateTO.new(@company_admin, @company_admin, disadm0, false)
+    to.update_fields = @enabled_admin
+    to.add_error_to(ErrorTO.new(:disabled_self, :enabled))
+    to.add_error_to(ErrorTO.new(:disabled_self, :company_admin))
+    to.test(self)
   end
 
-  test "a app admin shouldn't be able to disable or unadmin self" do
-    update_user_as(@app_admin, @app_admin, disable_and_lose_admin, "enabled", false)
+  test "company admin can't update enabled/admin for other user" do
+    to = UpdateTO.new(@company_admin, @other_user, disadm1, false)
+    to.update_fields = @enabled_admin
+    to.test(self)
   end
 
-  test "a company admin shouldn't be able to disable or unadmin self" do
-    update_user_as(@company_admin, @company_admin, disable_and_lose_admin, "enabled", false)
+  test "app admin can update enabled/admin for user" do
+    to = UpdateTO.new(@app_admin, @regular_user, disadm1, true)
+    to.update_fields = @enabled_admin
+    to.test(self)
   end
 
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to index of users.
-  def index_users(user, validity)
-    log_in_if_user(user)
-    get users_path
-    if validity == true
-      assert_template Page::IndexListPage::INDEX_HTML_PATH
-    else
-      assert_redirected_to root_url
-    end
+  test "app admin can't update enabled/admin for self" do
+    to = UpdateTO.new(@app_admin, @app_admin, disadm0, false)
+    to.update_fields = @enabled_admin
+    to.add_error_to(ErrorTO.new(:disabled_self, :enabled))
+    to.add_error_to(ErrorTO.new(:disabled_self, :company_admin))
+    to.test(self)
   end
 
-  test "a logged out user should not get the user index page." do
-    index_users(nil, false)
+  test "app admin can update enabled/admin for other user" do
+    to = UpdateTO.new(@app_admin, @other_user, disadm1, true)
+    to.update_fields = @enabled_admin
+    to.test(self)
   end
 
-  test "a regular user should not get the user index page." do
-    index_users(@regular_user, false)
+  test "user is warned about a deleted/not found record for update" do
+    to = UpdateTO.new(@company_admin, @regular_user, disadm1, nil)
+    to.test_nf(self)
   end
 
-  test "a company admin should get the user index page and should only get users from own company except self." do
-    index_users(@company_admin, true)
-    # should see these users from same company
-    assert_select "tr##{@regular_user.table_row_id}"
-    assert_select "tr##{@app_admin.table_row_id}"
-    # should not see self
-    assert_select "tr##{@company_admin.table_row_id}", false
-    # should not see users from other companies
-    assert_select "tr##{@other_user.table_row_id}", false
-    assert_select "tr##{@delete_me_user.table_row_id}", false
-  end
-
-  test "a app admin should get the user index page and should get all users except self" do
-    index_users(@app_admin, true)
-    # should see these users from same company
-    assert_select "tr##{@regular_user.table_row_id}"
-    assert_select "tr##{@company_admin.table_row_id}"
-    assert_select "tr##{@other_user.table_row_id}"
-    assert_select "tr##{@delete_me_user.table_row_id}"
-    # should not see self
-    assert_select "tr##{@app_admin.table_row_id}", false
-  end
-
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
   # test for app_admin should not be updated through the web.
-  become_app_admin = { app_admin: true }
-  test "no user should be able to become app admin through the web" do
-    update_user_as(nil, @regular_user, become_app_admin, "app_admin", false)
-    update_user_as(@regular_user, @regular_user, become_app_admin, "app_admin", false)
-    update_user_as(@company_admin, @company_admin, become_app_admin, "app_admin", false)
-    update_user_as(@app_admin, @company_admin, become_app_admin, "app_admin", false)
+
+  appadm = { app_admin: true }
+
+  test "logged out user can't update app admin" do
+    to = UpdateTO.new(nil, @regular_user, appadm, false)
+    to.update_fields = [:app_admin]
+    to.test(self)
+  end
+
+  test "regular user can't update app admin" do
+    to = UpdateTO.new(@regular_user, @regular_user, appadm, false)
+    to.update_fields = [:app_admin]
+    to.test(self)
+  end
+
+  test "company admin can't update app admin" do
+    to = UpdateTO.new(@company_admin, @company_admin, appadm, false)
+    to.update_fields = [:app_admin]
+    to.test(self)
+  end
+
+  test "app admin can't update app admin" do
+    to = UpdateTO.new(@app_admin, @company_admin, appadm, false)
+    to.update_fields = [:app_admin]
+    to.test(self)
+  end
+
+  # ----------------------------------------------------------------------------
+  # Tests for index records
+
+  test "a logged out user can't index" do
+    IndexTo.new(nil, @new, false).test(self)
+  end
+
+  test "a regular user can't index" do
+    IndexTo.new(@regular_user, @new, false).test(self)
+  end
+
+  test "company admin can index and see users except self" do
+    to = IndexTo.new(@company_admin, @new, true)
+    to.add_visible_y_record(@regular_user)
+    to.add_visible_y_record(@app_admin)
+    to.add_visible_n_record(@other_admin)
+    to.add_visible_n_record(@other_user)
+    to.add_visible_n_record(@delete_me_user)
+    to.add_visible_n_record(@company_admin)
+    to.test(self)
+  end
+
+  test "app admin can index and see all records except self" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.add_visible_y_record(@regular_user)
+    to.add_visible_y_record(@company_admin)
+    to.add_visible_y_record(@other_admin)
+    to.add_visible_y_record(@other_user)
+    to.add_visible_y_record(@delete_me_user)
+    to.add_visible_n_record(@app_admin)
+    to.test(self)
+  end
+
+  test "page title should be there" do
+    to = IndexTo.new(@company_admin, @new, true)
+    to.test_title = true
+    to.test(self)
+  end
+
+  test "page should have new record button" do
+    to = IndexTo.new(@company_admin, @new, true)
+    to.test_new = true
+    to.test(self)
+  end
+
+  test "should see the edit buttons" do
+    to = IndexTo.new(@company_admin, @new, true)
+    to.test_edit = true
+    to.add_visible_edit_record(@regular_user)
+    to.add_visible_edit_record(@app_admin)
+    to.test(self)
+  end
+
+  test "page should have enabled filter" do
+    to = IndexTo.new(@company_admin, @new, true)
+    to.test_enabled_filter = true
+    to.test(self)
+  end
+
+  test "should see both enabled and disabled with all filter." do
+    to = IndexTo.new(@company_admin, @new, true)
+    @regular_user.update_column(:enabled, false)
+    to.add_visible_y_record(@regular_user)
+    to.add_visible_y_record(@app_admin)
+    to.test(self)
+  end
+
+  test "should only see enabled with enabled filter." do
+    to = IndexTo.new(@company_admin, @new, true)
+    to.query = :enabled
+    to.add_visible_y_record(@app_admin)
+    @regular_user.update_column(:enabled, false)
+    to.add_visible_n_record(@regular_user)
+    to.test(self)
+  end
+
+  test "should only see disabled with disabled filter." do
+    to = IndexTo.new(@company_admin, @new, true)
+    to.query = :disabled
+    to.add_visible_n_record(@app_admin)
+    @regular_user.update_column(:enabled, false)
+    to.add_visible_y_record(@regular_user)
+    to.test(self)
   end
 
   # ----------------------------------------------------------------------------
   # ----------------------------------------------------------------------------
   # tests for reset password functionality
 
-  def reset_password_as(user, reset_user, test, parameter, validity)
-    params = { user: parameter }
-    log_in_if_user(user)
-    patch user_path(reset_user), xhr: true, params: params
-    reset_user.reload
-    if test == "password_reset_boolean"
-      # validity true means user has been flagged for reset password.
-      if validity == true
-        assert_equal reset_user.password_reset, true
-      # validity false means user is not flagged for reset password.
-      else
-        assert_equal reset_user.password_reset, false
-      end
-    end
+  test "user changing password for self doesn't trigger reset password" do
+    to = UpdateTO.new(@regular_user, @regular_user, @pu, false)
+    to.update_fields = [:password_reset]
+    to.test(self)
   end
 
-  test "logged in user changing their own password should not set password reset flag to true" do
-    reset_password_as(@regular_user, @regular_user, "password_reset_boolean", password_hash, false)
-    reset_password_as(@company_admin, @company_admin, "password_reset_boolean", password_hash, false)
-    reset_password_as(@app_admin, @app_admin, "password_reset_boolean", password_hash, false)
+  test "admin changing password for user does trigger reset password" do
+    to = UpdateTO.new(@company_admin, @regular_user, @pu, true)
+    to.update_fields = [:password_reset]
+    to.test(self)
   end
-
-  test "if a admin changes another user's password, that user's password reset flag should become true" do
-    reset_password_as(@app_admin, @company_admin, "password_reset_boolean", password_hash, true)
-    reset_password_as(@company_admin, @regular_user, "password_reset_boolean", password_hash, true)
-  end
-
-  test "A newly created user should have it's password_reset flag set to true" do
-    new_user = User.create!(company: @company_admin_company, first_name: 'New',
-      last_name: 'User', username: 'new_user_for_test789', password: 'Password1$',
-      current_user: "seed", access_policy_id: @averagejoe_access_policy.id )
-    assert new_user.password_reset == true
-  end
-
-  password_hash_2 = { password: "NewPassword123456$#2" }
 
   test "Monster test that checks the full flow of a user's password being reset and that user resetting it." do
-    reset_password_as(@app_admin, @company_admin, "password_reset_boolean", password_hash, true)
-    log_in_as(@company_admin, password_hash[:password])
-    # There's 2 redirects because by default logged in redirects to root, then when password_reset is true, you get redirected to the update password page.
+    to = UpdateTO.new(@app_admin, @company_admin, @pu, true)
+    to.update_fields = [:password_reset]
+    to.test(self)
+    log_in_as(@company_admin, @pu[:password])
+    # There's 2 redirects because by default logged in redirects to root,
+    # then when password_reset is true,
+    # you get redirected to the update password page.
     follow_redirect!
     assert_redirected_to update_password_user_url(@company_admin)
     follow_redirect!
@@ -644,7 +754,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_select "form"
     assert_select "form input[id=user_password]"
     assert_select "form input[id=user_password_confirmation]"
-    assert_select 'form input[type=submit][value="Update Password"]'
+    assert_select "form input[type=submit][value='#{I18n.t("users.title.update_password")}']"
     # trying to load other TMS pages should redirect the user back to update password.
     get root_path
     assert_redirected_to update_password_user_url(@company_admin)
@@ -652,65 +762,24 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to update_password_user_url(@company_admin)
     get edit_user_path(@company_admin)
     assert_redirected_to update_password_user_url(@company_admin)
-    # user should not be able to use the same password they logged in with as their new updated password.
-    assert_no_changes '@company_admin.password_digest' do
-      patch update_password_commit_user_path(@company_admin), params: { user: password_hash }
-      @company_admin.reload
-    end
+    # user should not be able to use the same password they
+    # logged in with as their new updated password.
+    to = UpdateTO.new(@company_admin, @company_admin, @pu, false)
+    to.xhr = false
+    to.update_fields = @password
+    to.path = update_password_commit_user_path(@company_admin)
+    to.add_error_to ErrorTO.new(:same, :password)
+    to.test(self)
     assert_template 'users/update_password'
-    assert_select 'div.invalid-feedback', "Password cannot be the same as it is right now"
-    # user should be able to update their password with a new password and their password_reset should now be false.
-    assert_changes '@company_admin.password_digest' do
-      patch update_password_commit_user_path(@company_admin), params: { user: password_hash_2 }
-      @company_admin.reload
-    end
-    assert @company_admin.password_reset == false
+    # user should be able to update their password with a new password
+    to.params_hash = @pu2
+    to.validity = true
+    # password_reset should be false after update.
+    to.attributes = { :password_reset => false }
+    to.test(self)
     assert_redirected_to root_url
     follow_redirect!
-    assert_select 'div.alert-success', "Password successfully updated!"
+    assert_select 'div.alert-success', I18n.t("alert.save.password_success")
   end
-
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # tests for deleted user alerts on show, edit, update.
-
-  def check_if_user_deleted(user, user_to_test, try, validity)
-    log_in_if_user(user)
-    case try
-      when "update"
-        patch user_path(user_to_test), xhr: true, params: { user: { email: "updated@updated.com" } }
-      when "edit"
-        get edit_user_path(user_to_test), xhr:true
-    end
-    if validity == true
-      assert_match /Record not found/, @response.body
-    else
-      assert_no_match /Record not found/, @response.body
-    end
-  end
-
-  test "if a user is deleted and a user trys to show, edit, or update that user, they are warned the user no longer exists." do
-    check_if_user_deleted(@delete_me_admin, @delete_me_user, "update", false)
-    check_if_user_deleted(@delete_me_admin, @delete_me_user, "edit", false)
-    @delete_me_user.destroy
-    check_if_user_deleted(@delete_me_admin, @delete_me_user, "update", true)
-    check_if_user_deleted(@delete_me_admin, @delete_me_user, "edit", true)
-  end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 end

@@ -1,7 +1,7 @@
 class CreateUpdateTO < GenericTO
   include Includes::Inputs
 
-  attr_accessor :params_hash, :error_to_array
+  attr_accessor :params_hash, :error_to_array, :attributes
 
   def initialize(user, model, params_hash, validity)
     @params_hash = params_hash
@@ -32,6 +32,14 @@ class CreateUpdateTO < GenericTO
     when :unique
       /#{ field_name + " " + I18n.t("form.errors.taken") }/
     end
+  end
+
+  def test_attributes?
+    !@attributes.blank?
+  end
+
+  def xhr_switch_params
+    super({ params: params })
   end
 
 end

@@ -1,8 +1,6 @@
 class User < ApplicationRecord
-  attr_accessor :context_password_reset
   attr_accessor :send_email
   attr_accessor :send_what_email
-
 
   belongs_to :company
   belongs_to :access_policy
@@ -25,7 +23,6 @@ class User < ApplicationRecord
   validate :regular_user_check, if: :current_user_pre_check
   validate :self_disable_check, if: :current_user_pre_check
   validate :self_unadmin_check, if: :current_user_pre_check
-  validate :password_repeat?
   validate :email_exists_if_send_email
   validate :password_changed_if_send_reset_email
   validate :access_policy_matches_user_company
@@ -85,39 +82,31 @@ class User < ApplicationRecord
     def self_disable_check
       if self_equals_current_user? && enabled_changed?
         #are you trying to disable yourself?
-        errors.add(:enabled, "cannot be disabled for yourself") if enabled == false
+        errors.add(:enabled,
+          I18n.t("form.errors.disabled_self")) if enabled == false
       end
     end
 
     def self_unadmin_check
       if self_equals_current_user? && company_admin_changed?
         #are you trying to unadmin yourself?
-        errors.add(:company_admin, "cannot be disabled for yourself") if company_admin == false
+        errors.add(:company_admin,
+          I18n.t("form.errors.disabled_self")) if company_admin == false
       end
     end
 
-    # Functions related to password reset functionality.
+    # Flag the user for password reset if password changed by other user.
     def check_password_digest
-      if password_digest_changed?
-        if password_reset == true && self_equals_current_user?
-          self.password_reset = false
-        elsif password_reset == false && !self_equals_current_user?
-          self.password_reset = true
-        end
-      end
-    end
-
-    def password_repeat?
-      if context_password_reset == true && BCrypt::Password.new(password_digest_was) == password
-        errors.add(:password, "cannot be the same as it is right now")
+      if password_digest_changed? && !self_equals_current_user?
+        self.password_reset = true
       end
     end
 
     # Funstions related to sending mail
     def email_exists_if_send_email
       if send_email == "1" && email.blank?
-        errors.add(:email, "cannot be blank if you want to send email")
-        errors.add(:send_email, "can't send email without email address")
+        errors.add(:email, I18n.t("form.errors.email.blank"))
+        errors.add(:send_email, I18n.t("form.errors.email.send.email_blank"))
       end
     end
 
@@ -137,8 +126,9 @@ class User < ApplicationRecord
 
     def password_changed_if_send_reset_email
       if send_email_of_type?("password-reset") && !password_digest_changed?
-        errors.add(:password, "didn't change.  can't send email.")
-        errors.add(:send_email, "can't send email if password doesn't change.")
+        errors.add(:password, I18n.t("form.errors.email.password.no_change"))
+        errors.add(:send_email,
+          I18n.t("form.errors.email.send.password_no_change"))
       end
     end
 

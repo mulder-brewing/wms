@@ -68,7 +68,21 @@ en:
     errors:
       does_not_belong: does not belong to your company
       disabled: is disabled
+      disabled_self: cannot be disabled for yourself
+      email:
+        blank: cannot be blank if you want to send email
+        send:
+          email_blank: cannot send email without email address
+          password_no_change: cannot send email if password does not change
+        password:
+          no_change: did not change.  Cannot send email.
+      password_confirmation:
+        mismatch: "doesn't match Password"
+      same: cannot be the same as it is right now
       taken: has already been taken
+
+
+
 
 
   global:

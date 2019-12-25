@@ -83,7 +83,7 @@ class ActionDispatch::IntegrationTest
   # This function uses the NewTO to test the new modal.
   def new_to_test(to)
     log_in_if_user(to.user)
-    get to.new_path, xhr:true
+    get to.new_path, to.xhr_switch_params
     assert_equal to.validity, !redirected?(@response)
     assert_select "form", to.validity
     verify_modal_title(to) if to.test_title?
@@ -96,23 +96,14 @@ class ActionDispatch::IntegrationTest
     log_in_if_user(to.user)
     if to.validity == true
       assert_difference 'to.model_count', 1 do
-        post to.create_path, xhr: true, params: to.params
+        post to.create_path, to.xhr_switch_params
       end
-      if to.test_company_id?
-        assert_equal to.expected_company_id, to.model_last.company_id
-      end
-      if to.test_enabled_default?
-        assert_equal true, to.model_last.enabled
-      end
+      verify_attributes(to) if to.test_attributes?
     else
       assert_no_difference 'to.model_count' do
-        post to.create_path, xhr: true, params: to.params
+        post to.create_path, to.xhr_switch_params
       end
-      if to.test_errors?
-        to.error_to_array.each do |f|
-          assert_match f.error_message, @response.body
-        end
-      end
+      verify_errors(to) if to.test_errors?
       verify_form_inputs(to) if to.test_inputs?
     end
   end
@@ -120,7 +111,7 @@ class ActionDispatch::IntegrationTest
   # This function uses the EditTO to test the edit modal.
   def edit_to_test(to)
     log_in_if_user(to.user)
-    get to.edit_path, xhr:true
+    get to.edit_path, to.xhr_switch_params
     assert_equal to.validity, !redirected?(@response)
     assert_select "form", to.validity
     verify_modal_title(to) if to.test_title?
@@ -131,7 +122,7 @@ class ActionDispatch::IntegrationTest
   # This function uses UpdateTO to test updating a record.
   def update_to_test(to)
     log_in_if_user(to.user)
-    patch to.update_path, xhr: true, params: to.params
+    patch to.update_path, to.xhr_switch_params
     object = to.model
     old_object = object.dup
     object.reload
@@ -139,6 +130,7 @@ class ActionDispatch::IntegrationTest
       to.update_fields.each do |attribute|
         assert_not_equal old_object.send(attribute), object.send(attribute)
       end
+      verify_attributes(to) if to.test_attributes?
     else
       to.update_fields.each do |attribute|
         if old_object.send(attribute) == nil
@@ -147,6 +139,7 @@ class ActionDispatch::IntegrationTest
           assert_equal old_object.send(attribute), object.send(attribute)
         end
       end
+      verify_errors(to) if to.test_errors?
     end
   end
 
@@ -286,6 +279,27 @@ class ActionDispatch::IntegrationTest
         end
       end
     }
+  end
+
+  # This function helps verify form errors when a create or update fails.
+  def verify_errors(to)
+    to.error_to_array.each do |f|
+      assert_match f.error_message, @response.body
+    end
+  end
+
+  # This function helps verify model attributes after a successful create or update.
+  def verify_attributes(to)
+    case to
+    when CreateTO
+      model = to.model_last
+    when UpdateTO
+      model = to.model
+      model.reload
+    end
+    to.attributes.each do |k, v|
+      assert_equal v, model.send(k)
+    end
   end
 
   # This function helps tests to run related to getting new object page/moda with ajax.

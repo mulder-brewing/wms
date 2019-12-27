@@ -76,7 +76,7 @@ class PasswordResetEmailTest < ActionDispatch::IntegrationTest
   # This function helps all the following tests to run related to checking for the presence of a send email checkbox.
   def edit_user_as(user, edit_user, validity)
     log_in_if_user(user)
-    get edit_user_path(edit_user), xhr:true
+    get edit_auth_user_path(edit_user), xhr:true
     text_regex = /Send email with new password/
     if validity == true
       assert_match text_regex, @response.body

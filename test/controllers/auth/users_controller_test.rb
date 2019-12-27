@@ -1,17 +1,17 @@
 require 'test_helper'
 require 'pp'
 
-class UsersControllerTest < ActionDispatch::IntegrationTest
+class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   def setup
-    @regular_user = users(:regular_user)
-    @company_admin = users(:company_admin_user)
-    @app_admin = users(:app_admin_user)
-    @other_admin = users(:other_company_admin)
-    @other_user = users(:other_company_user)
-    @delete_me_user = users(:delete_me_user)
+    @regular_user = auth_users(:regular_user)
+    @company_admin = auth_users(:company_admin_user)
+    @app_admin = auth_users(:app_admin_user)
+    @other_admin = auth_users(:other_company_admin)
+    @other_user = auth_users(:other_company_user)
+    @delete_me_user = auth_users(:delete_me_user)
 
-    @new = User.new
+    @new = Auth::User.new
 
     @averagejoe_access_policy = access_policies(:average_joe_access_policy_everything)
     @other_access_policy = access_policies(:other_access_policy_everything)
@@ -19,8 +19,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @ph = { first_name: "Test", last_name: "User", username: "new_user",
       password: "Password1$", company_admin: false, app_admin: false,
       access_policy_id: @averagejoe_access_policy.id }
-    @pu = { password: "NewPassword123$" }
-    @pu2 = { password: "NewPassword123456$#2" }
+    @pu = { password: "NewPassword123$",
+      password_confirmation: "NewPassword123$" }
+    @pu2 = { password: "NewPassword123456$#2",
+      password_confirmation: "NewPassword123456$#2" }
 
     @email = [:email]
     @password = [:password_digest]
@@ -745,41 +747,43 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     # then when password_reset is true,
     # you get redirected to the update password page.
     follow_redirect!
-    assert_redirected_to update_password_user_url(@company_admin)
+    assert_redirected_to new_auth_password_reset_path
     follow_redirect!
     # Should be 2 links, one being the Mulder WMS logo top left, the other being the log out link.
     assert_select 'a[href]', 2
     assert_select 'a[href=?]', logout_path
     assert_select 'a[href=?]', root_path
     assert_select "form"
-    assert_select "form input[id=user_password]"
-    assert_select "form input[id=user_password_confirmation]"
-    assert_select "form input[type=submit][value='#{I18n.t("users.title.update_password")}']"
+    assert_select "form input[id=auth_password_reset_password]"
+    assert_select "form input[id=auth_password_reset_password_confirmation]"
+    assert_select "form input[type=submit][value='#{I18n.t("auth/users.title.update_password")}']"
     # trying to load other TMS pages should redirect the user back to update password.
     get root_path
-    assert_redirected_to update_password_user_url(@company_admin)
-    get users_path
-    assert_redirected_to update_password_user_url(@company_admin)
-    get edit_user_path(@company_admin)
-    assert_redirected_to update_password_user_url(@company_admin)
+    assert_redirected_to new_auth_password_reset_path
+    get auth_users_path
+    assert_redirected_to new_auth_password_reset_path
+    get edit_auth_user_path(@company_admin)
+    assert_redirected_to new_auth_password_reset_path
     # user should not be able to use the same password they
     # logged in with as their new updated password.
-    to = UpdateTO.new(@company_admin, @company_admin, @pu, false)
+    @new_pr = Auth::PasswordResetForm.new(@company_admin)
+    to = CreateTO.new(@company_admin, @new_pr, @pu, false)
     to.xhr = false
-    to.update_fields = @password
-    to.path = update_password_commit_user_path(@company_admin)
+    to.path = auth_password_resets_path
     to.add_error_to ErrorTO.new(:same, :password)
+    to.check_count = false
     to.test(self)
-    assert_template 'users/update_password'
+    assert_template 'auth/password_resets/new'
     # user should be able to update their password with a new password
     to.params_hash = @pu2
     to.validity = true
-    # password_reset should be false after update.
-    to.attributes = { :password_reset => false }
     to.test(self)
     assert_redirected_to root_url
     follow_redirect!
     assert_select 'div.alert-success', I18n.t("alert.save.password_success")
+    # password_reset should be false after update.
+    @company_admin.reload
+    assert_equal false, @company_admin.password_reset
   end
 
 end

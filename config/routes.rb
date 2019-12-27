@@ -6,14 +6,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :users do
-    member do
-      get :update_password
-      patch :update_password_commit
-    end
+  namespace :auth do
+    resources :users
+    resources :password_resets, only: [:new, :create]
+    resources :password_update_forms, only: [:edit, :update]
   end
-
-  resources :password_forms, only: [:new, :create]
 
   resources :access_policies do
     collection do
@@ -39,10 +36,10 @@ Rails.application.routes.draw do
   root 'static_pages#home'
   get 'static_pages/home'
   get 'dock_request_audit_histories/index'
-  get '/login', to: 'sessions#new'
-  post '/login', to: 'sessions#create'
-  delete '/logout', to: 'sessions#destroy'
-  get '/become_user', to: 'sessions#become_user'
+  get '/login', to: 'auth/sessions#new'
+  post '/login', to: 'auth/sessions#create'
+  delete '/logout', to: 'auth/sessions#destroy'
+  get '/become_user', to: 'auth/sessions#become_user'
 
 
 end

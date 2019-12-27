@@ -47,9 +47,33 @@ en:
       not_found: Record not found
     not_authorized: Not Authorized
 
+  auth/users:
+    title:
+      index: Users
+      create: New User
+      update: Edit User
+      update_password: Update Password
+    name:
+      username: Username
+      first_name: First Name
+      last_name: Last Name
+    communication:
+      email: Email
+      send_email_login: Send email with login instructions
+      send_email_password: Send email with new password
+    hints:
+      username: lowercase, numbers, and underscore only with no spaces
+      password: '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
+      update_password: You must update your password before you can use Mulder WMS.
+    security:
+      admin: Admin
+      reset_password: Reset Password
+      password: Password
+      password_confirm: Password Confirmation
+    become: Become
+
   companies:
     company: Company
-
 
   dock_groups:
     title:
@@ -81,10 +105,6 @@ en:
       same: cannot be the same as it is right now
       taken: has already been taken
 
-
-
-
-
   global:
     actions: Actions
     all: All
@@ -110,28 +130,3 @@ en:
     created: Created
     updated: Updated
     title: Timestamps
-
-  users:
-    title:
-      index: Users
-      create: New User
-      update: Edit User
-      update_password: Update Password
-    name:
-      username: Username
-      first_name: First Name
-      last_name: Last Name
-    communication:
-      email: Email
-      send_email_login: Send email with login instructions
-      send_email_password: Send email with new password
-    hints:
-      username: lowercase, numbers, and underscore only with no spaces
-      password: '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
-      update_password: You must update your password before you can use Mulder WMS.
-    security:
-      admin: Admin
-      reset_password: Reset Password
-      password: Password
-      password_confirm: Password Confirmation
-    become: Become

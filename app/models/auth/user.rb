@@ -1,4 +1,4 @@
-class User < ApplicationRecord
+class Auth::User < ApplicationRecord
   attr_accessor :send_email
   attr_accessor :send_what_email
 
@@ -38,6 +38,10 @@ class User < ApplicationRecord
     self.first_name + ' ' + self.last_name
   end
 
+  def full_name_username
+    full_name + " (#{self.username})"
+  end
+
   # Scope for excluding user from all users.
   def self.all_except(user)
     where.not(id: user)
@@ -62,7 +66,7 @@ class User < ApplicationRecord
     end
 
     # Returns the hash digest of the given string, used for user fixtures with minitest.
-    def User.digest(string)
+    def self.digest(string)
       cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
                                                     BCrypt::Engine.cost
       BCrypt::Password.create(string, cost: cost)

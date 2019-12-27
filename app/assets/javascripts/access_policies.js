@@ -10,7 +10,7 @@ function hideAccessPolicyPermissions() {
 }
 
 function populateAccessPoliciesSelect() {
-  $("#user_company_id:not(.bound)").addClass("bound").on("change", function(){
+  $("#auth_user_company_id:not(.bound)").addClass("bound").on("change", function(){
     var company = $(this).val();
     $.ajax({
       url: "/access_policies/company",
@@ -21,7 +21,7 @@ function populateAccessPoliciesSelect() {
         console.error("AJAX Error: " + status + error);
       },
       success: function (response) {
-        var access_policy_select = $("#user_access_policy_id");
+        var access_policy_select = $("#auth_user_access_policy_id");
         access_policy_select.empty();
         access_policy_select.append("<option></option>");
         var access_policies = response["access_policies"];

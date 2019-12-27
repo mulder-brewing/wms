@@ -1,6 +1,7 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
-  include SessionsHelper
+  include Auth::SessionsHelper
+  include FindObjectHelper
   include Pundit
 
   before_action :logged_in
@@ -34,10 +35,6 @@ class ApplicationController < ActionController::Base
       all_formats_redirect_to(root_url)
     end
 
-    def raise_not_found
-      raise ApplicationController::RecordNotFound
-    end
-
     def not_found
       respond_to do |format|
         format.html {
@@ -61,42 +58,18 @@ class ApplicationController < ActionController::Base
     end
 
     def find_user_by_id(id)
-      @user = User.find_by(id: id)
+      @user = Auth::User.find_by(id: id)
     end
 
     def check_reset_password
-      all_formats_redirect_to new_password_form_path if logged_in? && needs_password_reset?
-    end
-
-    # These functions help with locating a object for a model
-    # and setting current_user for the model.
-    def find_object_with_current_user(model)
-      object = find_object_by_id(model)
-      raise_not_found if object.nil?
-      object_with_current_user = set_current_user(object)
-      return object_with_current_user
-    end
-
-    def find_object_by_id(model)
-      return model.find_by(id: params[:id])
-    end
-
-    def find_record
-      find_object_with_current_user(controller_model)
-    end
-
-    def set_current_user(object)
-      object.current_user = current_user
-      return object
+      if logged_in? && needs_password_reset?
+        all_formats_redirect_to new_auth_password_reset_path
+      end
     end
 
     # This can be used to set the current user attribute for an object that is a instance variable.
     def set_current_user_attribute(instance_variable)
       instance_variable_get("@#{instance_variable}").current_user = current_user
-    end
-
-    def controller_model
-      controller_name.classify.constantize
     end
 
     def select_options(model, record_id = nil, company_id = current_company_id)

@@ -1,5 +1,5 @@
 <%= provide(:title, (t_nf page.title)) %>
-<%= provide(:new_link, send(page.new_path)) if page.show_new_link? %>
+<%= provide(:new_link, new_polymorphic_path(page.new_record)) if page.show_new_link? %>
 
 <% if page.show_enabled_filter? %>
   <%= render page.enabled_filter_html_path, page: page %>

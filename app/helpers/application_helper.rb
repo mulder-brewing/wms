@@ -17,7 +17,7 @@ module ApplicationHelper
       if object.errors.any?
           content_tag(:div, class: "card border-danger mb-3") do
               concat(content_tag(:div, class: "card-header bg-danger text-white") do
-                  concat "#{pluralize(object.errors.count, "error")} prohibited this #{object.class.name.downcase} from being saved:"
+                  concat "#{pluralize(object.errors.count, "error")} prohibited this from being saved:"
               end)
               concat(content_tag(:ul, class: 'mb-0 list-group list-group-flush') do
                   object.errors.full_messages.each do |msg|

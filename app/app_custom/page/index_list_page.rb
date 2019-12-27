@@ -6,7 +6,7 @@ class Page::IndexListPage < Page::GenericPage
   RECORD_HTML_PATH = SHARED_PATH + "record"
 
   attr_accessor :table, :enabled_param, :recordsSendArray,
-    :table_array_hash
+    :table_array_hash, :new_record
   attr_writer :show_new_link, :show_enabled_filter
 
   def initialize(records = nil)
@@ -29,14 +29,6 @@ class Page::IndexListPage < Page::GenericPage
 
   def record_html_path
     RECORD_HTML_PATH
-  end
-
-  def new_path
-    "new_#{@records.name.underscore}_path"
-  end
-
-  def index_path
-    "#{@records.name.pluralize.underscore}_path"
   end
 
   def show_new_link?

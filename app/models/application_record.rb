@@ -37,16 +37,16 @@ class ApplicationRecord < ActiveRecord::Base
 
   # this is to uniquely id a table of records.
   def self.table_body_id
-    table_name.dasherize + "-table-body";
+    self.name.pluralize.parameterize + "-table-body";
   end
 
   # this is the uniquely id a record in a table of record.
   def table_row_id
-    self.class.name.underscore.dasherize + "-" + self[:id].to_s;
+    self.class.name.parameterize + "-" + self[:id].to_s;
   end
 
   def self.record_name
-    self.name.underscore
+    self.name.underscore.sub("/", "_")
   end
 
   def record_name

@@ -1,0 +1,47 @@
+<%= simple_form_for modal_form.record,
+                                remote:true,
+                                :html => { :id => modal_form.form_id } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :company_id, label: t_nf("companies.company"),
+          :collection => @companies, :label_method => :name,
+          :value_method => :id if app_admin? %>
+      <%= f.input :first_name, label: t_nf("auth/users.name.first_name"),
+          as: :string if admin? %>
+      <%= f.input :last_name, label: t_nf("auth/users.name.last_name"),
+          as: :string if admin? %>
+      <%= f.input :email, label: t_nf("auth/users.communication.email"),
+          as: :string %>
+      <%= f.input :send_email, as: :boolean,
+          label: t_nf("auth/users.communication.send_email_login")\
+          if admin? && modal_form.type_co.create? %>
+      <%= f.input :username, label: t_nf("auth/users.name.username"),
+          as: :string if admin? %>
+      <%= f.hint t_nf("auth/users.hints.username") %>
+      <%= f.input :access_policy_id, label: t_nf("access_policies.access_policy"),
+          :collection => @access_policies, :label_method => :description,
+          :value_method => :id if admin? %>
+      <%= f.input :company_admin, label: t_nf("auth/users.security.admin")\
+          if admin? && not_self?(modal_form.record) %>
+    </div>
+    <% if modal_form.type_co.update? && admin? &&
+                                        not_self?(modal_form.record) %>
+      <div class="mb-2">
+        <%= f.input :enabled,
+            label: t_nf("global.boolean.enabled_disabled.enabled"),
+            wrapper: :switch %>
+      </div>
+    <% end %>
+    <% if modal_form.type_co.update? %>
+      <%= link_to t_nf("auth/users.security.reset_password"),
+        edit_auth_password_update_form_path(id: modal_form.record.id),
+        :remote => true, :class => 'btn btn-primary btn-block mt-3' %>
+    <% end %>
+<% end %>
+
+<script type="text/javascript">
+  showResetPassword();
+  populateAccessPoliciesSelect();
+</script>

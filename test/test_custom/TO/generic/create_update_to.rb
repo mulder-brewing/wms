@@ -10,7 +10,7 @@ class CreateUpdateTO < GenericTO
   end
 
   def params
-    { @model.record_name.to_sym => @params_hash }
+    { @model.model_name.to_s.underscore.sub("/", "_").to_sym => @params_hash }
   end
 
   def merge_params_hash(to_merge)

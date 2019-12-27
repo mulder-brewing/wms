@@ -94,14 +94,23 @@ class ActionDispatch::IntegrationTest
   # This function uses the CreateTO to test creating a record.
   def create_to_test(to)
     log_in_if_user(to.user)
+    c = -> { post to.create_path, to.xhr_switch_params }
     if to.validity == true
-      assert_difference 'to.model_count', 1 do
-        post to.create_path, to.xhr_switch_params
+      if to.check_count?
+        assert_difference 'to.model_count', 1 do
+          c.()
+        end
+      else
+        c.()
       end
       verify_attributes(to) if to.test_attributes?
     else
-      assert_no_difference 'to.model_count' do
-        post to.create_path, to.xhr_switch_params
+      if to.check_count?
+        assert_no_difference 'to.model_count' do
+          c.()
+        end
+      else
+        c.()
       end
       verify_errors(to) if to.test_errors?
       verify_form_inputs(to) if to.test_inputs?

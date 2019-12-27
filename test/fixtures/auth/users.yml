@@ -9,7 +9,7 @@ regular_user:
   company_admin: false
   app_admin: false
   company: averagejoes
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: average_joe_access_policy_everything
 
@@ -22,7 +22,7 @@ company_admin_user:
   company_admin: true
   app_admin: false
   company: averagejoes
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: average_joe_access_policy_everything
 
@@ -35,7 +35,7 @@ app_admin_user:
   company_admin: true
   app_admin: true
   company: averagejoes
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: average_joe_access_policy_everything
 
@@ -48,7 +48,7 @@ nothing_ap_user:
   company_admin: false
   app_admin: false
   company: averagejoes
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: average_joe_access_policy_nothing
 
@@ -61,7 +61,7 @@ everything_ap_user:
   company_admin: false
   app_admin: false
   company: averagejoes
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: average_joe_access_policy_everything
 
@@ -74,7 +74,7 @@ delete_me_user:
   company_admin: false
   app_admin: false
   company: company_to_delete
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: delete_access_policy_everything
 
@@ -87,7 +87,7 @@ delete_me_admin:
   company_admin: true
   app_admin: false
   company: company_to_delete
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: delete_access_policy_everything
 
@@ -100,7 +100,7 @@ other_company_user:
   company_admin: false
   app_admin: false
   company: other_company
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: other_access_policy_everything
 
@@ -113,7 +113,7 @@ other_company_admin:
   company_admin: true
   app_admin: false
   company: other_company
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: other_access_policy_everything
 
@@ -126,7 +126,7 @@ nothing_setup_company_user:
   company_admin: false
   app_admin: false
   company: nothing_setup_company
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: nothing_setup_access_policy_everything
 
@@ -139,6 +139,6 @@ nothing_setup_company_admin:
   company_admin: true
   app_admin: false
   company: nothing_setup_company
-  password_digest: <%= User.digest('Password1$') %>
+  password_digest: <%= Auth::User.digest('Password1$') %>
   password_reset: false
   access_policy: nothing_setup_access_policy_everything

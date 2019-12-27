@@ -1,4 +1,4 @@
-class SessionsController < ApplicationController
+class Auth::SessionsController < Auth::BaseController
   include DockRequestsControllerHelper
 
   skip_before_action :logged_in, :only => [:new, :create]
@@ -11,7 +11,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(username: params[:session][:username].downcase)
+    user = Auth::User.find_by(username: params[:session][:username].downcase)
     if user && user.authenticate(params[:session][:password]) && user.enabled && user.company.enabled
       log_in_redirect_root(user)
     else

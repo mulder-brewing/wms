@@ -9,7 +9,8 @@
       </div>
       <div class="modal-body">
         <% if modal_form.show_form? %>
-          <%= render modal_form.form_path, { :modal_form => modal_form } %>
+          <%= render modal_form.form_path(controller_path),
+            { :modal_form => modal_form } %>
         <% elsif modal_form.type_co.show? %>
           <%= render 'show' %>
         <% elsif modal_form.type_co.destroy? %>
@@ -17,7 +18,7 @@
         <% end %>
       </div>
       <div class="modal-footer">
-        <% if modal_form.type_co.update? %>
+        <% if modal_form.type_co.update?  && modal_form.form.show_timestamps? %>
           <%= render modal_form.timestamps_html_path, modal_form: modal_form %>
         <% end %>
         <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">

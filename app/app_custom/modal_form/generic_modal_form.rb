@@ -64,8 +64,8 @@ class ModalForm::GenericModalForm
     @form.id
   end
 
-  def form_path
-    @form.path(@type_co, @record)
+  def form_path(controller_path)
+    @form.path(controller_path)
   end
 
 

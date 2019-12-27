@@ -1,4 +1,4 @@
-class UserPolicy < ApplicationPolicy
+class Auth::UserPolicy < ApplicationPolicy
 
   def new?
     admin?

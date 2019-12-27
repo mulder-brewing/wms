@@ -1,5 +1,5 @@
 class ApplicationPolicy
-  include SessionsHelper
+  include Auth::SessionsHelper
 
   attr_reader :user, :record
 
@@ -36,7 +36,7 @@ class ApplicationPolicy
     attr_reader :permission
 
   class Scope
-    include SessionsHelper
+    include Auth::SessionsHelper
 
     def initialize(user, scope)
       @user  = user

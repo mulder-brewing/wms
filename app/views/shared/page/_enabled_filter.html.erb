@@ -2,12 +2,15 @@
   <div class="row">
     <div class="col py-1">
       <div class="btn-group btn-group-sm enabled-filter" role="group" aria-label="Basic example">
-        <%= link_to t_nf("global.all"), send(page.index_path), class: "btn #{page.button_class(:all)}" %>
+        <%= link_to t_nf("global.all"), polymorphic_path(page.new_record),
+            class: "btn #{page.button_class(:all)}" %>
         <%= link_to t_nf("global.boolean.enabled_disabled.enabled"),
-            send(page.index_path, :enabled => "true"), class: "btn #{page.button_class(:enabled)}"
+            polymorphic_path(page.new_record, :enabled => "true"),
+            class: "btn #{page.button_class(:enabled)}"
             %>
         <%= link_to t_nf("global.boolean.enabled_disabled.disabled"),
-            send(page.index_path, :enabled => "false"), class: "btn #{page.button_class(:disabled)}"
+            polymorphic_path(page.new_record, :enabled => "false"),
+            class: "btn #{page.button_class(:disabled)}"
             %>
       </div>
     </div>

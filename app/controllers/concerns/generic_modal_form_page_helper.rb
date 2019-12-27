@@ -7,10 +7,21 @@ module GenericModalFormPageHelper
     record = record_callback(record, action)
   end
 
+  def mfc(modal_form, action)
+    return modal_form unless self.respond_to?(:modal_form_callback, true)
+    modal_form = modal_form_callback(modal_form, action)
+  end
+
+  def setup_table
+    return nil unless self.respond_to?(:table_array_hash, true)
+    Table::GenericTable.new(table_array_hash)
+  end
+
   def new_modal
     record = authorize controller_model.new
     record = rc(record, :new)
     modal_form = ModalForm::GenericModalForm.new(:create, record)
+    modal_form = mfc(modal_form, :new)
     respond_to do |format|
       format.js {
         render  :template => modal_form.generic_js_path,
@@ -29,7 +40,8 @@ module GenericModalFormPageHelper
     record = rc(record, :create)
     record.save
     modal_form = ModalForm::GenericModalForm.new(:create, record)
-    table = Table::GenericTable.new(table_array_hash)
+    modal_form = mfc(modal_form, :create)
+    table = setup_table
     respond_to do |format|
       format.js {
         render  :template => modal_form.save_result_js_path,
@@ -40,10 +52,13 @@ module GenericModalFormPageHelper
     end
   end
 
-  def edit_modal
-    record = authorize find_record
-    record = rc(record, :edit)
+  def edit_modal(record = nil)
+    if record.nil?
+      record = form? ? controller_model.new(param_id) : find_record
+    end
+    record = authorize rc(record, :edit)
     modal_form = ModalForm::GenericModalForm.new(:update, record)
+    modal_form = mfc(modal_form, :edit)
     respond_to do |format|
       format.js {
         render  :template => modal_form.generic_js_path,
@@ -54,14 +69,17 @@ module GenericModalFormPageHelper
 
   def update_record(record = nil)
     if record.nil?
-      record = find_record
+      cu = current_user
+      puts params.inspect
+      record = form? ? controller_model.new(param_id) : find_record
       record.assign_attributes(record_params)
     end
     authorize record
     record = rc(record, :update)
-    record.save
+    record.is_a?(BaseForm) ? record.submit : record.save
     modal_form = ModalForm::GenericModalForm.new(:update, record)
-    table = Table::GenericTable.new(table_array_hash)
+    modal_form = mfc(modal_form, :update)
+    table = setup_table
     respond_to do |format|
       format.js {
         render  :template => modal_form.save_result_js_path,
@@ -98,6 +116,7 @@ module GenericModalFormPageHelper
     pagy, records = pagy(records, items:25)
 
     page.records = records
+    page.new_record = controller_model.new
     page.add_table(table_array_hash) \
       if self.respond_to?(:table_array_hash, true)
 

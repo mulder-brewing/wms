@@ -1,0 +1,28 @@
+<%= simple_form_for modal_form.record,
+                                remote:true,
+                                :html => { :id => modal_form.form_id } do |f| %>
+    <% if not_self?(modal_form.record.user) %>
+      <h5>
+        <small class="text-muted">
+          You are resetting password for
+          <%= modal_form.record.user.full_name_username %>
+        </small>
+      </h5>
+    <% end %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :password, label: t_nf("auth/users.security.password") %>
+      <%= f.hint t_nf("auth/users.hints.password") %>
+      <%= f.input :password_confirmation,
+          label: t_nf("auth/users.security.password_confirm"),
+          required: true %>
+      <% if not_self?(modal_form.record.user) %>
+        <%= f.input :email,
+            label: t_nf("auth/users.communication.email")%>
+        <%= f.input :send_email, as: :boolean,
+            label: t_nf("auth/users.communication.send_email_password")%>
+      <% end %>
+    </div>
+<% end %>

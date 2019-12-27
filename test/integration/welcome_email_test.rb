@@ -18,7 +18,7 @@ class WelcomeEmailTest < ActionDispatch::IntegrationTest
     params = { user: { first_name: "Test", last_name: "User", username: create_user_username, password: "Password1$", company_admin: false, app_admin: false, company_id: company_id, email: email, send_email: send_mail } }
     log_in_if_user(user)
     assert_difference 'User.count', user_count_difference do
-      post users_path, xhr: true, params: params
+      post auth_users_path, xhr: true, params: params
     end
     if email_validity == true
       assert_equal 1, ActionMailer::Base.deliveries.size
@@ -45,7 +45,7 @@ class WelcomeEmailTest < ActionDispatch::IntegrationTest
     log_in_if_user(@company_admin)
     get new_user_path, xhr:true
     assert_match /Send email with login instructions/, @response.body
-    get edit_user_path(@regular_user), xhr:true
+    get edit_auth_user_path(@regular_user), xhr:true
     assert_no_match /Send email with login instructions/, @response.body
   end
 

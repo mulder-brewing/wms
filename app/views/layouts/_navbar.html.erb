@@ -29,7 +29,7 @@
                       <%= link_to "Admin Only", '#', :class => "dropdown-item dropdown-toggle" %>
                       <ul class="dropdown-menu">
                         <li><%= link_to "Companies",   companies_path, class: "dropdown-item" if app_admin? %></li>
-                        <li><%= link_to "Users", users_path(:enabled => "true"), class: "dropdown-item" %></li>
+                        <li><%= link_to "Users", auth_users_path(:enabled => "true"), class: "dropdown-item" %></li>
                         <li><%= link_to "Access Policies", access_policies_path(:enabled => "true"), class: "dropdown-item" %></li>
                       </ul>
                     </li>
@@ -45,7 +45,7 @@
 
           </div>
           <div class="navbar-nav ml-auto">
-            <%= link_to current_user.username, edit_user_path(current_user), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => "nav-item nav-link mr-4" %>
+            <%= link_to current_user.username, edit_auth_user_path(current_user), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => "nav-item nav-link mr-4" %>
           </div>
         </div>
       <% end %>

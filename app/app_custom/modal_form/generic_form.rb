@@ -1,6 +1,7 @@
 class ModalForm::GenericForm
 
   attr_accessor :show_timestamps
+  attr_writer :controller_path
 
   CREATE_UPDATE_FORM_FILE_NAME = "/create_update_form"
   ID = "generic-form"
@@ -14,6 +15,7 @@ class ModalForm::GenericForm
   end
 
   def path(controller_path)
+    return @controller_path + CREATE_UPDATE_FORM_FILE_NAME unless @controller_path.nil?
     controller_path + CREATE_UPDATE_FORM_FILE_NAME
   end
 

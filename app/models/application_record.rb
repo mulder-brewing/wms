@@ -23,7 +23,7 @@ class ApplicationRecord < ActiveRecord::Base
     where_company(current_company_id).enabled
   end
 
-  def self.select_options(company_id, record_id = nil)
+  def self.select_options(company_id, record_id)
     options = enabled_where_company(company_id)
     unless record_id.nil?
       options = options.or(where(id: record_id))

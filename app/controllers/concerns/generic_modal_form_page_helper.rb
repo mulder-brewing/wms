@@ -1,15 +1,14 @@
 module GenericModalFormPageHelper
 
+
   private
 
-  def rc(record, action)
-    return record unless self.respond_to?(:record_callback, true)
-    record = record_callback(record, action)
+  def rc(record)
+    record_callback(record) if self.respond_to?(:record_callback, true)
   end
 
-  def mfc(modal_form, action)
-    return modal_form unless self.respond_to?(:modal_form_callback, true)
-    modal_form = modal_form_callback(modal_form, action)
+  def mfc(modal_form)
+    modal_form_callback(modal_form) if self.respond_to?(:modal_form_callback, true)
   end
 
   def setup_table
@@ -19,9 +18,9 @@ module GenericModalFormPageHelper
 
   def new_modal
     record = authorize controller_model.new
-    record = rc(record, :new)
+    rc(record)
     modal_form = ModalForm::GenericModalForm.new(:create, record)
-    modal_form = mfc(modal_form, :new)
+    mfc(modal_form)
     respond_to do |format|
       format.js {
         render  :template => modal_form.generic_js_path,
@@ -37,10 +36,10 @@ module GenericModalFormPageHelper
       record.current_user = current_user
     end
     authorize record
-    record = rc(record, :create)
-    record.save
+    rc(record)
+    record.is_a?(BaseForm) ? record.submit : record.save
     modal_form = ModalForm::GenericModalForm.new(:create, record)
-    modal_form = mfc(modal_form, :create)
+    mfc(modal_form)
     table = setup_table
     respond_to do |format|
       format.js {
@@ -54,11 +53,12 @@ module GenericModalFormPageHelper
 
   def edit_modal(record = nil)
     if record.nil?
-      record = form? ? controller_model.new(param_id) : find_record
+      record = form? ? controller_model.new(param_id_with_current_user) : find_record
     end
-    record = authorize rc(record, :edit)
+    authorize record
+    rc(record)
     modal_form = ModalForm::GenericModalForm.new(:update, record)
-    modal_form = mfc(modal_form, :edit)
+    mfc(modal_form)
     respond_to do |format|
       format.js {
         render  :template => modal_form.generic_js_path,
@@ -69,16 +69,14 @@ module GenericModalFormPageHelper
 
   def update_record(record = nil)
     if record.nil?
-      cu = current_user
-      puts params.inspect
-      record = form? ? controller_model.new(param_id) : find_record
+      record = form? ? controller_model.new(param_id_with_current_user) : find_record
       record.assign_attributes(record_params)
     end
     authorize record
-    record = rc(record, :update)
+    rc(record)
     record.is_a?(BaseForm) ? record.submit : record.save
     modal_form = ModalForm::GenericModalForm.new(:update, record)
-    modal_form = mfc(modal_form, :update)
+    mfc(modal_form)
     table = setup_table
     respond_to do |format|
       format.js {

@@ -1,15 +1,18 @@
 class Auth::PasswordUpdateForm < BaseForm
+  include Concerns::Auth::SendEmail
+  include Concerns::Auth::ValidateUser
 
   validates :password, presence: true
   validates :password_confirmation, presence: true
-  validate :user_valid?
+  validate :email_exists_if_send_email
+  validate :not_self_if_send_email
+  validate :user_valid
 
   attr_accessor :user, :send_email
-  attr_writer :email
 
   delegate  :password, :password=,
             :password_confirmation, :password_confirmation=,
-            :email,
+            :email, :email=,
             to: :@user
 
   def persisted?
@@ -26,19 +29,28 @@ class Auth::PasswordUpdateForm < BaseForm
   end
 
   def submit(params = nil)
+    @user.password_reset = true unless self?(@user)
     if valid?
-      @user.save!
-      @save_success = true
-    else
-      puts self.password
-      puts self.password_confirmation
-      false
+      ActiveRecord::Base.transaction do
+        @user.save!
+        send_user_mail(:password_reset) if send_email?
+        @save_success = true
+      end    
     end
+  rescue
+    @save_success = false
+  end
   end
 
-  def user_valid?
-    unless @user.valid?
-      errors.merge!(@user.errors)
+  def record
+    @user
+  end
+
+  private
+
+  def not_self_if_send_email
+    if send_email? && self?(@user)
+      errors.add(:send_email, I18n.t("form.errors.email.send.self"))
     end
   end
 

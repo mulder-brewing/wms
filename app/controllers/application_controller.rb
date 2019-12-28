@@ -72,8 +72,12 @@ class ApplicationController < ActionController::Base
       instance_variable_get("@#{instance_variable}").current_user = current_user
     end
 
-    def select_options(model, record_id = nil, company_id = current_company_id)
-      model.select_options(company_id, record_id).order(:description)
+    def select_options(model, record_id, company_id)
+      model.select_options(company_id ||= current_company_id, record_id)
+    end
+
+    def action_sym
+      action_name.to_sym
     end
 
 end

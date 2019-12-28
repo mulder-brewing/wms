@@ -47,10 +47,13 @@ en:
       not_found: Record not found
     not_authorized: Not Authorized
 
+  auth/user_new_create_form:
+    title:
+      create: New User
+
   auth/users:
     title:
       index: Users
-      create: New User
       update: Edit User
       update_password: Update Password
     name:
@@ -98,6 +101,8 @@ en:
         send:
           email_blank: cannot send email without email address
           password_no_change: cannot send email if password does not change
+          self: cannot send email when resetting your own password
+          error: error sending email
         password:
           no_change: did not change.  Cannot send email.
       password_confirmation:

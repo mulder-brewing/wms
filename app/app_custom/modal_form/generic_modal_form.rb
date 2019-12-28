@@ -68,6 +68,10 @@ class ModalForm::GenericModalForm
     @form.path(controller_path)
   end
 
+  def record_or_form_record
+    record.is_a?(BaseForm) ? @record.record : @record
+  end
+
 
 
 end

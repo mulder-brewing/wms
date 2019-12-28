@@ -35,7 +35,7 @@ module FindObjectHelper
       controller_model < BaseForm
     end
 
-    def param_id
+    def param_id_with_current_user
       params.extract!(:id).permit(:id).merge(:current_user => current_user)
     end
 

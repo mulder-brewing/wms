@@ -7,7 +7,8 @@
     <div class="mb-3">
       <%= f.input :company_id, label: t_nf("companies.company"),
           :collection => @companies, :label_method => :name,
-          :value_method => :id if app_admin? %>
+          :value_method => :id,
+          input_html: { id: "auth_user_company_id"} if app_admin? %>
       <%= f.input :first_name, label: t_nf("auth/users.name.first_name"),
           as: :string if admin? %>
       <%= f.input :last_name, label: t_nf("auth/users.name.last_name"),
@@ -20,11 +21,19 @@
       <%= f.input :username, label: t_nf("auth/users.name.username"),
           as: :string if admin? %>
       <%= f.hint t_nf("auth/users.hints.username") %>
+      <% if modal_form.type_co.create? %>
+        <%= f.input :password, label: t_nf("auth/users.security.password") %>
+        <%= f.hint t_nf("auth/users.hints.password") %>
+        <%= f.input :password_confirmation,
+            label: t_nf("auth/users.security.password_confirm"),
+            required: true %>
+      <% end %>
       <%= f.input :access_policy_id, label: t_nf("access_policies.access_policy"),
           :collection => @access_policies, :label_method => :description,
-          :value_method => :id if admin? %>
-      <%= f.input :company_admin, label: t_nf("auth/users.security.admin")\
-          if admin? && not_self?(modal_form.record) %>
+          :value_method => :id,
+          input_html: { id: "auth_user_access_policy_id" } if admin? %>
+      <%= f.input :company_admin, label: t_nf("auth/users.security.admin"),
+          as: :boolean if admin? && not_self?(modal_form.record) %>
     </div>
     <% if modal_form.type_co.update? && admin? &&
                                         not_self?(modal_form.record) %>
@@ -42,6 +51,5 @@
 <% end %>
 
 <script type="text/javascript">
-  showResetPassword();
   populateAccessPoliciesSelect();
 </script>

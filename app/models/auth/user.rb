@@ -19,18 +19,13 @@ class Auth::User < ApplicationRecord
   validates :email, length: { maximum: 255 }, format: { with: VALID_EMAIL_REGEX }, allow_blank: true
   # Regex for 8-64 characters, must have at least one uppercase, lowercase, number, and special character.  No spaces
   VALID_PASSWORD_REGEX = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*)(?=.*\W.*)[a-zA-Z0-9\S]{8,64}\z/
-  validates :password, presence: true, format: { with: VALID_PASSWORD_REGEX }, allow_blank: true, allow_nil: true
+  validates :password, format: { with: VALID_PASSWORD_REGEX }, allow_nil: true
   validate :regular_user_check, if: :current_user_pre_check
   validate :self_disable_check, if: :current_user_pre_check
   validate :self_unadmin_check, if: :current_user_pre_check
-  validate :email_exists_if_send_email
-  validate :password_changed_if_send_reset_email
   validate :access_policy_matches_user_company
 
-  before_save :check_password_digest, if: :current_user_pre_check
-
   after_create_commit :send_welcome_email
-  after_update_commit :send_password_reset_email
 
   has_secure_password
 
@@ -99,21 +94,6 @@ class Auth::User < ApplicationRecord
       end
     end
 
-    # Flag the user for password reset if password changed by other user.
-    def check_password_digest
-      if password_digest_changed? && !self_equals_current_user?
-        self.password_reset = true
-      end
-    end
-
-    # Funstions related to sending mail
-    def email_exists_if_send_email
-      if send_email == "1" && email.blank?
-        errors.add(:email, I18n.t("form.errors.email.blank"))
-        errors.add(:send_email, I18n.t("form.errors.email.send.email_blank"))
-      end
-    end
-
     def send_mail?
       send_email == "1" && !email.blank?
     end
@@ -128,22 +108,8 @@ class Auth::User < ApplicationRecord
       end
     end
 
-    def password_changed_if_send_reset_email
-      if send_email_of_type?("password-reset") && !password_digest_changed?
-        errors.add(:password, I18n.t("form.errors.email.password.no_change"))
-        errors.add(:send_email,
-          I18n.t("form.errors.email.send.password_no_change"))
-      end
-    end
-
     def change_after_commit?(attribute)
       self.previous_changes.has_key?(attribute)
-    end
-
-    def send_password_reset_email
-      if change_after_commit?("password_digest") && send_email_of_type?("password-reset")
-        UserMailer.password_reset(self).deliver_now unless self_equals_current_user?
-      end
     end
 
     def access_policy_matches_user_company

@@ -81,6 +81,10 @@ module Auth::SessionsHelper
     !(user == current_user)
   end
 
+  def self?(user)
+    user == current_user
+  end
+
   # Returns the current user's access policy
   def current_access_policy
      @current_access_policy ||= current_user.access_policy

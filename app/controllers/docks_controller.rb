@@ -36,9 +36,9 @@ class DocksController < ApplicationController
       array << { name: :enabled, text_key_qualifier: :enabled }
     end
 
-    def record_callback(record, action)
+    def record_callback(record)
       p = -> (x = nil) { @dock_groups = select_options(DockGroup, x) }
-      case action
+      case action_sym
       when :new, :create
           p.()
           if @dock_groups.length == 1

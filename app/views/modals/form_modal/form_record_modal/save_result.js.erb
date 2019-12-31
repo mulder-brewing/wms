@@ -1,0 +1,19 @@
+<% record = modal.form.record %>
+var modal_id = '<%= modal.css_id %>';
+<% if modal.form.save_success %>
+  hideModal(modal_id);
+  <% if !table.nil? %>
+    function renderRecord() {
+      return '<%= j render partial: Page::IndexListPage::RECORD_HTML_PATH, locals: { record: record, table: table } %>'
+    }
+    <% if modal_form.type_co.create? %>
+      $('#<%= record.class.table_body_id %>').prepend(renderRecord());
+      $('#<%= record.table_row_id %>').hide().fadeIn(1000);
+    <% elsif modal_form.type_co.update? %>
+      $('#<%= record.table_row_id %>').replaceWith(renderRecord());
+    <% end %>
+  <% end %>
+  alert_custom('<%= Constants::Alert::SUCCESS %>', '<%= t "alert.save.success" %>');
+<% else %>
+  $("#<%= modal.form.css_id %>").replaceWith("<%=  j render modal.form.view_path, modal: modal %>");
+<% end %>

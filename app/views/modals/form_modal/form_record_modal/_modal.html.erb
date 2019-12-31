@@ -1,0 +1,33 @@
+<div id="<%= modal.css_id %>" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><%= t_nf modal.title %></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <% if modal.form? %>
+          <%= render modal.form.view_path,
+            { :modal => modal } %>
+        <% end %>
+      </div>
+      <div class="modal-footer">
+        <% if modal.footer.show_timestamps? %>
+          <%= render modal.timestamps_path, modal: modal %>
+        <% end %>
+        <% if modal.footer.buttons.include? :close %>
+          <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">
+            <%= t_nf "modal.close" %>
+          </button>
+        <% end %>
+        <% if modal.footer.buttons.include? :save %>
+          <button type="submit" form="<%= modal.form.css_id %>" class="btn btn-primary save">
+            <%= t_nf "modal.save" %>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

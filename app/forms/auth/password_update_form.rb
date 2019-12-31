@@ -1,12 +1,11 @@
-class Auth::PasswordUpdateForm < BaseForm
-  include Concerns::Auth::SendEmail
-  include Concerns::Auth::ValidateUser
+class Auth::PasswordUpdateForm < RecordForm
+  include Concerns::Email
 
   validates :password, presence: true
   validates :password_confirmation, presence: true
+  validate :user_valid
   validate :email_exists_if_send_email
   validate :not_self_if_send_email
-  validate :user_valid
 
   attr_accessor :user, :send_email
 
@@ -31,15 +30,12 @@ class Auth::PasswordUpdateForm < BaseForm
   def submit(params = nil)
     @user.password_reset = true unless self?(@user)
     if valid?
-      ActiveRecord::Base.transaction do
-        @user.save!
-        send_user_mail(:password_reset) if send_email?
-        @save_success = true
-      end    
+      @user.save!
+      send_email if send_email?
+      @save_success = true
+    else
+      @save_success = false
     end
-  rescue
-    @save_success = false
-  end
   end
 
   def record
@@ -47,6 +43,27 @@ class Auth::PasswordUpdateForm < BaseForm
   end
 
   private
+
+  def user_valid
+    unless @user.valid?
+      errors.merge!(@user.errors)
+    end
+  end
+
+  def send_email
+    UserMailer.password_reset(@user).deliver_now
+  end
+
+  def send_email?
+    @send_email_bool = ActiveModel::Type::Boolean.new.cast(@send_email)
+  end
+
+  def email_exists_if_send_email
+    unless send_email_possible?(@user.email, @send_email)
+      errors.add(:email, I18n.t("form.errors.email.blank"))
+      errors.add(:send_email, I18n.t("form.errors.email.send.email_blank"))
+    end
+  end
 
   def not_self_if_send_email
     if send_email? && self?(@user)

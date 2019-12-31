@@ -1,4 +1,4 @@
-class Modals::UpdateModal < Modals::EditUpdateModal
+class Modal::CreateModal < Modal::NewCreateModal
 
   def initialize(form)
     super

@@ -1,4 +1,4 @@
-class Modals::FormRecordModal < Modals::FormModal
+class Modal::FormRecordModal < Modal::FormModal
 
   attr_accessor :table, :persist, :role
 

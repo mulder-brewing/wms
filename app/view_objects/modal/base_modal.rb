@@ -1,4 +1,4 @@
-class Modals::BaseModal
+class Modal::BaseModal
 
   attr_accessor :footer
 

@@ -1,4 +1,4 @@
-class Modals::EditModal < Modals::EditUpdateModal
+class Modal::NewModal < Modal::NewCreateModal
 
   def initialize(*)
     super

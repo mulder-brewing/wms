@@ -1,4 +1,4 @@
-class Modals::Footers::FormFooter < Modals::Footers::BaseFooter
+class Modal::Footers::FormFooter < Modal::Footers::BaseFooter
 
   attr_accessor :buttons
 

@@ -1,4 +1,4 @@
-class Modals::FormModal < Modals::BaseModal
+class Modal::FormModal < Modal::BaseModal
 
   attr_accessor :form
 

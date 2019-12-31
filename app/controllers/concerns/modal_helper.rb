@@ -27,15 +27,14 @@ module ModalHelper
   def modal_class
     case action_sym
     when :new
-      Modals::NewModal
+      Modal::NewModal
     when :create
-      Modals::CreateModal
+      Modal::CreateModal
     when :edit
-      Modals::EditModal
+      Modal::EditModal
     when :update
-      Modals::UpdateModal
+      Modal::UpdateModal
     end
   end
-
 
 end

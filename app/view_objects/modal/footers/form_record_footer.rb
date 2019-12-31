@@ -1,4 +1,4 @@
-class Modals::Footers::FormRecordFooter < Modals::Footers::FormFooter
+class Modal::Footers::FormRecordFooter < Modal::Footers::FormFooter
 
   attr_accessor :show_timestamps
 

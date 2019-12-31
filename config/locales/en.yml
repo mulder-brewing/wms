@@ -112,8 +112,8 @@ en:
     all: All
     boolean:
       yes_no:
-        yes: Yes
-        no: No
+        'yes': 'Yes'
+        'no': 'No'
       enabled_disabled:
         enabled: Enabled
         disabled: Disabled

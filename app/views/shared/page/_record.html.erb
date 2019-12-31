@@ -1,15 +1,10 @@
 <tr id="<%= record.table_row_id %>">
   <% table.columns.each do |column| %>
     <td>
-      <% if column.name == :actions %>
-        <% if column.add_edit_button? %>
-          <%= link_to t_nf("modal.edit"), edit_polymorphic_path(record), :remote => true, :class => 'btn btn-primary btn-sm m-1' %>
+      <% if column.actions? && column.buttons? %>
+        <% column.buttons.each do |button| %>
+          <%= link_to t_nf(button.text_key), button.path(record), :remote => button.remote, :class => button.btn_class %>
         <% end %>
-        <% if column.add_become_button? && app_admin? %>
-          <%= link_to t_nf("auth/users.become"), become_user_path(id: record.id), :class => 'btn btn-primary btn-sm m-1' %>
-        <% end %>
-      <% elsif column.name == :enabled %>
-        <%= t human_boolean(record.enabled) %>
       <% else %>
         <%= column.field_value(record) %>
       <% end %>

@@ -1,9 +1,9 @@
-class Modals::EditUpdateModal < Modals::FormRecordModal
+class Modal::EditUpdateModal < Modal::FormRecordModal
 
   def initialize(*)
     super
     @role = :edit_update
-    @footer = Modals::Footers::EditUpdateFooter.new
+    @footer = Modal::Footers::EditUpdateFooter.new
   end
 
   def views_path

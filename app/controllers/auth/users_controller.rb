@@ -1,6 +1,5 @@
 class Auth::UsersController < Auth::BaseController
     include ModalHelper
-    include Auth::UsersIndexTable
 
     def new
       modal = new_modal(Auth::UserNewCreateForm)
@@ -22,7 +21,10 @@ class Auth::UsersController < Auth::BaseController
     end
 
     def update
-      update_record
+      modal = new_modal(Auth::UserEditUpdateForm)
+      modal.form.submit(record_params)
+      setup_form_variables(modal.form.record)
+      render_modal(modal)
     end
 
     def index
@@ -84,8 +86,7 @@ class Auth::UsersController < Auth::BaseController
 
       page.records = records
       page.new_record = controller_model.new
-      page.add_table(table_array_hash) \
-        if self.respond_to?(:table_array_hash, true)
+      page.table = Auth::UsersIndexTable.new(current_user)
 
       respond_to do |format|
         format.html {

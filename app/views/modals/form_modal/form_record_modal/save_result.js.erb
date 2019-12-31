@@ -2,14 +2,14 @@
 var modal_id = '<%= modal.css_id %>';
 <% if modal.form.save_success %>
   hideModal(modal_id);
-  <% if !table.nil? %>
+  <% if !modal.table.nil? %>
     function renderRecord() {
-      return '<%= j render partial: Page::IndexListPage::RECORD_HTML_PATH, locals: { record: record, table: table } %>'
+      return '<%= j render partial: Page::IndexListPage::RECORD_HTML_PATH, locals: { record: record, table: modal.table } %>'
     }
-    <% if modal_form.type_co.create? %>
+    <% if modal.role?(:new_create) %>
       $('#<%= record.class.table_body_id %>').prepend(renderRecord());
       $('#<%= record.table_row_id %>').hide().fadeIn(1000);
-    <% elsif modal_form.type_co.update? %>
+    <% elsif modal.role?(:edit_update) %>
       $('#<%= record.table_row_id %>').replaceWith(renderRecord());
     <% end %>
   <% end %>

@@ -1,9 +1,9 @@
-class Modals::NewCreateModal < Modals::FormRecordModal
+class Modal::NewCreateModal < Modal::FormRecordModal
 
   def initialize(*)
     super
     @role = :new_create
-    @footer = Modals::Footers::NewCreateFooter.new
+    @footer = Modal::Footers::NewCreateFooter.new
   end
 
   def title

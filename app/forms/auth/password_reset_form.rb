@@ -1,4 +1,4 @@
-class Auth::PasswordResetForm < BaseForm
+class Auth::PasswordResetForm < RecordForm
 
   validates :password, presence: true
   validates :password_confirmation, presence: true

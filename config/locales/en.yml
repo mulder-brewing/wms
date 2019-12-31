@@ -47,12 +47,9 @@ en:
       not_found: Record not found
     not_authorized: Not Authorized
 
-  auth/user_new_create_form:
-    title:
-      create: New User
-
   auth/users:
     title:
+      new_create: New User
       index: Users
       update: Edit User
       update_password: Update Password

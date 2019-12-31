@@ -9,14 +9,13 @@ class ApplicationController < ActionController::Base
   after_action :verify_authorized
   after_action :verify_policy_scoped, only: :index
 
-  RecordNotFound = Class.new(StandardError)
-  rescue_from ApplicationController::RecordNotFound, with: :not_found
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+
+  rescue_from Pundit::NotAuthorizedError, with: :not_authorized
 
   rescue_from ActionController::InvalidAuthenticityToken do
     all_formats_redirect_to(root_url)
   end
-
-  rescue_from Pundit::NotAuthorizedError, with: :not_authorized
 
   def all_formats_redirect_to(path)
     respond_to do |format|

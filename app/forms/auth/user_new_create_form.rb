@@ -1,32 +1,20 @@
-class Auth::UserNewCreateForm < BaseForm
-  include Concerns::Auth::SendEmail
-  include Concerns::Auth::ValidateUser
+class Auth::UserNewCreateForm < Auth::UserForm
+  include Concerns::Email
 
   validates :password_confirmation, presence: true
   validate :email_exists_if_send_email
-  validate :user_valid
 
-  attr_accessor :user, :send_email
+  attr_accessor :send_email
 
-  delegate  :company_id, :company_id=,
-            :first_name, :first_name=,
-            :last_name, :last_name=,
-            :email, :email=,
-            :username, :username=,
-            :password, :password=,
-            :password_confirmation, :password_confirmation=,
-            :company_admin, :company_admin=,
-            :access_policy_id, :access_policy_id=,
-            :table_row_id,
-            to: :@user
+  delegate :password, :password_confirmation, to: :@user
 
-  def initialize(params = nil)
+  def prep_record(*)
     @user = Auth::User.new
-    super
   end
 
-  def submit
-    @user.current_user = current_user
+  def submit(params)
+    @user.attributes = params
+    @user.company_id ||= current_company_id
     if valid?
       @user.save!
       @save_success = true
@@ -35,8 +23,17 @@ class Auth::UserNewCreateForm < BaseForm
     end
   end
 
-  def record
-    @user
+  def view_path
+    super(self.class.superclass)
+  end
+
+  private
+
+  def email_exists_if_send_email
+    unless send_email_possible?(@user.email, @send_email)
+      errors.add(:email, I18n.t("form.errors.email.blank"))
+      errors.add(:send_email, I18n.t("form.errors.email.send.email_blank"))
+    end
   end
 
 end

@@ -7,8 +7,8 @@ Rails.application.routes.draw do
   end
 
   namespace :auth do
-    resources :users, only: [:edit, :update, :index]
-    resources :users, only: :new, to: 'user_new_create_forms#new'
+    resources :users, only: [:new, :create, :edit, :update, :index]
+    # resources :users, only: :new, to: 'user_new_create_forms#new'
     resources :user_new_create_forms, only: [:new, :create]
     resources :password_resets, only: [:new, :create]
     resources :password_update_forms, only: [:edit, :update]

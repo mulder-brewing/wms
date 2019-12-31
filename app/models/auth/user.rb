@@ -7,7 +7,6 @@ class Auth::User < ApplicationRecord
   has_many :dock_request_audit_histories, dependent: :destroy
 
   before_validation :strip_whitespace
-  validates :current_user, presence: true
   validates :company_id, presence: true
   validates :access_policy_id, presence: true
   # Regex for lowercase letters, numbers, and underscore.
@@ -20,9 +19,9 @@ class Auth::User < ApplicationRecord
   # Regex for 8-64 characters, must have at least one uppercase, lowercase, number, and special character.  No spaces
   VALID_PASSWORD_REGEX = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*)(?=.*\W.*)[a-zA-Z0-9\S]{8,64}\z/
   validates :password, format: { with: VALID_PASSWORD_REGEX }, allow_nil: true
-  validate :regular_user_check, if: :current_user_pre_check
-  validate :self_disable_check, if: :current_user_pre_check
-  validate :self_unadmin_check, if: :current_user_pre_check
+  # validate :regular_user_check, if: :current_user_pre_check
+  # validate :self_disable_check, if: :current_user_pre_check
+  # validate :self_unadmin_check, if: :current_user_pre_check
   validate :access_policy_matches_user_company
 
   after_create_commit :send_welcome_email
@@ -51,13 +50,6 @@ class Auth::User < ApplicationRecord
       self.first_name.strip! if self.first_name?
       self.last_name.strip! if self.last_name?
       self.email.strip! if self.email?
-    end
-
-    # check that the current user's company matches the company of this instance
-    def company_check
-      if company_id != current_user.company_id
-        errors.add(:company_id, :mismatch) unless current_user.app_admin
-      end
     end
 
     # Returns the hash digest of the given string, used for user fixtures with minitest.

@@ -20,4 +20,8 @@ class RecordForm < BaseForm
     @controller.controller_path + "/" + view_class.name.demodulize.underscore
   end
 
+  def controller_model
+    @controller.controller_path.classify.constantize
+  end
+
 end

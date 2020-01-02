@@ -6,31 +6,33 @@ class Auth::UserNewCreateForm < Auth::UserForm
 
   attr_accessor :send_email
 
-  delegate :password, :password_confirmation, to: :@user
-
-  def prep_record(*)
-    @user = Auth::User.new
-  end
-
-  def submit(params)
-    @user.attributes = params
-    @user.company_id ||= current_company_id
-    if valid?
-      @user.save!
-      @save_success = true
-    else
-      @save_success = false
-    end
-  end
+  delegate  :password, :password=,
+            :password_confirmation, :password_confirmation=,
+            to: :@record
 
   def view_path
     super(self.class.superclass)
   end
 
+  def permitted_params
+    permitted = [:first_name, :last_name, :username, :company_admin,
+        :access_policy_id, :password, :password_confirmation,
+        :email, :send_email]
+    permitted << :company_id if app_admin?
+    return permitted
+  end
+
+  def setup_variables
+    super
+    if app_admin? && controller.action_name == "new"
+      @access_policies = AccessPolicy.none
+    end
+  end
+
   private
 
   def email_exists_if_send_email
-    unless send_email_possible?(@user.email, @send_email)
+    unless send_email_possible?(@record.email, @send_email)
       errors.add(:email, I18n.t("form.errors.email.blank"))
       errors.add(:send_email, I18n.t("form.errors.email.send.email_blank"))
     end

@@ -1,40 +1,29 @@
-class Auth::UserForm < RecordForm
+class Auth::UserForm < BasicRecordForm
+
+  attr_accessor :companies, :access_policies
+
+  delegate  :company_id, :company_id=,
+            :first_name, :first_name=,
+            :last_name, :last_name=,
+            :email, :email=,
+            :username, :username=,
+            :company_admin, :company_admin=,
+            :access_policy_id, :access_policy_id=,
+            to: :@record
 
   def self.model_name
     ActiveModel::Name.new(self, nil, "Auth::User")
   end
 
-  validate :user_valid
-
-  attr_accessor :user
-
-  delegate  :company_id,
-            :first_name,
-            :last_name,
-            :email,
-            :username,
-            :company_admin,
-            :access_policy_id,
-            to: :@user
-
-  def record
-    @user
+  def setup_variables
+    @companies = Company.all.order(:name) if app_admin?
+    company_id = @record.company_id || current_company_id
+    @access_policies = AccessPolicy.select_options(company_id,
+      record.access_policy_id).order(:description)
   end
 
-  def persisted?
-    @user.persisted?
-  end
-
-  def id
-    @user.id
-  end
-
-  private
-
-  def user_valid
-    unless @user.valid?
-      errors.merge!(@user.errors)
-    end
+  def table
+    Table::Auth::UsersIndexTable.new(current_user) if action?(:create, :update)
   end
 
 end

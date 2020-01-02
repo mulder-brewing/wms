@@ -1,8 +1,8 @@
 class Button::BecomeButton < Button::IndexButton
 
   def initialize
-    super("auth/users.become", STYLES[:primary])
-    @size = SIZES[:small]
+    super("auth/users.become", Button::Style::PRIMARY)
+    @size = Button::Size::SMALL
     @classes << "m-1"
   end
 

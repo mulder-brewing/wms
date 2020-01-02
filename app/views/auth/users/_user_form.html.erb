@@ -5,7 +5,7 @@
     </div>
     <div class="mb-3">
       <%= f.input :company_id, label: t_nf("companies.company"),
-          :collection => @companies, :label_method => :name,
+          :collection => modal.form.companies, :label_method => :name,
           :value_method => :id, required: true,
           input_html: { id: "auth_user_company_id"} if app_admin? %>
       <%= f.input :first_name, label: t_nf("auth/users.name.first_name"),
@@ -29,8 +29,8 @@
             required: true %>
       <% end %>
       <%= f.input :access_policy_id, label: t_nf("access_policies.access_policy"),
-          :collection => @access_policies, :label_method => :description,
-          :value_method => :id, required: true,
+          :collection => modal.form.access_policies,
+          :label_method => :description, :value_method => :id, required: true,
           input_html: { id: "auth_user_access_policy_id" } if admin? %>
       <%= f.input :company_admin, label: t_nf("auth/users.security.admin"),
           as: :boolean if admin? && not_self?(modal.form.record) %>

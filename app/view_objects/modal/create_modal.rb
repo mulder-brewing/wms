@@ -1,6 +1,6 @@
 class Modal::CreateModal < Modal::NewCreateModal
 
-  def initialize(form)
+  def initialize(*)
     super
     @persist = true
   end

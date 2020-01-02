@@ -1,19 +1,20 @@
 <% record = modal.form.record %>
-var modal_id = '<%= modal.css_id %>';
+<% table = modal.table %>
+var modal_id = '<%= modal.id %>';
 <% if modal.form.save_success %>
   hideModal(modal_id);
-  <% if !modal.table.nil? %>
+  <% if !table.nil? %>
     function renderRecord() {
-      return '<%= j render partial: Page::IndexListPage::RECORD_HTML_PATH, locals: { record: record, table: modal.table } %>'
+      return '<%= j render partial: Page::IndexListPage::RECORD_HTML_PATH, locals: { record: record, table: table } %>'
     }
     <% if modal.role?(:new_create) %>
-      $('#<%= record.class.table_body_id %>').prepend(renderRecord());
-      $('#<%= record.table_row_id %>').hide().fadeIn(1000);
+      $('#<%= table.body_id %>').prepend(renderRecord());
+      $('#<%= table.row_id(record) %>').hide().fadeIn(1000);
     <% elsif modal.role?(:edit_update) %>
-      $('#<%= record.table_row_id %>').replaceWith(renderRecord());
+      $('#<%= table.row_id(record) %>').replaceWith(renderRecord());
     <% end %>
   <% end %>
   alert_custom('<%= Constants::Alert::SUCCESS %>', '<%= t "alert.save.success" %>');
 <% else %>
-  $("#<%= modal.form.css_id %>").replaceWith("<%=  j render modal.form.view_path, modal: modal %>");
+  $("#<%= modal.form.html_id %>").replaceWith("<%=  j render modal.form.view_path, modal: modal %>");
 <% end %>

@@ -9,9 +9,12 @@ class BaseForm
     @controller = controller
   end
 
+  def controller_model
+    Controller::Model.call(@controller)
+  end
+
   def action?(*args)
     args.include? controller.action_name.to_sym
   end
-
 
 end

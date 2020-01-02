@@ -1,4 +1,4 @@
-<tr id="<%= record.table_row_id %>">
+<tr id="<%= table.row_id(record) %>">
   <% table.columns.each do |column| %>
     <td>
       <% if column.actions? && column.buttons? %>

@@ -177,7 +177,7 @@ class DockRequest < ApplicationRecord
 
     def clean_phone_number
       if !phone_number.blank?
-        self.phone_number = digits_only(phone_number)
+        self.phone_number = Util::String::DigitsOnly.call(phone_number)
       end
     end
 

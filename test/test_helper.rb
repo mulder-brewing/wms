@@ -182,10 +182,10 @@ class ActionDispatch::IntegrationTest
       assert_template to.index_template
       if to.check_visibility?
         to.visible_y_records.each do |record|
-          assert_select "tr##{record.table_row_id}"
+          assert_select "tr##{Table::IndexTable.row_id(record)}"
         end
         to.visible_n_records.each do |record|
-          assert_select "tr##{record.table_row_id}", false
+          assert_select "tr##{Table::IndexTable.row_id(record)}", false
         end
       end
       assert_select "header h3", to.title if to.test_title?
@@ -309,6 +309,10 @@ class ActionDispatch::IntegrationTest
     to.attributes.each do |k, v|
       assert_equal v, model.send(k)
     end
+  end
+
+  def form_input_id(form, attribute)
+    form.record_name + "_" + attribute.to_s
   end
 
   # This function helps tests to run related to getting new object page/moda with ajax.

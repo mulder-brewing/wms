@@ -20,14 +20,6 @@ class Auth::UserPolicy < ApplicationPolicy
     admin?
   end
 
-  def update_password?
-    check?
-  end
-
-  def update_password_commit?
-    check?
-  end
-
   private
     def check?
       return true if app_admin?
@@ -38,7 +30,7 @@ class Auth::UserPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       if app_admin?
-        scope.all_except(current_user).order(:username)
+        scope.all_except(current_user).includes_company.order(:username)
       else
         scope.where_company_users_except(current_user).order(:username)
       end

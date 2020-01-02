@@ -1,6 +1,6 @@
 class Modal::UpdateModal < Modal::EditUpdateModal
 
-  def initialize(form)
+  def initialize(*)
     super
     @persist = true
   end

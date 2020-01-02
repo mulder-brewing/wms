@@ -7,7 +7,7 @@ class Table::Auth::UsersIndexTable < Table::IndexTable
     @columns << Table::Column::DataColumn.new("auth/users.name.username",
       :username)
     @columns << Table::Column::DataColumn.new("companies.company",
-      [:company, :name])
+      [:company, :name]) if app_admin?
     @columns << Table::Column::EnabledColumn.new
   end
 end

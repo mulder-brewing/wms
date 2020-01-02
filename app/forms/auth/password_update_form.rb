@@ -1,5 +1,4 @@
 class Auth::PasswordUpdateForm < RecordForm
-  include Concerns::Email
 
   validates :password, presence: true
   validates :password_confirmation, presence: true
@@ -55,11 +54,11 @@ class Auth::PasswordUpdateForm < RecordForm
   end
 
   def send_email?
-    @send_email_bool = ActiveModel::Type::Boolean.new.cast(@send_email)
+    @send_email_bool = Util::Boolean::Cast.call(@send_email)
   end
 
   def email_exists_if_send_email
-    unless send_email_possible?(@user.email, @send_email)
+    unless Util::Email::SendPossible.call(@user.email, @send_email)
       errors.add(:email, I18n.t("form.errors.email.blank"))
       errors.add(:send_email, I18n.t("form.errors.email.send.email_blank"))
     end

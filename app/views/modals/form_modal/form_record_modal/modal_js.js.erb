@@ -1,4 +1,4 @@
-$("#<%= modal.css_id %>").removeClass("fade");
-$("#<%= modal.css_id %>").modal("hide");
+$("#<%= modal.id %>").removeClass("fade");
+$("#<%= modal.id %>").modal("hide");
 $("#<%= modal.wrapper %>").html("<%= j render modal.html_path, modal: modal %>");
-$("#<%= modal.css_id %>").modal("show");
+$("#<%= modal.id %>").modal("show");

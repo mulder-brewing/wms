@@ -1,6 +1,6 @@
 class RecordForm < BaseForm
 
-  CSS_ID = "record-form"
+  HTML_ID = "record-form"
 
   attr_accessor :save_success, :view_class
 
@@ -11,12 +11,17 @@ class RecordForm < BaseForm
     @view_class = self.class
   end
 
-  def css_id
-    CSS_ID
+  def html_id
+    HTML_ID
   end
 
   def self.record_name
     self.model_name.to_s.underscore.sub("/", "_")
+  end
+
+  # Tests use this to figure out what input id to look for.
+  def form_input_id(attribute)
+    record_name + "_" + attribute.to_s
   end
 
   def view_path()

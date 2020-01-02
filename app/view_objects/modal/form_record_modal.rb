@@ -3,7 +3,7 @@ class Modal::FormRecordModal < Modal::FormModal
   attr_accessor :table, :persist, :role
 
   WRAPPER = "modal-wrapper"
-  CSS_ID = "form-record-modal"
+  ID = "form-record-modal"
 
   VIEWS_PATH = "modals/form_modal/form_record_modal/"
 
@@ -16,8 +16,8 @@ class Modal::FormRecordModal < Modal::FormModal
     @table = table
   end
 
-  def css_id
-    CSS_ID
+  def id
+    ID
   end
 
   def wrapper
@@ -41,7 +41,7 @@ class Modal::FormRecordModal < Modal::FormModal
   end
 
   def title
-    form.record.modal_title
+    form.record.class.name.tableize + ".title."
   end
 
 end

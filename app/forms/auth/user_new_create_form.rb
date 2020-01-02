@@ -15,6 +15,13 @@ class Auth::UserNewCreateForm < Auth::UserForm
     @view_class = self.class.superclass
   end
 
+  def submit
+    super
+    if @save_success && Util::Boolean::Cast.call(@send_email)
+      send_welcome_email
+    end
+  end
+
   def permitted_params
     permitted = [:first_name, :last_name, :username, :company_admin,
         :access_policy_id, :password, :password_confirmation,
@@ -37,6 +44,10 @@ class Auth::UserNewCreateForm < Auth::UserForm
       errors.add(:email, I18n.t("form.errors.email.blank"))
       errors.add(:send_email, I18n.t("form.errors.email.send.email_blank"))
     end
+  end
+
+  def send_welcome_email
+    UserMailer.create_user(@record).deliver_now
   end
 
 end

@@ -20,14 +20,6 @@ class Auth::UserPolicy < ApplicationPolicy
     admin?
   end
 
-  def update_password?
-    check?
-  end
-
-  def update_password_commit?
-    check?
-  end
-
   private
     def check?
       return true if app_admin?

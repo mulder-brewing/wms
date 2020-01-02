@@ -1,5 +1,5 @@
 <%= simple_form_for modal.form, remote:true,
-  :html => { :id => modal.form.css_id } do |f| %>
+  :html => { :id => modal.form.html_id } do |f| %>
     <div id="feedback">
       <%= errors_for(f.object) %>
     </div>
@@ -36,7 +36,7 @@
           as: :boolean if admin? && not_self?(modal.form.record) %>
     </div>
     <% if modal.role?(:edit_update) && admin? &&
-                                        not_self?(modal.form.record) %>
+          not_self?(modal.form.record) %>
       <div class="mb-2">
         <%= f.input :enabled,
             label: t_nf("global.boolean.enabled_disabled.enabled"),

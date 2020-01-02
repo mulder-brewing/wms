@@ -1,4 +1,4 @@
-<div id="<%= modal.css_id %>" class="modal fade" tabindex="-1" role="dialog">
+<div id="<%= modal.id %>" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -23,7 +23,7 @@
           </button>
         <% end %>
         <% if modal.footer.buttons.include? :save %>
-          <button type="submit" form="<%= modal.form.css_id %>" class="btn btn-primary save">
+          <button type="submit" form="<%= modal.form.html_id %>" class="btn btn-primary save">
             <%= t_nf "modal.save" %>
           </button>
         <% end %>

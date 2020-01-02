@@ -14,7 +14,7 @@
         <% end %>
       </tr>
     </thead>
-    <tbody id=<%= page.records.table_body_id %>>
+    <tbody id=<%= page.table.body_id %>>
       <% page.records.each do |record| %>
         <%= render partial: page.record_html_path,
           locals: { record: record,

@@ -87,47 +87,6 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
--- Name: auth/users; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public."auth/users" (
-    id bigint NOT NULL,
-    username text,
-    first_name text,
-    last_name text,
-    email text,
-    enabled boolean DEFAULT true,
-    company_id bigint,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    password_digest character varying,
-    company_admin boolean DEFAULT false,
-    app_admin boolean DEFAULT false,
-    password_reset boolean DEFAULT true,
-    access_policy_id bigint
-);
-
-
---
--- Name: auth/users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public."auth/users_id_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: auth/users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public."auth/users_id_seq" OWNED BY public."auth/users".id;
-
-
---
 -- Name: companies; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -313,17 +272,51 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.users (
+    id bigint NOT NULL,
+    username text,
+    first_name text,
+    last_name text,
+    email text,
+    enabled boolean DEFAULT true,
+    company_id bigint,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    password_digest character varying,
+    company_admin boolean DEFAULT false,
+    app_admin boolean DEFAULT false,
+    password_reset boolean DEFAULT true,
+    access_policy_id bigint
+);
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
 -- Name: access_policies id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.access_policies ALTER COLUMN id SET DEFAULT nextval('public.access_policies_id_seq'::regclass);
-
-
---
--- Name: auth/users id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."auth/users" ALTER COLUMN id SET DEFAULT nextval('public."auth/users_id_seq"'::regclass);
 
 
 --
@@ -362,6 +355,13 @@ ALTER TABLE ONLY public.docks ALTER COLUMN id SET DEFAULT nextval('public.docks_
 
 
 --
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
 -- Name: access_policies access_policies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -375,14 +375,6 @@ ALTER TABLE ONLY public.access_policies
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
-
-
---
--- Name: auth/users auth/users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."auth/users"
-    ADD CONSTRAINT "auth/users_pkey" PRIMARY KEY (id);
 
 
 --
@@ -434,31 +426,18 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: index_access_policies_on_company_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_access_policies_on_company_id ON public.access_policies USING btree (company_id);
-
-
---
--- Name: index_auth/users_on_access_policy_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX "index_auth/users_on_access_policy_id" ON public."auth/users" USING btree (access_policy_id);
-
-
---
--- Name: index_auth/users_on_company_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX "index_auth/users_on_company_id" ON public."auth/users" USING btree (company_id);
-
-
---
--- Name: index_auth/users_on_username; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX "index_auth/users_on_username" ON public."auth/users" USING btree (username);
 
 
 --
@@ -560,6 +539,27 @@ CREATE INDEX index_docks_on_dock_group_id ON public.docks USING btree (dock_grou
 
 
 --
+-- Name: index_users_on_access_policy_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_access_policy_id ON public.users USING btree (access_policy_id);
+
+
+--
+-- Name: index_users_on_company_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_company_id ON public.users USING btree (company_id);
+
+
+--
+-- Name: index_users_on_username; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_users_on_username ON public.users USING btree (username);
+
+
+--
 -- Name: docks fk_rails_02ff6b4572; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -592,18 +592,18 @@ ALTER TABLE ONLY public.docks
 
 
 --
--- Name: auth/users fk_rails_2cc9dc4915; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: users fk_rails_2cc9dc4915; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."auth/users"
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT fk_rails_2cc9dc4915 FOREIGN KEY (access_policy_id) REFERENCES public.access_policies(id);
 
 
 --
--- Name: auth/users fk_rails_7682a3bdfe; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: users fk_rails_7682a3bdfe; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public."auth/users"
+ALTER TABLE ONLY public.users
     ADD CONSTRAINT fk_rails_7682a3bdfe FOREIGN KEY (company_id) REFERENCES public.companies(id);
 
 
@@ -628,7 +628,7 @@ ALTER TABLE ONLY public.dock_requests
 --
 
 ALTER TABLE ONLY public.dock_request_audit_histories
-    ADD CONSTRAINT fk_rails_bc04785038 FOREIGN KEY (user_id) REFERENCES public."auth/users"(id);
+    ADD CONSTRAINT fk_rails_bc04785038 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -710,7 +710,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191129163607'),
 ('20191129185733'),
 ('20191207203219'),
-('20191214150324'),
-('20191226154619');
+('20191214150324');
 
 

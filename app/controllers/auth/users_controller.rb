@@ -1,25 +1,39 @@
 class Auth::UsersController < Auth::BaseController
-    include ModalHelper
+    include FormHelper, ModalHelper
 
     def new
-      modal = new_modal(Auth::UserNewCreateForm)
+      form = new_form_prep_record(Auth::UserNewCreateForm)
+      authorize form.record
+      form.setup_variables
+      modal = Modal::NewModal.new(form)
       render_modal(modal)
     end
 
     def create
-      modal = new_modal(Auth::UserNewCreateForm)
-      modal.form.submit
+      form = new_form_prep_record(Auth::UserNewCreateForm)
+      assign_form_attributes(form)
+      authorize form.record
+      form.submit
+      form.setup_variables
+      modal = Modal::CreateModal.new(form, table: form.table)
       render_modal(modal)
     end
 
     def edit
-      modal = new_modal(Auth::UserEditUpdateForm)
+      form = new_form_prep_record(Auth::UserEditUpdateForm)
+      authorize form.record
+      form.setup_variables
+      modal = Modal::EditModal.new(form)
       render_modal(modal)
     end
 
     def update
-      modal = new_modal(Auth::UserEditUpdateForm)
-      modal.form.submit
+      form = new_form_prep_record(Auth::UserEditUpdateForm)
+      assign_form_attributes(form)
+      authorize form.record
+      form.submit
+      form.setup_variables
+      modal = Modal::UpdateModal.new(form, table: form.table)
       render_modal(modal)
     end
 
@@ -28,6 +42,10 @@ class Auth::UsersController < Auth::BaseController
     end
 
     private
+
+    def assign_form_attributes(form)
+      form.attributes = params.require(form.record_name).permit(form.permitted_params)
+    end
 
     def index_page(page = nil)
       page = Page::IndexListPage.new if page.nil?

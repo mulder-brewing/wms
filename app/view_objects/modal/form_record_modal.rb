@@ -11,6 +11,11 @@ class Modal::FormRecordModal < Modal::FormModal
   JS_PATH = VIEWS_PATH + "modal_js"
   SAVE_RESULT_PATH = VIEWS_PATH + "save_result"
 
+  def initialize(form, table: nil)
+    super(form)
+    @table = table
+  end
+
   def css_id
     CSS_ID
   end

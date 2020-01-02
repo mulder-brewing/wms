@@ -1,8 +1,11 @@
+include Auth::SessionsHelper
+
 class Page::BasePage
 
-  attr_accessor :controller, :title
+  attr_accessor :current_user, :controller, :title, :pagy
 
-  def initialize(controller, title = nil)
+  def initialize(current_user, controller, title = nil)
+    @current_user = current_user
     @controller = controller
     @title = title
   end

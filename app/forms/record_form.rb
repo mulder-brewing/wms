@@ -19,11 +19,6 @@ class RecordForm < BaseForm
     self.model_name.to_s.underscore.sub("/", "_")
   end
 
-  # Tests use this to figure out what input id to look for.
-  def form_input_id(attribute)
-    record_name + "_" + attribute.to_s
-  end
-
   def view_path()
     @controller.controller_path + "/" + @view_class.name.demodulize.underscore
   end

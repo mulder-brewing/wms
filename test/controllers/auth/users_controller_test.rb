@@ -12,12 +12,14 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     @delete_me_user = auth_users(:delete_me_user)
 
     @new = Auth::User.new
+    @form = Auth::UserForm
 
     @averagejoe_access_policy = access_policies(:average_joe_access_policy_everything)
     @other_access_policy = access_policies(:other_access_policy_everything)
 
     @ph = { first_name: "Test", last_name: "User", username: "new_user",
-      password: "Password1$", company_admin: false, app_admin: false,
+      password: "Password1$", password_confirmation: "Password1$",
+      company_admin: false, app_admin: false,
       access_policy_id: @averagejoe_access_policy.id }
     @pu = { password: "NewPassword123$",
       password_confirmation: "NewPassword123$" }
@@ -74,23 +76,23 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "company admin field visibility new modal" do
     to = NewTO.new(@company_admin, @new, true)
-    to.add_input(SelectTO.new(@new.form_input_id(:company_id), false))
-    to.add_input(InputTO.new(@new.form_input_id(:first_name)))
-    to.add_input(InputTO.new(@new.form_input_id(:last_name)))
-    to.add_input(InputTO.new(@new.form_input_id(:email)))
-    to.add_input(InputTO.new(@new.form_input_id(:username)))
-    to.add_input(InputTO.new(@new.form_input_id(:password)))
-    to.add_input(InputTO.new(@new.form_input_id(:password_confirmation)))
-    to.add_input(InputTO.new(@new.form_input_id(:send_email)))
-    to.add_input(SelectTO.new(@new.form_input_id(:access_policy_id)))
-    to.add_input(InputTO.new(@new.form_input_id(:company_admin)))
-    to.add_input(InputTO.new(@new.form_input_id(:enabled), false))
+    to.add_input(SelectTO.new(form_input_id(@form, :company_id), false))
+    to.add_input(InputTO.new(form_input_id(@form, :first_name)))
+    to.add_input(InputTO.new(form_input_id(@form, :last_name)))
+    to.add_input(InputTO.new(form_input_id(@form, :email)))
+    to.add_input(InputTO.new(form_input_id(@form, :username)))
+    to.add_input(InputTO.new(form_input_id(@form, :password)))
+    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
+    to.add_input(InputTO.new(form_input_id(@form, :send_email)))
+    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id)))
+    to.add_input(InputTO.new(form_input_id(@form, :company_admin)))
+    to.add_input(InputTO.new(form_input_id(@form, :enabled), false))
     to.test(self)
   end
 
   test "access policy selector has enabled policies for company admin" do
     to = NewTO.new(@company_admin, @new, true)
-    select = SelectTO.new(@new.form_input_id(:access_policy_id))
+    select = SelectTO.new(form_input_id(@form, :access_policy_id))
     select.options_count = AccessPolicy
       .enabled_where_company(@company_admin.company_id).count
     to.add_input(select)
@@ -100,7 +102,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "access policy selector doesn't have disabled policies" do
     to = NewTO.new(@company_admin, @new, true)
     @averagejoe_access_policy.update_column(:enabled, false)
-    select = SelectTO.new(@new.form_input_id(:access_policy_id))
+    select = SelectTO.new(form_input_id(@form, :access_policy_id))
     select.add_option(@averagejoe_access_policy.description,
                       @averagejoe_access_policy.id, false)
     to.add_input(select)
@@ -113,23 +115,23 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "app admin field visibility new modal" do
     to = NewTO.new(@app_admin, @new, true)
-    to.add_input(SelectTO.new(@new.form_input_id(:company_id)))
-    to.add_input(InputTO.new(@new.form_input_id(:first_name)))
-    to.add_input(InputTO.new(@new.form_input_id(:last_name)))
-    to.add_input(InputTO.new(@new.form_input_id(:email)))
-    to.add_input(InputTO.new(@new.form_input_id(:username)))
-    to.add_input(InputTO.new(@new.form_input_id(:password)))
-    to.add_input(InputTO.new(@new.form_input_id(:password_confirmation)))
-    to.add_input(InputTO.new(@new.form_input_id(:send_email)))
-    to.add_input(SelectTO.new(@new.form_input_id(:access_policy_id)))
-    to.add_input(InputTO.new(@new.form_input_id(:company_admin)))
-    to.add_input(InputTO.new(@new.form_input_id(:enabled), false))
+    to.add_input(SelectTO.new(form_input_id(@form,  :company_id)))
+    to.add_input(InputTO.new(form_input_id(@form, :first_name)))
+    to.add_input(InputTO.new(form_input_id(@form, :last_name)))
+    to.add_input(InputTO.new(form_input_id(@form, :email)))
+    to.add_input(InputTO.new(form_input_id(@form, :username)))
+    to.add_input(InputTO.new(form_input_id(@form, :password)))
+    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
+    to.add_input(InputTO.new(form_input_id(@form, :send_email)))
+    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id)))
+    to.add_input(InputTO.new(form_input_id(@form, :company_admin)))
+    to.add_input(InputTO.new(form_input_id(@form, :enabled), false))
     to.test(self)
   end
 
   test "access policy selector is empty for app admin" do
     to = NewTO.new(@app_admin, @new, true)
-    select = SelectTO.new(@new.form_input_id(:access_policy_id))
+    select = SelectTO.new(form_input_id(@form, :access_policy_id))
     select.options_count = 0
     to.add_input(select)
     to.test(self)
@@ -170,7 +172,8 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a app admin can create" do
-    CreateTO.new(@app_admin, @new, @ph, true).test(self)
+    to = CreateTO.new(@app_admin, @new, @ph, true)
+    to.test(self)
   end
 
   test "company admin can only create own company user" do
@@ -193,7 +196,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.merge_params_hash({ company_id: @other_admin.company_id })
     # Setting this to nil so create fails.
     to.params_hash[:access_policy_id] = nil
-    select = SelectTO.new(@new.form_input_id(:access_policy_id))
+    select = SelectTO.new(form_input_id(@form, :access_policy_id))
     select.add_option(@other_access_policy.description,
                       @other_access_policy.id,
                       true)
@@ -289,33 +292,33 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "company admin field visibility" do
     to = EditTO.new(@company_admin, @regular_user, true)
-    to.add_input(InputTO.new(@new.form_input_id(:company_id), false))
-    to.add_input(InputTO.new(@new.form_input_id(:first_name)))
-    to.add_input(InputTO.new(@new.form_input_id(:last_name)))
-    to.add_input(InputTO.new(@new.form_input_id(:email)))
-    to.add_input(InputTO.new(@new.form_input_id(:username)))
-    to.add_input(InputTO.new(@new.form_input_id(:password)))
-    to.add_input(InputTO.new(@new.form_input_id(:password_confirmation)))
-    to.add_input(InputTO.new(@new.form_input_id(:send_email)))
-    to.add_input(SelectTO.new(@new.form_input_id(:access_policy_id)))
-    to.add_input(InputTO.new(@new.form_input_id(:company_admin)))
-    to.add_input(InputTO.new(@new.form_input_id(:enabled)))
+    to.add_input(InputTO.new(form_input_id(@form, :company_id), false))
+    to.add_input(InputTO.new(form_input_id(@form, :first_name)))
+    to.add_input(InputTO.new(form_input_id(@form, :last_name)))
+    to.add_input(InputTO.new(form_input_id(@form, :email)))
+    to.add_input(InputTO.new(form_input_id(@form, :username)))
+    to.add_input(InputTO.new(form_input_id(@form, :password)))
+    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
+    to.add_input(InputTO.new(form_input_id(@form, :send_email)))
+    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id)))
+    to.add_input(InputTO.new(form_input_id(@form, :company_admin)))
+    to.add_input(InputTO.new(form_input_id(@form, :enabled)))
     to.test(self)
   end
 
   test "regular user field visibility" do
     to = EditTO.new(@regular_user, @regular_user, true)
-    to.add_input(InputTO.new(@new.form_input_id(:company_id), false))
-    to.add_input(InputTO.new(@new.form_input_id(:first_name), false))
-    to.add_input(InputTO.new(@new.form_input_id(:last_name), false))
-    to.add_input(InputTO.new(@new.form_input_id(:email)))
-    to.add_input(InputTO.new(@new.form_input_id(:username), false))
-    to.add_input(InputTO.new(@new.form_input_id(:password)))
-    to.add_input(InputTO.new(@new.form_input_id(:password_confirmation)))
-    to.add_input(InputTO.new(@new.form_input_id(:send_email), false))
-    to.add_input(SelectTO.new(@new.form_input_id(:access_policy_id), false))
-    to.add_input(InputTO.new(@new.form_input_id(:company_admin), false))
-    to.add_input(InputTO.new(@new.form_input_id(:enabled), false))
+    to.add_input(InputTO.new(form_input_id(@form, :company_id), false))
+    to.add_input(InputTO.new(form_input_id(@form, :first_name), false))
+    to.add_input(InputTO.new(form_input_id(@form, :last_name), false))
+    to.add_input(InputTO.new(form_input_id(@form, :email)))
+    to.add_input(InputTO.new(form_input_id(@form, :username), false))
+    to.add_input(InputTO.new(form_input_id(@form, :password)))
+    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
+    to.add_input(InputTO.new(form_input_id(@form, :send_email), false))
+    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id), false))
+    to.add_input(InputTO.new(form_input_id(@form, :company_admin), false))
+    to.add_input(InputTO.new(form_input_id(@form, :enabled), false))
     to.test(self)
   end
 
@@ -460,26 +463,6 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "app admin can update password for user in other company" do
     to = UpdateTO.new(@app_admin, @other_user, @pu, true)
     to.update_fields = @password
-    to.test(self)
-  end
-
-  test "sending password reset email fails without email address" do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, false)
-    to.update_fields = @password
-    to.params_hash[:send_email] = 1
-    to.params_hash[:email] = ""
-    to.add_error_to(ErrorTO.new("form.errors.email.blank", :email))
-    to.add_error_to(ErrorTO.new("form.errors.email.send.email_blank", :send_email))
-    to.test(self)
-  end
-
-  test "sending password reset email fails if password does not change" do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, false)
-    to.update_fields = @password
-    to.params_hash[:send_email] = 1
-    to.params_hash[:password] = ""
-    to.add_error_to(ErrorTO.new("form.errors.email.password.no_change", :password))
-    to.add_error_to(ErrorTO.new("form.errors.email.send.password_no_change", :send_email))
     to.test(self)
   end
 

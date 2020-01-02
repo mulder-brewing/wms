@@ -10,7 +10,7 @@ class BaseForm
   end
 
   def controller_model
-    @controller.controller_path.classify.constantize
+    Controller::Model.call(@controller)
   end
 
   def action?(*args)

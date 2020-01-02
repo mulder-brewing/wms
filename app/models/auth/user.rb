@@ -37,6 +37,10 @@ class Auth::User < ApplicationRecord
     where("id != ? AND company_id = ?", user.id, user.company_id)
   end
 
+  def self.includes_company
+    includes(:company)
+  end
+
   private
     def strip_whitespace
       self.first_name.strip! if self.first_name?

@@ -1,11 +1,15 @@
 class RecordForm < BaseForm
-  include FindObjectHelper
 
   CSS_ID = "record-form"
 
-  attr_accessor :save_success
+  attr_accessor :save_success, :view_class
 
   delegate :record_name, to: :class
+
+  def initialize(*)
+    super
+    @view_class = self.class
+  end
 
   def css_id
     CSS_ID
@@ -15,13 +19,8 @@ class RecordForm < BaseForm
     self.model_name.to_s.underscore.sub("/", "_")
   end
 
-  def view_path(view_class = nil)
-    view_class ||= self.class
-    @controller.controller_path + "/" + view_class.name.demodulize.underscore
-  end
-
-  def controller_model
-    @controller.controller_path.classify.constantize
+  def view_path()
+    @controller.controller_path + "/" + @view_class.name.demodulize.underscore
   end
 
 end

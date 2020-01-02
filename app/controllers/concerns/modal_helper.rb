@@ -8,7 +8,6 @@ module ModalHelper
     form.setup_variables
     modal = modal_class.new(form)
     modal.table = form.table
-    puts modal.table.inspect
     return modal
   end
 

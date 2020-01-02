@@ -10,8 +10,9 @@ class Auth::UserNewCreateForm < Auth::UserForm
             :password_confirmation, :password_confirmation=,
             to: :@record
 
-  def view_path
-    super(self.class.superclass)
+  def initialize(*)
+    super
+    @view_class = self.class.superclass
   end
 
   def permitted_params

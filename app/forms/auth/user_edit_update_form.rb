@@ -1,23 +1,19 @@
 class Auth::UserEditUpdateForm < Auth::UserForm
 
-  delegate  :enabled, to: :@user
-
-  def prep_record(params)
-    @user = Auth::User.find(params[:id])
-  end
-
-  def submit(params)
-    @user.attributes = params
-    if valid?
-      @user.save!
-      @save_success = true
-    else
-      @save_success = false
-    end
-  end
+  delegate  :enabled, :enabled=, to: :@record
 
   def view_path
     super(self.class.superclass)
+  end
+
+  def permitted_params
+    permitted = [:email]
+    if admin?
+      permitted.push(:first_name, :last_name, :username, :company_admin,
+        :access_policy_id, :enabled)
+      permitted << :company_id if app_admin?
+    end
+    return permitted
   end
 
 end

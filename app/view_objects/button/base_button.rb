@@ -2,19 +2,6 @@ class Button::BaseButton
 
   BASE_CLASS = "btn"
 
-  STYLES = {  primary: "btn-primary",
-              secondary: "btn-secondary",
-              success: "btn-success",
-              danger: "btn-danger",
-              warning: "btn-warning",
-              info: "btn-info",
-              light: "btn-light",
-              dark: "btn-dark",
-              link: "btn-link" }
-
-  SIZES = { small: "btn-sm",
-            large: "btn-lg" }
-
   attr_accessor :text_key, :style, :size, :remote, :classes
 
   def initialize(text_key, style)

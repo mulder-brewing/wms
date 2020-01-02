@@ -1,9 +1,9 @@
 class Button::EditButton < Button::IndexButton
 
   def initialize(remote = true)
-    super("modal.edit", STYLES[:primary])
+    super("modal.edit", Button::Style::PRIMARY)
     @remote = remote
-    @size = SIZES[:small]
+    @size = Button::Size::SMALL
     @classes << "m-1"
   end
 

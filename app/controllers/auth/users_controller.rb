@@ -3,27 +3,23 @@ class Auth::UsersController < Auth::BaseController
 
     def new
       modal = new_modal(Auth::UserNewCreateForm)
-      setup_form_variables(modal.form.record)
       render_modal(modal)
     end
 
     def create
       modal = new_modal(Auth::UserNewCreateForm)
-      modal.form.submit(record_params)
-      setup_form_variables(modal.form.record)
+      modal.form.submit
       render_modal(modal)
     end
 
     def edit
       modal = new_modal(Auth::UserEditUpdateForm)
-      setup_form_variables(modal.form.record)
       render_modal(modal)
     end
 
     def update
       modal = new_modal(Auth::UserEditUpdateForm)
-      modal.form.submit(record_params)
-      setup_form_variables(modal.form.record)
+      modal.form.submit
       render_modal(modal)
     end
 
@@ -32,32 +28,6 @@ class Auth::UsersController < Auth::BaseController
     end
 
     private
-
-    def record_params
-      # Non-admin can only update their email through this controller.
-      permitted = [:email]
-      if admin?
-        permitted.push(:first_name, :last_name, :username, :company_admin,
-          :access_policy_id, :enabled)
-        if action_sym == :create
-          # There is a separate controller for password resets after the user is created.
-          permitted.push(:password, :password_confirmation, :send_email)
-        end
-        permitted << :company_id if app_admin?
-      end
-      params.require(:auth_user).permit(permitted)
-    end
-
-    def setup_form_variables(record)
-      # Setup options for the selects
-      @companies = Company.all.order(:name) if app_admin?
-      if action_sym == :new && app_admin?
-        @access_policies = AccessPolicy.none
-      else
-        @access_policies = select_options(AccessPolicy, record.access_policy_id,
-                              record.company_id).order(:description)
-      end
-    end
 
     def index_page(page = nil)
       page = Page::IndexListPage.new if page.nil?
@@ -86,7 +56,7 @@ class Auth::UsersController < Auth::BaseController
 
       page.records = records
       page.new_record = controller_model.new
-      page.table = Auth::UsersIndexTable.new(current_user)
+      page.table = Table::Auth::UsersIndexTable.new(current_user)
 
       respond_to do |format|
         format.html {

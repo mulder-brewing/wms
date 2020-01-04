@@ -7,7 +7,7 @@ module Util::Email
     end
 
     def call
-      @send_email = Boolean::Cast.call(@send_email)
+      @send_email = Util::Boolean::Cast.call(@send_email)
       return false if @email.blank? && @send_email
       return true
     end

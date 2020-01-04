@@ -1,6 +1,6 @@
 class Modal::FormRecordModal < Modal::FormModal
 
-  attr_accessor :table, :persist, :role
+  attr_accessor :table, :persist, :role, :title_suffix
 
   VIEWS_PATH = "modals/form_modal/form_record_modal/"
 
@@ -30,7 +30,7 @@ class Modal::FormRecordModal < Modal::FormModal
   end
 
   def title
-    form.record.class.name.tableize + ".title."
+    @title || form.record.class.name.tableize + ".title." + @title_suffix
   end
 
 end

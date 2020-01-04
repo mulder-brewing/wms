@@ -1,22 +1,32 @@
-class Auth::PasswordResetsController < Auth::BaseController
+class Auth::PasswordResetsController < ApplicationController
+  include FormHelper
 
   skip_before_action :check_reset_password
-  before_action :skip_authorization
-  before_action :skip_policy_scope
 
-  def new
-    form = Auth::PasswordResetForm.new(current_user)
+  def edit
+    form = new_form_prep_record(Auth::PasswordResetForm)
+    authorize form
     render :locals => { form: form }
   end
 
-  def create
-    form = Auth::PasswordResetForm.new(current_user)
-    if form.submit(params[:auth_password_reset])
+  def update
+    form = new_form_prep_record(Auth::PasswordResetForm)
+    assign_form_attributes(form)
+    authorize form
+    form.submit
+    if form.save_success
       flash[:success] = t("alert.save.password_success")
       all_formats_redirect_to(root_url)
     else
-      render "new", :locals => { form: form }
+      render "edit", :locals => { form: form }
     end
+  end
+
+  private
+
+  def assign_form_attributes(form)
+    form.attributes = params.require(form.record_name)
+      .permit(:password, :password_confirmation)
   end
 
 end

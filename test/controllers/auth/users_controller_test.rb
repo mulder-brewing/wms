@@ -139,6 +139,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal title" do
     to = NewTO.new(@company_admin, @new, true)
+    to.title_text_key = "auth/users.title.new_create"
     to.test_title = true
     to.test(self)
   end
@@ -273,6 +274,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal title" do
     to = EditTO.new(@regular_user, @regular_user, true)
+    to.title_text_key = "auth/users.title.edit_update"
     to.test_title = true
     to.test(self)
   end
@@ -297,9 +299,9 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.add_input(InputTO.new(form_input_id(@form, :last_name)))
     to.add_input(InputTO.new(form_input_id(@form, :email)))
     to.add_input(InputTO.new(form_input_id(@form, :username)))
-    to.add_input(InputTO.new(form_input_id(@form, :password)))
-    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
-    to.add_input(InputTO.new(form_input_id(@form, :send_email)))
+    to.add_input(InputTO.new(form_input_id(@form, :password), false))
+    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation), false))
+    to.add_input(InputTO.new(form_input_id(@form, :send_email), false))
     to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id)))
     to.add_input(InputTO.new(form_input_id(@form, :company_admin)))
     to.add_input(InputTO.new(form_input_id(@form, :enabled)))
@@ -313,8 +315,8 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.add_input(InputTO.new(form_input_id(@form, :last_name), false))
     to.add_input(InputTO.new(form_input_id(@form, :email)))
     to.add_input(InputTO.new(form_input_id(@form, :username), false))
-    to.add_input(InputTO.new(form_input_id(@form, :password)))
-    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
+    to.add_input(InputTO.new(form_input_id(@form, :password), false))
+    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation), false))
     to.add_input(InputTO.new(form_input_id(@form, :send_email), false))
     to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id), false))
     to.add_input(InputTO.new(form_input_id(@form, :company_admin), false))
@@ -324,28 +326,28 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "the enable/disable switch isn't visible when editing self" do
     to = EditTO.new(@company_admin, @company_admin, true)
-    input = InputTO.new(@regular_user.form_input_id(:enabled), false)
+    input = InputTO.new(form_input_id(@form, :enabled), false)
     to.add_input(input)
     to.test(self)
   end
 
   test "the admin checkbox isn't visible when editing self" do
     to = EditTO.new(@company_admin, @company_admin, true)
-    input = InputTO.new(@company_admin.form_input_id(:company_admin), false)
+    input = InputTO.new(form_input_id(@form, :company_admin), false)
     to.add_input(input)
     to.test(self)
   end
 
   test "the send email isn't visible when editing self" do
     to = EditTO.new(@company_admin, @company_admin, true)
-    input = InputTO.new(@regular_user.form_input_id(:send_email), false)
+    input = InputTO.new(form_input_id(@form, :send_email), false)
     to.add_input(input)
     to.test(self)
   end
 
   test "the company selector is visible for app admin edit modal" do
     to = EditTO.new(@app_admin, @company_admin, true)
-    input = SelectTO.new(@app_admin.form_input_id(:company_id))
+    input = SelectTO.new(form_input_id(@form, :company_id))
     to.add_input(input)
     to.test(self)
   end
@@ -410,7 +412,8 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.test(self)
   end
 
-  # test who can and can't update passwords
+  # Nobody should be able to update passwords.  There is a separate
+  # controller for updating a user's password.
 
   test "logged out user should not be able to update password" do
     to = UpdateTO.new(nil, @regular_user, @pu, false)
@@ -418,20 +421,20 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.test(self)
   end
 
-  test "regular user can update password for self" do
-    to = UpdateTO.new(@regular_user, @regular_user, @pu, true)
+  test "regular user can't update password for self" do
+    to = UpdateTO.new(@regular_user, @regular_user, @pu, false)
     to.update_fields = @password
     to.test(self)
   end
 
-  test "company admin can update password for self" do
-    to = UpdateTO.new(@company_admin, @company_admin, @pu, true)
+  test "company admin can't update password for self" do
+    to = UpdateTO.new(@company_admin, @company_admin, @pu, false)
     to.update_fields = @password
     to.test(self)
   end
 
-  test "app admin can update password for self" do
-    to = UpdateTO.new(@app_admin, @app_admin, @pu, true)
+  test "app admin can't update password for self" do
+    to = UpdateTO.new(@app_admin, @app_admin, @pu, false)
     to.update_fields = @password
     to.test(self)
   end
@@ -442,14 +445,14 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.test(self)
   end
 
-  test "company admin can update password for user in same company" do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, true)
+  test "company admin can't update password for user in same company" do
+    to = UpdateTO.new(@company_admin, @regular_user, @pu, false)
     to.update_fields = @password
     to.test(self)
   end
 
-  test "app admin can update password for user in same company" do
-    to = UpdateTO.new(@app_admin, @regular_user, @pu, true)
+  test "app admin can't update password for user in same company" do
+    to = UpdateTO.new(@app_admin, @regular_user, @pu, false)
     to.update_fields = @password
     to.test(self)
   end
@@ -460,8 +463,8 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.test(self)
   end
 
-  test "app admin can update password for user in other company" do
-    to = UpdateTO.new(@app_admin, @other_user, @pu, true)
+  test "app admin can't update password for user in other company" do
+    to = UpdateTO.new(@app_admin, @other_user, @pu, false)
     to.update_fields = @password
     to.test(self)
   end
@@ -655,6 +658,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "page title should be there" do
     to = IndexTo.new(@company_admin, @new, true)
+    to.title_text_key = "auth/users.title.index"
     to.test_title = true
     to.test(self)
   end
@@ -671,6 +675,28 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.add_visible_edit_record(@regular_user)
     to.add_visible_edit_record(@app_admin)
     to.test(self)
+  end
+
+  test "company admin should not see the become button" do
+    to = IndexTo.new(@company_admin, @new, true).test(self)
+    assert_select "a.#{Button::BecomeButton::TEST_ID}", false
+  end
+
+  test "app admin should see the become button" do
+    to = IndexTo.new(@app_admin, @new, true).test(self)
+    assert_select "a.#{Button::BecomeButton::TEST_ID}"
+  end
+
+  test "company admin should not see the company column" do
+    to = IndexTo.new(@company_admin, @new, true).test(self)
+    id = Table::Auth::UsersIndexTable::COMPANY_COLUMN_TEST_ID
+    assert_select "##{id}", false
+  end
+
+  test "app admin should see the company column" do
+    to = IndexTo.new(@app_admin, @new, true).test(self)
+    id = Table::Auth::UsersIndexTable::COMPANY_COLUMN_TEST_ID
+    assert_select "##{id}"
   end
 
   test "page should have enabled filter" do
@@ -703,70 +729,6 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     @regular_user.update_column(:enabled, false)
     to.add_visible_y_record(@regular_user)
     to.test(self)
-  end
-
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # tests for reset password functionality
-
-  test "user changing password for self doesn't trigger reset password" do
-    to = UpdateTO.new(@regular_user, @regular_user, @pu, false)
-    to.update_fields = [:password_reset]
-    to.test(self)
-  end
-
-  test "admin changing password for user does trigger reset password" do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, true)
-    to.update_fields = [:password_reset]
-    to.test(self)
-  end
-
-  test "Monster test that checks the full flow of a user's password being reset and that user resetting it." do
-    to = UpdateTO.new(@app_admin, @company_admin, @pu, true)
-    to.update_fields = [:password_reset]
-    to.test(self)
-    log_in_as(@company_admin, @pu[:password])
-    # There's 2 redirects because by default logged in redirects to root,
-    # then when password_reset is true,
-    # you get redirected to the update password page.
-    follow_redirect!
-    assert_redirected_to new_auth_password_reset_path
-    follow_redirect!
-    # Should be 2 links, one being the Mulder WMS logo top left, the other being the log out link.
-    assert_select 'a[href]', 2
-    assert_select 'a[href=?]', logout_path
-    assert_select 'a[href=?]', root_path
-    assert_select "form"
-    assert_select "form input[id=auth_password_reset_password]"
-    assert_select "form input[id=auth_password_reset_password_confirmation]"
-    assert_select "form input[type=submit][value='#{I18n.t("auth/users.title.update_password")}']"
-    # trying to load other TMS pages should redirect the user back to update password.
-    get root_path
-    assert_redirected_to new_auth_password_reset_path
-    get auth_users_path
-    assert_redirected_to new_auth_password_reset_path
-    get edit_auth_user_path(@company_admin)
-    assert_redirected_to new_auth_password_reset_path
-    # user should not be able to use the same password they
-    # logged in with as their new updated password.
-    @new_pr = Auth::PasswordResetForm.new(@company_admin)
-    to = CreateTO.new(@company_admin, @new_pr, @pu, false)
-    to.xhr = false
-    to.path = auth_password_resets_path
-    to.add_error_to ErrorTO.new(:same, :password)
-    to.check_count = false
-    to.test(self)
-    assert_template 'auth/password_resets/new'
-    # user should be able to update their password with a new password
-    to.params_hash = @pu2
-    to.validity = true
-    to.test(self)
-    assert_redirected_to root_url
-    follow_redirect!
-    assert_select 'div.alert-success', I18n.t("alert.save.password_success")
-    # password_reset should be false after update.
-    @company_admin.reload
-    assert_equal false, @company_admin.password_reset
   end
 
 end

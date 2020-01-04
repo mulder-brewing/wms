@@ -1,10 +1,7 @@
-class Button::EditButton < Button::IndexButton
+class Button::EditButton < Button::BaseButton
 
-  def initialize(remote = true)
-    super("modal.edit", Button::Style::PRIMARY)
-    @remote = remote
-    @size = Button::Size::SMALL
-    @classes << "m-1"
+  def initialize(*)
+    super("actions.edit", Button::Style::PRIMARY)
   end
 
   def path(record)

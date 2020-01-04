@@ -1,6 +1,6 @@
 class Table::Column::BaseColumn
 
-  attr_accessor :text_key
+  attr_accessor :text_key, :id
 
   def initialize(text_key)
     @text_key = text_key

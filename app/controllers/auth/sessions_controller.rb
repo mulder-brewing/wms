@@ -1,4 +1,4 @@
-class Auth::SessionsController < Auth::BaseController
+class Auth::SessionsController < ApplicationController
   include DockRequestsControllerHelper
 
   skip_before_action :logged_in, :only => [:new, :create]

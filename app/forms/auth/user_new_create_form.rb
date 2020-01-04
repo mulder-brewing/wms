@@ -1,5 +1,4 @@
 class Auth::UserNewCreateForm < Auth::UserForm
-  include Concerns::Email
 
   validates :password_confirmation, presence: true
   validate :email_exists_if_send_email
@@ -32,7 +31,7 @@ class Auth::UserNewCreateForm < Auth::UserForm
 
   def setup_variables
     super
-    if app_admin? && controller.action_name == "new"
+    if app_admin? && action?(:new)
       @access_policies = AccessPolicy.none
     end
   end
@@ -40,7 +39,7 @@ class Auth::UserNewCreateForm < Auth::UserForm
   private
 
   def email_exists_if_send_email
-    unless send_email_possible?(@record.email, @send_email)
+    unless Util::Email::SendPossible.call(@record.email, @send_email)
       errors.add(:email, I18n.t("form.errors.email.blank"))
       errors.add(:send_email, I18n.t("form.errors.email.send.email_blank"))
     end

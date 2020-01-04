@@ -8,8 +8,8 @@ Rails.application.routes.draw do
 
   namespace :auth do
     resources :users, only: [:new, :create, :edit, :update, :index]
-    resources :password_resets, only: [:new, :create]
-    resources :password_update_forms, only: [:edit, :update]
+    resources :password_resets, only: [:edit, :update]
+    resources :password_updates, only: [:edit, :update]
   end
 
   resources :access_policies do

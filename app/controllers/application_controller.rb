@@ -62,7 +62,7 @@ class ApplicationController < ActionController::Base
 
     def check_reset_password
       if logged_in? && needs_password_reset?
-        all_formats_redirect_to new_auth_password_reset_path
+        all_formats_redirect_to(edit_auth_password_reset_path(current_user))
       end
     end
 

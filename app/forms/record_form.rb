@@ -4,14 +4,14 @@ class RecordForm < BaseForm
 
   attr_accessor :save_success, :view_class
 
-  delegate :record_name, to: :class
+  delegate :record_name, :html_id, to: :class
 
   def initialize(*)
     super
     @view_class = self.class
   end
 
-  def html_id
+  def self.html_id
     HTML_ID
   end
 

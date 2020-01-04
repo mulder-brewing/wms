@@ -22,15 +22,15 @@
           <%= render modal_form.timestamps_html_path, modal_form: modal_form %>
         <% end %>
         <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">
-          <%= t_nf "modal.close" %>
+          <%= t_nf "actions.close" %>
         </button>
         <% if modal_form.show_form? %>
           <button type="submit" form="<%= modal_form.form_id %>" class="btn btn-primary save">
-            <%= t_nf "modal.save" %>
+            <%= t_nf "actions.save" %>
           </button>
         <% end %>
         <% if modal_form.type_co.destroy? %>
-          <%= link_to t_nf "modal.delete", object,  method: :delete, remote: true, class: 'btn btn-danger'  %>
+          <%= link_to t_nf "actions.delete", object,  method: :delete, remote: true, class: 'btn btn-danger'  %>
         <% end %>
       </div>
     </div>

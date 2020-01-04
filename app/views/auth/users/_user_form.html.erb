@@ -45,7 +45,7 @@
     <% end %>
     <% if modal.role?(:edit_update) %>
       <%= link_to t_nf("auth/users.security.reset_password"),
-        edit_auth_password_update_form_path(id: modal.form.record.id),
+        edit_auth_password_update_path(id: modal.form.record.id),
         :remote => true, :class => 'btn btn-primary btn-block mt-3' %>
     <% end %>
 <% end %>

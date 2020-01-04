@@ -1,4 +1,4 @@
-class Auth::UsersController < Auth::BaseController
+class Auth::UsersController < ApplicationController
     include FormHelper, ModalHelper, PageHelper
 
     def new

@@ -4,6 +4,7 @@ class Modal::EditUpdateModal < Modal::FormRecordModal
     super
     @role = :edit_update
     @footer = Modal::Footers::EditUpdateFooter.new
+    @title_suffix = "edit_update"
   end
 
   def views_path
@@ -13,10 +14,5 @@ class Modal::EditUpdateModal < Modal::FormRecordModal
   def timestamps_path
     views_path + "timestamps"
   end
-
-  def title
-    super + "edit_update"
-  end
-
 
 end

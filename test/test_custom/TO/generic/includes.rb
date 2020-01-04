@@ -36,11 +36,10 @@ module Includes
 
   module Title
 
-    attr_writer :title, :test_title, :title_text_key
+    attr_writer :test_title, :title_text_key
 
     def title
-      return I18n.t(@title) unless @title.nil?
-      I18n.t(@model.title(@title_text_key))
+      I18n.t(@title_text_key)
     end
 
     def test_title?

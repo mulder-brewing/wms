@@ -4,10 +4,7 @@ class Modal::NewCreateModal < Modal::FormRecordModal
     super
     @role = :new_create
     @footer = Modal::Footers::NewCreateFooter.new
-  end
-
-  def title
-    super + "new_create"
+    @title_suffix = "new_create"
   end
 
 end

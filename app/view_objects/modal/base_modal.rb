@@ -3,7 +3,7 @@ class Modal::BaseModal
   WRAPPER = "modal-wrapper"
   ID = "generic-modal"
 
-  attr_accessor :footer
+  attr_accessor :footer, :title
 
   def id
     ID

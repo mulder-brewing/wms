@@ -109,6 +109,7 @@ en:
           error: error sending email
         password:
           no_change: did not change.  Cannot send email.
+      invalid: is invalid
       password_confirmation:
         mismatch: "doesn't match Password"
       same: cannot be the same as it is right now

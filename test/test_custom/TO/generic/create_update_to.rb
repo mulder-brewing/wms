@@ -1,7 +1,7 @@
 class CreateUpdateTO < GenericTO
   include Includes::Inputs
 
-  attr_accessor :params_hash, :error_to_array, :attributes
+  attr_accessor :params_key, :params_hash, :error_to_array, :attributes
 
   def initialize(user, model, params_hash, validity)
     @params_hash = params_hash
@@ -10,7 +10,8 @@ class CreateUpdateTO < GenericTO
   end
 
   def params
-    { @model.model_name.to_s.underscore.sub("/", "_").to_sym => @params_hash }
+    key = @params_key || @model.model_name.to_s.underscore.sub("/", "_").to_sym
+    { key => @params_hash }
   end
 
   def merge_params_hash(to_merge)
@@ -24,14 +25,6 @@ class CreateUpdateTO < GenericTO
   def add_error_to(error_to)
     @error_to_array ||= []
     @error_to_array << error_to
-  end
-
-  def error(error_to)
-    field_name = error_to.field.to_s.humanize
-    case error_to.type
-    when :unique
-      /#{ field_name + " " + I18n.t("form.errors.taken") }/
-    end
   end
 
   def test_attributes?

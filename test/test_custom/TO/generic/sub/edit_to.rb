@@ -11,7 +11,7 @@ class EditTO < NewEditTO
   end
 
   def edit_path
-    Rails.application.routes.url_helpers.edit_polymorphic_path(@model)
+    @path || Rails.application.routes.url_helpers.edit_polymorphic_path(@model)
   end
 
   def enabled_present?

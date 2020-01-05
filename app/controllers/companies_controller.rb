@@ -1,59 +1,68 @@
 class CompaniesController < ApplicationController
-  before_action :app_admin
-  before_action :skip_authorization
+  include FormHelper, ModalHelper, PageHelper
 
   def new
-    @company = Company.new
-    respond_to :js
+    form = new_form_prep_record(CompanyForm)
+    authorize form.record
+    modal = Modal::NewModal.new(form)
+    render_modal(modal)
   end
 
   def create
-    @company = Company.new(company_params)
-    @company.save
-    respond_to :js
-  end
-
-  def show
-    find_company_by_id
-    respond_to :js
+    form = new_form_prep_record(CompanyForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::CreateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def edit
-    find_company_by_id
-    respond_to :js
+    form = new_form_prep_record(CompanyForm)
+    authorize form.record
+    modal = Modal::EditModal.new(form)
+    render_modal(modal)
   end
 
   def update
-    find_company_by_id
-    @company.update(company_params)
-    respond_to :js
-  end
-
-  def destroy_modal
-    find_company_by_id
-    respond_to :js
-  end
-
-  def destroy
-    find_company_by_id
-    @company.destroy
-    respond_to :js
+    form = new_form_prep_record(CompanyForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::UpdateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def index
-    @pagy, @companies = pagy(Company.all.order(:name), items:25)
+    page = new_page_prep_records(Page::IndexListPage)
+    page.table = Table::CompaniesIndexTable.new(current_user)
+    authorize_scope_records(page)
+    pagy_records(page)
+    render_page(page)
+  end
+
+  def destroy_modal
+    form = new_form_prep_record(DestroyRecordForm)
+    form.to_delete = form.record.name
+    authorize form.record
+    modal = Modal::DestroyModal.new(form)
+    render_modal(modal)
+  end
+
+  def destroy
+    form = new_form_prep_record(DestroyRecordForm)
+    form.to_delete = form.record.name
+    authorize form.record
+    form.submit
+    modal = Modal::DestroyModal.new(form)
+    modal.table = Table::CompaniesIndexTable.new(current_user)
+    render_modal(modal)
   end
 
   private
-    def company_params
-      params.require(:company).permit(:name, :enabled)
-    end
 
-    def app_admin
-      all_formats_redirect_to(root_url) unless logged_in_app_admin?
-    end
+  def assign_form_attributes(form)
+    form.attributes = params.require(form.record_name).permit(form.permitted_params)
+  end
 
-    def find_company_by_id
-      @company = Company.find_by(id: params[:id])
-    end
 end

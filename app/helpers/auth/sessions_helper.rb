@@ -91,6 +91,6 @@ module Auth::SessionsHelper
   end
 
   def ap_check?(permission)
-    current_access_policy.check(permission)
+    current_access_policy&.check(permission)
   end
 end

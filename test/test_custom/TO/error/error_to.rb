@@ -13,6 +13,8 @@ class ErrorTO
     case @type
     when String
       f.call(@type)
+    when :invalid
+      f.call("form.errors.invalid")
     when :unique
       f.call("form.errors.taken")
     when :does_not_belong

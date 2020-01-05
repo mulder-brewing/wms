@@ -16,7 +16,7 @@ class Auth::UserNewCreateForm < Auth::UserForm
 
   def submit
     super
-    if @save_success && Util::Boolean::Cast.call(@send_email)
+    if @submit_success && Util::Boolean::Cast.call(@send_email)
       send_welcome_email
     end
   end

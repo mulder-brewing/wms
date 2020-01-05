@@ -8,7 +8,7 @@ class UpdateTO < CreateUpdateTO
   end
 
   def update_path
-    @path ||= Rails.application.routes.url_helpers.polymorphic_path(@model)
+    @path || Rails.application.routes.url_helpers.polymorphic_path(@model)
   end
 
 end

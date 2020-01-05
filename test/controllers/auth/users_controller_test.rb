@@ -23,8 +23,6 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
       access_policy_id: @averagejoe_access_policy.id }
     @pu = { password: "NewPassword123$",
       password_confirmation: "NewPassword123$" }
-    @pu2 = { password: "NewPassword123456$#2",
-      password_confirmation: "NewPassword123456$#2" }
 
     @email = [:email]
     @password = [:password_digest]
@@ -334,13 +332,6 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "the admin checkbox isn't visible when editing self" do
     to = EditTO.new(@company_admin, @company_admin, true)
     input = InputTO.new(form_input_id(@form, :company_admin), false)
-    to.add_input(input)
-    to.test(self)
-  end
-
-  test "the send email isn't visible when editing self" do
-    to = EditTO.new(@company_admin, @company_admin, true)
-    input = InputTO.new(form_input_id(@form, :send_email), false)
     to.add_input(input)
     to.test(self)
   end

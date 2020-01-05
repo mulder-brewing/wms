@@ -4,11 +4,11 @@
       <div class="btn-group btn-group-sm enabled-filter" role="group" aria-label="Basic example">
         <%= link_to t_nf("global.all"), polymorphic_path(page.new_record),
             class: "btn #{page.button_class(:all)}" %>
-        <%= link_to t_nf("global.boolean.enabled_disabled.enabled"),
+        <%= link_to t_nf("global.boolean.enabled"),
             polymorphic_path(page.new_record, :enabled => "true"),
             class: "btn #{page.button_class(:enabled)}"
             %>
-        <%= link_to t_nf("global.boolean.enabled_disabled.disabled"),
+        <%= link_to t_nf("global.boolean.disabled"),
             polymorphic_path(page.new_record, :enabled => "false"),
             class: "btn #{page.button_class(:disabled)}"
             %>

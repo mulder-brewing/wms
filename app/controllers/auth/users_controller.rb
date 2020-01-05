@@ -38,7 +38,8 @@ class Auth::UsersController < ApplicationController
     end
 
     def index
-      page = new_page_prep_records(Page::Auth::UsersIndexPage)
+      page = new_page_prep_records(Page::IndexListPage)
+      page.table = Table::Auth::UsersIndexTable.new(current_user)
       authorize_scope_records(page)
       pagy_records(page)
       render_page(page)

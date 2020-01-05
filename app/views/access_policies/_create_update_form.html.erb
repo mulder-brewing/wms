@@ -6,7 +6,7 @@
       <%= f.input :description, label: t_nf("global.description"), as: :string %>
       <% if modal_form.type_co.update? %>
         <div class="mb-2">
-          <%= f.input :enabled, label: t_nf("global.boolean.enabled_disabled.enabled"), wrapper: :switch %>
+          <%= f.input :enabled, label: t_nf("global.boolean.enabled"), wrapper: :switch %>
         </div>
       <% end %>
       <%= f.input :everything, label: t_nf("access_policies.fields.everything"),  wrapper: :switch %>

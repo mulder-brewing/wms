@@ -18,6 +18,8 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
+  DEFAULT_PASSWORD = "Password1$"
+
   # Shared return page title
   def wms_title (page_title)
     page_title + ' | Mulder WMS'
@@ -62,7 +64,7 @@ class ActionDispatch::IntegrationTest
   end
 
   # Log in as a particular user.
-  def log_in_as(user, password = "Password1$", swapcase = false)
+  def log_in_as(user, password = DEFAULT_PASSWORD, swapcase = false)
     username = user.username
     username.swapcase! if swapcase
     post login_path, params: { session: { username: username, password: password, } }

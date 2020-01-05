@@ -3,9 +3,9 @@ require 'test_helper'
 class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   def setup
-    @regular_user = users(:regular_user)
-    @company_admin = users(:company_admin_user)
-    @app_admin = users(:app_admin_user)
+    @regular_user = auth_users(:regular_user)
+    @company_admin = auth_users(:company_admin_user)
+    @app_admin = auth_users(:app_admin_user)
     @regular_user_company = @regular_user.company
     @company_admin_company = @company_admin.company
   end

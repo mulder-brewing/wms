@@ -14,7 +14,7 @@ class Auth::PasswordResetsController < ApplicationController
     assign_form_attributes(form)
     authorize form
     form.submit
-    if form.save_success
+    if form.submit_success
       flash[:success] = t("alert.save.password_success")
       all_formats_redirect_to(root_url)
     else

@@ -3,8 +3,8 @@ class Table::Auth::UsersIndexTable < Table::IndexTable
 
   COMPANY_COLUMN_TEST_ID = "user-company-column-test-id"
 
-  def initialize(current_user)
-    super(current_user)
+  def initialize(*)
+    super
     buttons = [Button::IndexEditButton.new]
     buttons << Button::BecomeButton.new if app_admin?
     @columns << Table::Column::ButtonColumn.new(buttons)

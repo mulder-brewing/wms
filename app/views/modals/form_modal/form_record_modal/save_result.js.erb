@@ -1,7 +1,7 @@
 <% record = modal.form.record %>
 <% table = modal.table %>
 var modal_id = '<%= modal.id %>';
-<% if modal.form.save_success %>
+<% if modal.form.submit_success %>
   hideModal(modal_id);
   <% if !table.nil? %>
     function renderRecord() {
@@ -12,6 +12,10 @@ var modal_id = '<%= modal.id %>';
       $('#<%= table.row_id(record) %>').hide().fadeIn(1000);
     <% elsif modal.role?(:edit_update) %>
       $('#<%= table.row_id(record) %>').replaceWith(renderRecord());
+    <% elsif modal.role?(:destroy) %>
+      $('#<%= table.row_id(record) %>').fadeOut(500, function(){
+        $(this).remove();
+      });
     <% end %>
   <% end %>
   alert_custom('<%= Constants::Alert::SUCCESS %>', '<%= t "alert.save.success" %>');

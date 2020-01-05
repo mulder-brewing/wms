@@ -4,7 +4,6 @@ class Modal::Footers::FormRecordFooter < Modal::Footers::FormFooter
 
   def initialize
     super
-    @buttons.push(:close, :save)
   end
 
   def show_timestamps?

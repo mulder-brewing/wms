@@ -16,7 +16,7 @@ module Util::Boolean
     end
 
     def call
-      key = @boolean ? "global.boolean.yes_no.yes" : "global.boolean.yes_no.no"
+      key = @boolean ? "global.boolean.yes" : "global.boolean.no"
       return I18n.t(key)
     end
   end

@@ -24,16 +24,18 @@ class BasicRecordForm < RecordForm
   end
 
   def submit
-    @record.company_id ||= current_company_id
+    if @record.has_attribute?(:company_id)
+      @record.company_id ||= current_company_id
+    end
     validate_and_save(@record)
   end
 
   def validate_and_save(record)
     if valid?
       record.save!
-      @save_success = true
+      @submit_success = true
     else
-      @save_success = false
+      @submit_success = false
     end
   end
 

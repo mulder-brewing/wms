@@ -11,6 +11,8 @@
         <% if modal.form? %>
           <%= render modal.form.view_path,
             { :modal => modal } %>
+        <% elsif modal.role?(:destroy) %>
+          <%= t_nf("modal.destroy.chicken_message", :to_delete=> modal.form.to_delete) %>
         <% end %>
       </div>
       <div class="modal-footer">
@@ -26,6 +28,9 @@
           <button type="submit" form="<%= modal.form.html_id %>" class="btn btn-primary save">
             <%= t_nf "actions.save" %>
           </button>
+        <% end %>
+        <% if modal.footer.buttons.include? :delete %>
+          <%= link_to t_nf("actions.delete"), modal.form.record,  method: :delete, remote: true, class: 'btn btn-danger'  %>
         <% end %>
       </div>
     </div>

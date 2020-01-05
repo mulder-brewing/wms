@@ -1,5 +1,5 @@
 class Company < ApplicationRecord
-  has_many :users, dependent: :destroy
+  has_many :users, class_name: "Auth::User", dependent: :destroy
   has_many :dock_groups, dependent: :destroy
   has_many :docks, dependent: :destroy
   has_many :dock_requests, dependent: :destroy

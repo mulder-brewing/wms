@@ -23,7 +23,7 @@ class Auth::PasswordUpdateForm < BasicRecordForm
   def submit
     @record.password_reset = true unless self?(@record)
     super
-    if send_email? && @save_success
+    if send_email? && @submit_success
       send_password_reset_email
     end
   end

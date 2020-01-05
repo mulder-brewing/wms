@@ -1,7 +1,7 @@
 class Table::Column::EnabledColumn < Table::Column::IndexColumn
 
   def initialize
-    super("global.boolean.enabled_disabled.enabled")
+    super("global.boolean.enabled")
   end
 
   def enabled_value?

@@ -3,7 +3,7 @@
     <td>
       <% if column.actions? && column.buttons? %>
         <% column.buttons.each do |button| %>
-          <%= link_to t_nf(button.text_key), button.path(record), :remote => button.remote, :class => button.btn_class %>
+          <%= button(button, record: record) %>
         <% end %>
       <% else %>
         <%= column.field_value(record) %>

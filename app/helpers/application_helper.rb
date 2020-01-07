@@ -54,5 +54,13 @@ module ApplicationHelper
     I18n.t(key, options)
   end
 
+  def button(button, record: nil, path: nil, **options)
+    raise ArgumentError if record.nil? && path.nil?
+    path ||= button.path(record)
+    options[:remote] = true if button.remote
+    options[:class] = button.btn_class
+    link_to t_nf(button.text_key), path, options
+  end
+
 
 end

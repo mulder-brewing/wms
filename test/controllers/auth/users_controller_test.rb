@@ -656,15 +656,15 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "page should have new record button" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.test_new = true
+    to.test_buttons = true
+    to.add_visible_button(Button::NewButton::TEST_ID)
     to.test(self)
   end
 
   test "should see the edit buttons" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.test_edit = true
-    to.add_visible_edit_record(@regular_user)
-    to.add_visible_edit_record(@app_admin)
+    to.test_buttons = true
+    to.add_visible_button(Button::EditButton::TEST_ID)
     to.test(self)
   end
 

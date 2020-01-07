@@ -191,7 +191,6 @@ class ActionDispatch::IntegrationTest
         end
       end
       assert_select "header h3", to.title if to.test_title?
-      assert_select "header a:match('href',?)", to.new_path if to.test_new?
       if to.test_enabled_filter?
         assert_select "main div.action-bar div.enabled-filter" do
             to.query = nil
@@ -202,10 +201,9 @@ class ActionDispatch::IntegrationTest
             assert_select "a[href=?]", to.index_path
         end
       end
-      if to.test_edit?
-        to.visible_edit_records.each do |record|
-          assert_select "table.index-table tr##{Table::IndexTable.row_id(record)} a[href=?]",
-            edit_polymorphic_path(record), { :text => I18n.t("actions.edit") }
+      if to.test_buttons?
+        to.visible_buttons.each do |id|
+          assert_select "main a.#{id}"
         end
       end
       if to.test_pagination?
@@ -215,6 +213,18 @@ class ActionDispatch::IntegrationTest
     else
       assert redirected?(@response)
     end
+  end
+
+  # This function uses the DestroyTO to test deleting records.
+  def destroy_modal_to_test(to)
+    log_in_if_user(to.user)
+    get to.path, to.xhr_switch_params
+    assert_equal to.validity, !redirected?(@response)
+    if to.validity == true
+      message = I18n.t("modal.destroy.chicken_message", :to_delete=> to.to_delete)
+      assert_match message, @response.body
+    end
+    verify_modal_title(to) if to.test_title?
   end
 
   # This function uses NavbarTO to test navbar links.

@@ -1,5 +1,15 @@
 module Util::Paths
 
+  class New < ApplicationService
+    def initialize(record)
+      @record = record
+    end
+
+    def call
+      Rails.application.routes.url_helpers.polymorphic_url(@record,
+        routing_type: :path, action: :new)
+    end
+  end
 
   class Edit < ApplicationService
     def initialize(record)

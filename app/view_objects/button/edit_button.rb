@@ -1,7 +1,10 @@
 class Button::EditButton < Button::BaseButton
 
-  def initialize(*)
-    super("actions.edit", Button::Style::PRIMARY)
+  TEST_ID = "edit-button-test-id"
+
+  def initialize(**options)
+    super("actions.edit", Button::Style::PRIMARY, options)
+    @test_id = TEST_ID
   end
 
   def path(record)

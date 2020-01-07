@@ -2,11 +2,11 @@ class Button::BecomeButton < Button::BaseButton
 
   TEST_ID = "become-user-button-test-id"
 
-  def initialize
-    super("auth/users.become", Button::Style::PRIMARY)
+  def initialize(**options)
+    super("auth/users.become", Button::Style::PRIMARY, options)
     @size = Button::Size::SMALL
     @classes << "m-1"
-    @classes << TEST_ID
+    @test_id = TEST_ID
   end
 
   def path(record)

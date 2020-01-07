@@ -2,7 +2,7 @@ class NewTO < NewEditTO
   include Includes::NewPath
 
   def initialize(user, model, validity)
-    @title_text_key = "create"
+    @title_text_key = "new_create"
     super(user, model, validity)
   end
 

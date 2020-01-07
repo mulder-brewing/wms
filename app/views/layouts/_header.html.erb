@@ -6,7 +6,7 @@
       </div>
       <div class="col-3 py-1 text-right my-auto">
         <% if !yield(:new_link).empty? %>
-          <%= link_to t_nf("actions.new"), yield(:new_link), 'data-toggle' => 'modal', 'data-target' => '#create-modal', remote:true, 'class' => 'btn btn-success btn-sm' %>
+          <%= button(Button::NewButton.new, path: yield(:new_link)) %>
         <% end %>
       </div>
     </div>

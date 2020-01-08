@@ -6,7 +6,7 @@
       </div>
       <div class="col-3 py-1 text-right my-auto">
         <% if !yield(:new_link).empty? %>
-          <%= button(Button::NewButton.new, path: yield(:new_link)) %>
+          <%= btn_link(Button::NewButton.new(size: Button::Size::SMALL, path: yield(:new_link), remote: true)) %>
         <% end %>
       </div>
     </div>

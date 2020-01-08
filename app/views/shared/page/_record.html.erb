@@ -3,7 +3,7 @@
     <td>
       <% if column.actions? && column.buttons? %>
         <% column.buttons.each do |button| %>
-          <%= button(button, record: record) %>
+          <%= btn_link(button, record: record) %>
         <% end %>
       <% else %>
         <%= column.field_value(record) %>

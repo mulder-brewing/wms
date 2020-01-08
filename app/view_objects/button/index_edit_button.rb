@@ -1,10 +1,9 @@
 class Button::IndexEditButton < Button::EditButton
 
-  def initialize(**options)
-    super(options)
+  def initialize(*)
+    super
     @remote = true
-    @size = Button::Size::SMALL
-    @classes << "m-1"
+    index_action_style
   end
 
 end

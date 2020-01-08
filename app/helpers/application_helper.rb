@@ -54,12 +54,14 @@ module ApplicationHelper
     I18n.t(key, options)
   end
 
-  def button(button, record: nil, path: nil, **options)
-    raise ArgumentError if record.nil? && path.nil?
-    path ||= button.path(record)
-    options[:remote] = true if button.remote
-    options[:class] = button.btn_class
-    link_to t_nf(button.text_key), path, options
+  def btn(button, **options)
+    options.reverse_merge!(button.btn_options)
+    button_tag t_nf(button.text_key), options
+  end
+
+  def btn_link(button, **options)
+    options.reverse_merge!(button.btn_link_options)
+    link_to t_nf(button.text_key), button.path(options[:record]), options
   end
 
 

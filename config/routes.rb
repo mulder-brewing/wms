@@ -1,18 +1,18 @@
 Rails.application.routes.draw do
   # Resources
-  resources :companies do
+  resources :companies, except: :show do
     member do
       get :destroy_modal
     end
   end
 
   namespace :auth do
-    resources :users, only: [:new, :create, :edit, :update, :index]
+    resources :users, except: [:show, :destroy]
     resources :password_resets, only: [:edit, :update]
     resources :password_updates, only: [:edit, :update]
   end
 
-  resources :access_policies do
+  resources :access_policies, except: [:show, :destroy] do
     collection do
       get :company
     end

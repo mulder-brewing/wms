@@ -8,12 +8,13 @@ class CompanyForm < BasicRecordForm
     ActiveModel::Name.new(self, nil, "Company")
   end
 
-  def permitted_params
-    [:name, :enabled]
+  def initialize(*)
+    super
+    @table_class = Table::CompaniesIndexTable
   end
 
-  def table
-    Table::CompaniesIndexTable.new(current_user) if action?(:create, :update)
+  def permitted_params
+    [:name, :enabled]
   end
 
 end

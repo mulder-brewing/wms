@@ -33,11 +33,8 @@ en:
   access_policies:
     title:
       index: Access Policies
-      create: New Access Policy
-      update: Edit Access Policy
-    fields:
-      everything: Everything
-    access_policy: Access Policy
+      new_create: New Access Policy
+      edit_update: Edit Access Policy
 
   actions:
     new: New
@@ -63,23 +60,7 @@ en:
       index: Users
       edit_update: Edit User
       update_password: Update Password
-    name:
-      username: Username
-      first_name: First Name
-      last_name: Last Name
-    communication:
-      email: Email
-      send_email_login: Send email with login instructions
-      send_email_password: Send email with new password
-    hints:
-      username: lowercase, numbers, and underscore only with no spaces
-      password: '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
-      update_password: You must update your password before you can use Mulder WMS.
-    security:
-      admin: Admin
-      reset_password: Reset Password
-      password: Password
-      password_confirm: Password Confirmation
+    reset_password: Reset Password
     become: Become
 
   companies:
@@ -93,15 +74,15 @@ en:
   dock_groups:
     title:
       index: Dock Groups
-      create: New Dock Group
-      update: Edit Dock Group
+      new_create: New Dock Group
+      edit_update: Edit Dock Group
     dock_group: Dock Group
 
   docks:
     title:
       index: Docks
-      create: New Dock
-      update: Edit Dock
+      new_create: New Dock
+      edit_update: Edit Dock
 
   form:
     errors:
@@ -132,12 +113,14 @@ en:
       enabled: Enabled
       disabled: Disabled
     description: Description
-    name: Name
     number: Number
 
   modal:
     destroy:
       chicken_message: 'Are you sure you want to delete %{to_delete}?  This action is irreversible.'
+
+  password_reset:
+    message: You must update your password before you can use Mulder WMS.
 
   timestamps:
     created: Created

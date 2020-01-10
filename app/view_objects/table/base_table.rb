@@ -1,5 +1,6 @@
 class Table::BaseTable
   include Auth::SessionsHelper
+  include SimpleFormHelper
 
   attr_accessor :current_user, :columns
 

@@ -30,17 +30,17 @@ class Auth::PasswordUpdatesControllerTest < ActionDispatch::IntegrationTest
   test "regular user only sees password and password confirmation" do
     to = EditTO.new(@regular_user, @regular_user, true)
     to.path = edit_auth_password_update_path(@regular_user)
-    to.add_input(InputTO.new(form_input_id(@form, :company_id), false))
-    to.add_input(InputTO.new(form_input_id(@form, :first_name), false))
-    to.add_input(InputTO.new(form_input_id(@form, :last_name), false))
-    to.add_input(InputTO.new(form_input_id(@form, :username), false))
-    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id), false))
-    to.add_input(InputTO.new(form_input_id(@form, :company_admin), false))
-    to.add_input(InputTO.new(form_input_id(@form, :enabled), false))
-    to.add_input(InputTO.new(form_input_id(@form, :email), false))
-    to.add_input(InputTO.new(form_input_id(@form, :password)))
-    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
-    to.add_input(InputTO.new(form_input_id(@form, :send_email), false))
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_id, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :first_name, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :last_name, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :username, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :access_policy_id, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_admin, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :email, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password_confirmation)
+    to.visibles << FormFieldVisible.new(form: @form, field: :send_email, visible: false)
     to.test(self)
   end
 
@@ -65,30 +65,31 @@ class Auth::PasswordUpdatesControllerTest < ActionDispatch::IntegrationTest
   test "company admin doesn't see these things for user in company" do
     to = EditTO.new(@company_admin, @regular_user, true)
     to.path = edit_auth_password_update_path(@regular_user)
-    to.add_input(InputTO.new(form_input_id(@form, :company_id), false))
-    to.add_input(InputTO.new(form_input_id(@form, :first_name), false))
-    to.add_input(InputTO.new(form_input_id(@form, :last_name), false))
-    to.add_input(InputTO.new(form_input_id(@form, :username), false))
-    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id), false))
-    to.add_input(InputTO.new(form_input_id(@form, :company_admin), false))
-    to.add_input(InputTO.new(form_input_id(@form, :enabled), false))
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_id, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :first_name, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :last_name, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :username, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :access_policy_id, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_admin, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
+    to.test(self)
   end
 
   test "company admin sees these things for user in company" do
     to = EditTO.new(@company_admin, @regular_user, true)
     to.path = edit_auth_password_update_path(@regular_user)
-    to.add_input(InputTO.new(form_input_id(@form, :email)))
-    to.add_input(InputTO.new(form_input_id(@form, :password)))
-    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
-    to.add_input(InputTO.new(form_input_id(@form, :send_email)))
+    to.visibles << FormFieldVisible.new(form: @form, field: :email)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password_confirmation)
+    to.visibles << FormFieldVisible.new(form: @form, field: :send_email)
     to.test(self)
   end
 
   test "company admin doesn't see email and send email for self" do
     to = EditTO.new(@company_admin, @company_admin, true)
     to.path = edit_auth_password_update_path(@company_admin)
-    to.add_input(InputTO.new(form_input_id(@form, :email), false))
-    to.add_input(InputTO.new(form_input_id(@form, :send_email), false))
+    to.visibles << FormFieldVisible.new(form: @form, field: :email, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :send_email, visible: false)
     to.test(self)
   end
 

@@ -30,6 +30,10 @@ class GenericTO
     @model_class ||= @model.class
   end
 
+  def model_count
+    model_class.count
+  end
+
   def xhr_switch_params(p = {})
     p = { xhr: true }.merge(p) if xhr
     return p
@@ -37,6 +41,10 @@ class GenericTO
 
   def test_visibles?
     !@visibles.empty?
+  end
+
+  def xhr?
+    @xhr
   end
 
 end

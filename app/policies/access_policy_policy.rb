@@ -1,28 +1,36 @@
 class AccessPolicyPolicy < ApplicationPolicy
 
   def new?
-    check
+    admin?
   end
 
   def create?
-    check
+    admin?
   end
 
   def edit?
-    check
+    check?
   end
 
   def update?
-    check
+    check?
   end
 
   def index?
-    check
+    admin?
   end
 
   private
-    def check
-      true
+
+  def check?
+    admin? && same_company_as_current_user?(record)
+  end
+
+  class Scope < Scope
+    def resolve
+      super.order(:description)
     end
+  end
+
 
 end

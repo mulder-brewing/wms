@@ -3,7 +3,7 @@ class Button::BaseButton
 
   BASE_CLASS = "btn"
 
-  attr_accessor :text_key, :style, :size, :classes, :btn_class
+  attr_accessor :remote, :text_key, :style, :size, :classes, :btn_class
 
   def initialize(**options)
     @remote = false

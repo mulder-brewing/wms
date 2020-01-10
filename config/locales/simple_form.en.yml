@@ -5,27 +5,32 @@ en:
     required:
       text: 'required'
       mark: '*'
-      # You can uncomment the line below if you need to overwrite the whole required html.
-      # When using html, text and mark won't be used.
-      # html: '<abbr title="required">*</abbr>'
-    error_notification:
-      default_message: "Please review the problems below:"
-    # Examples
-    # labels:
-    #   defaults:
-    #     password: 'Password'
-    #   user:
-    #     new:
-    #       email: 'E-mail to sign in.'
-    #     edit:
-    #       email: 'E-mail.'
-    # hints:
-    #   defaults:
-    #     username: 'User name to sign in.'
-    #     password: 'No special characters, please.'
+    labels:
+      defaults:
+        name: Name
+        description: Description
+        enabled: Enabled
+      access_policy:
+        everything: Everything
+      auth_user:
+        first_name: First Name
+        last_name: Last Name
+        email: Email
+        send_email: Send email with login instructions
+        username: Username
+        password: Password
+        password_confirmation: Password Confirmation
+        access_policy_id: Access Policy
+        company_admin: Admin
+      auth_password_update:
+        send_email: Send email with new password
+    hints:
+      auth_user:
+        username: lowercase, numbers, and underscore only with no spaces
+        password: '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
     # include_blanks:
     #   defaults:
     #     age: 'Rather not say'
     # prompts:
-    #   defaults:
-    #     age: 'Select your age'
+    #   auth_user:
+    #     company_id: Select Company

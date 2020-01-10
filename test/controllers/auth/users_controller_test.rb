@@ -1,5 +1,4 @@
 require 'test_helper'
-require 'pp'
 
 class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
@@ -152,6 +151,12 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.test(self)
   end
 
+  test "new modal doesn't show reset password button" do
+    to = NewTO.new(@company_admin, @new, true)
+    to.visibles << ModalBodyVisible.new(class: Button::ResetPasswordButton::BTN_CLASS, visible: false)
+    to.test(self)
+  end
+
   # ----------------------------------------------------------------------------
   # Tests for creating a record.
 
@@ -279,6 +284,12 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to = EditTO.new(@regular_user, @regular_user, true)
     to.visibles << ModalFooterVisible.new(class: Button::SaveButton::BTN_CLASS)
     to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
+    to.test(self)
+  end
+
+  test "edit modal does show reset password button" do
+    to = EditTO.new(@regular_user, @regular_user, true)
+    to.visibles << ModalBodyVisible.new(class: Button::ResetPasswordButton::BTN_CLASS)
     to.test(self)
   end
 

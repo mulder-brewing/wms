@@ -1,7 +1,7 @@
 class Table::Column::EnabledColumn < Table::Column::IndexColumn
 
   def initialize
-    super("global.boolean.enabled")
+    super("simple_form.labels.defaults.enabled")
   end
 
   def enabled_value?

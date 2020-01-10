@@ -15,15 +15,16 @@ class Auth::UserForm < BasicRecordForm
     ActiveModel::Name.new(self, nil, "Auth::User")
   end
 
+  def initialize(*)
+    super
+    @table_class = Table::Auth::UsersIndexTable
+  end
+
   def setup_variables
     @companies = Company.all.order(:name) if app_admin?
     company_id = @record.company_id || current_company_id
     @access_policies = AccessPolicy.select_options(company_id,
       record.access_policy_id).order(:description)
-  end
-
-  def table
-    Table::Auth::UsersIndexTable.new(current_user) if action?(:create, :update)
   end
 
 end

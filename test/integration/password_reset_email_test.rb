@@ -43,8 +43,10 @@ class PasswordResetEmailTest < ActionDispatch::IntegrationTest
     to.path = auth_password_update_path(@regular_user)
     to.params_key = :auth_password_update
     to.update_fields = @password
-    to.add_error_to ErrorTO.new("form.errors.email.send.email_blank", :send_email)
-    to.add_error_to ErrorTO.new("form.errors.email.blank", :email)
+    to.visibles << FormErrorVisible.new(field: :send_email,
+      error: "form.errors.email.send.email_blank")
+    to.visibles << FormErrorVisible.new(field: :email,
+      error: "form.errors.email.blank")
     to.test(self)
     assert_equal 0, ActionMailer::Base.deliveries.size
   end
@@ -55,7 +57,7 @@ class PasswordResetEmailTest < ActionDispatch::IntegrationTest
     to.path = auth_password_update_path(@regular_user)
     to.params_key = :auth_password_update
     to.update_fields = @password
-    to.add_error_to ErrorTO.new(:invalid, :email)
+    to.visibles << FormErrorVisible.new(field: :email, type: :invalid)
     to.test(self)
     assert_equal 0, ActionMailer::Base.deliveries.size
   end

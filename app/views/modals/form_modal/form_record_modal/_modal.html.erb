@@ -7,7 +7,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class= <%= modal.body_class %>>
         <% if modal.form? %>
           <%= render modal.form.view_path,
             { :modal => modal } %>

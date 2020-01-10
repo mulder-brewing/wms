@@ -26,7 +26,7 @@ class Auth::PasswordUpdatesController < ApplicationController
     end
 
     def customize_modal(modal)
-      modal.title = "auth/users.security.reset_password"
+      modal.title = "auth/users.reset_password"
       modal.footer.show_timestamps = false
     end
 

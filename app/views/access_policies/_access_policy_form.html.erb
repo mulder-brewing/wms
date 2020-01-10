@@ -1,0 +1,23 @@
+<%= simple_form_for modal.form, remote:true, :html => { :id => modal.form.html_id } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :description, as: :string, required: true %>
+      <% if modal.role?(:edit_update) %>
+        <div class="mb-2">
+          <%= f.input :enabled, sf_switch %>
+        </div>
+      <% end %>
+      <%= f.input :everything, sf_switch %>
+      <div class="individual_permissions ml-4">
+        <%= f.input :dock_groups, sf_switch(label: t_nf("dock_groups.title.index")) %>
+        <%= f.input :docks, sf_switch(label: t_nf("docks.title.index")) %>
+      </div>
+    </div>
+<% end %>
+
+<script type="text/javascript">
+  hideAccessPolicyPermissions();
+  $('#access_policy_everything').change(hideAccessPolicyPermissions);
+</script>

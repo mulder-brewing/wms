@@ -8,7 +8,7 @@ class Table::Auth::UsersIndexTable < Table::IndexTable
     buttons = [Button::IndexEditButton.new]
     buttons << Button::BecomeButton.new if app_admin?
     @columns << Table::Column::ButtonColumn.new(buttons)
-    @columns << Table::Column::DataColumn.new("auth/users.name.username",
+    @columns << Table::Column::DataColumn.new("simple_form.labels.auth_user.username",
       :username)
     if app_admin?
       company_column = Table::Column::DataColumn.new("companies.company",

@@ -6,47 +6,29 @@
     <div class="mb-3">
       <%= f.input :company_id, label: t_nf("companies.company"),
           :collection => modal.form.companies, :label_method => :name,
-          :value_method => :id, required: true,
+          :value_method => :id, required: true, prompt: true,
           input_html: { id: "auth_user_company_id"} if app_admin? %>
-      <%= f.input :first_name, label: t_nf("auth/users.name.first_name"),
-          required: true, as: :string if admin? %>
-      <%= f.input :last_name, label: t_nf("auth/users.name.last_name"),
-          required: true, as: :string if admin? %>
-      <%= f.input :email, label: t_nf("auth/users.communication.email"),
-          as: :string %>
-      <%= f.input :send_email, as: :boolean,
-          label: t_nf("auth/users.communication.send_email_login")\
-          if admin? && modal.role?(:new_create) %>
-      <%= f.input :username, label: t_nf("auth/users.name.username"),
-          required: true, as: :string if admin? %>
-      <%= f.hint t_nf("auth/users.hints.username") %>
+      <%= f.input :first_name, required: true, as: :string if admin? %>
+      <%= f.input :last_name, required: true, as: :string if admin? %>
+      <%= f.input :email, as: :string %>
+      <%= f.input :send_email, as: :boolean if admin? && modal.role?(:new_create) %>
+      <%= f.input :username, required: true, as: :string if admin? %>
       <% if modal.role?(:new_create) %>
-        <%= f.input :password, label: t_nf("auth/users.security.password"),
-        required: true %>
-        <%= f.hint t_nf("auth/users.hints.password") %>
-        <%= f.input :password_confirmation,
-            label: t_nf("auth/users.security.password_confirm"),
-            required: true %>
+        <%= f.input :password, required: true %>
+        <%= f.input :password_confirmation, required: true %>
       <% end %>
-      <%= f.input :access_policy_id, label: t_nf("access_policies.access_policy"),
-          :collection => modal.form.access_policies,
+      <%= f.input :access_policy_id, :collection => modal.form.access_policies,
           :label_method => :description, :value_method => :id, required: true,
-          input_html: { id: "auth_user_access_policy_id" } if admin? %>
-      <%= f.input :company_admin, label: t_nf("auth/users.security.admin"),
-          as: :boolean if admin? && not_self?(modal.form.record) %>
+          input_html: { id: "auth_user_access_policy_id" }, prompt: true if admin? %>
+      <%= f.input :company_admin, as: :boolean if admin? && not_self?(modal.form.record) %>
     </div>
-    <% if modal.role?(:edit_update) && admin? &&
-          not_self?(modal.form.record) %>
+    <% if modal.role?(:edit_update) && admin? && not_self?(modal.form.record) %>
       <div class="mb-2">
-        <%= f.input :enabled,
-            label: t_nf("global.boolean.enabled"),
-            as: :boolean, wrapper: :switch %>
+        <%= f.input :enabled, sf_switch %>
       </div>
     <% end %>
     <% if modal.role?(:edit_update) %>
-      <%= link_to t_nf("auth/users.security.reset_password"),
-        edit_auth_password_update_path(id: modal.form.record.id),
-        :remote => true, :class => 'btn btn-primary btn-block mt-3' %>
+      <%= btn(Button::ResetPasswordButton.new(record: modal.form.record)) %>
     <% end %>
 <% end %>
 

@@ -4,11 +4,11 @@
     <%= errors_for(f.object) %>
   </div>
   <div class="mb-3">
-    <%= f.input :name %>
+    <%= f.input :name, required: true %>
   </div>
   <% if modal.role?(:edit_update) %>
     <div class="mb-2">
-      <%= f.input :enabled, wrapper: :switch, as: :boolean %>
+      <%= f.input :enabled, sf_switch %>
     </div>
   <% end %>
 <% end %>

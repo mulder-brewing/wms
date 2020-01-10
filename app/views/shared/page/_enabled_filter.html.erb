@@ -1,7 +1,7 @@
 <div class="btn-group btn-group-sm enabled-filter my-1" role="group">
   <%= link_to t_nf("global.all"), polymorphic_path(page.new_record),
       class: "btn #{page.button_class(:all)}" %>
-  <%= link_to t_nf("global.boolean.enabled"),
+  <%= link_to t_nf("simple_form.labels.defaults.enabled"),
       polymorphic_path(page.new_record, :enabled => "true"),
       class: "btn #{page.button_class(:enabled)}"
       %>

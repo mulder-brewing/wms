@@ -17,7 +17,7 @@ class Table::GenericTableColumn
     when :global
       "global." + name.to_s
     when :enabled
-      "global.boolean.enabled"
+      "simple_form.labels.defaults.enabled"
     end
   end
 

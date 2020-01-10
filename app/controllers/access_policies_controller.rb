@@ -2,24 +2,40 @@ class AccessPoliciesController < ApplicationController
   include FormHelper, ModalHelper, PageHelper
 
   def new
-    new_modal
+    form = new_form_prep_record(AccessPolicyForm)
+    authorize form.record
+    modal = Modal::NewModal.new(form)
+    render_modal(modal)
   end
 
   def create
-    create_record
+    form = new_form_prep_record(AccessPolicyForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::CreateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def edit
-    edit_modal
+    form = new_form_prep_record(AccessPolicyForm)
+    authorize form.record
+    modal = Modal::EditModal.new(form)
+    render_modal(modal)
   end
 
   def update
-    update_record
+    form = new_form_prep_record(AccessPolicyForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::UpdateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def index
     page = new_page_prep_records(Page::IndexListPage)
-    page.table = Table::Auth::UsersIndexTable.new(current_user)
+    page.table = Table::AccessPoliciesIndexTable.new(current_user)
     authorize_scope_records(page)
     pagy_records(page)
     render_page(page)
@@ -42,20 +58,9 @@ class AccessPoliciesController < ApplicationController
   end
 
   private
-    def record_params
-      params.require(:access_policy).permit(:description, :enabled, :everything, :dock_groups, :docks)
+  
+    def assign_form_attributes(form)
+      form.attributes = params.require(form.record_name).permit(form.permitted_params)
     end
 
-    def table_array_hash
-      array = []
-      array << { name: :actions, edit_button: true }
-      array << { name: :description }
-      array << { name: :enabled, text_key_qualifier: :enabled }
-
-    end
-
-    def recordsSendArray
-      array = []
-      array << [:order, :description]
-    end
 end

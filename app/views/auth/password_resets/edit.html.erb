@@ -4,11 +4,12 @@
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-md-6 col-lg-4 mt-3">
-      <h5 class="text-center font-weight-light"><%= t_nf("auth/users.hints.update_password") %></h5>
+      <h5 class="text-center font-weight-light"><%= t_nf("password_reset.message") %></h5>
       <%= simple_form_for form do |f| %>
-        <%= f.input :password %>
-        <%= f.hint t_nf("auth/users.hints.password") %>
-        <%= f.input :password_confirmation, required: true %>
+        <%= f.input :password, label: t_nf("simple_form.labels.auth_user.password") %>
+        <%= f.hint t_nf("simple_form.hints.auth_user.password") %>
+        <%= f.input :password_confirmation, required: true,
+          label: t_nf("simple_form.labels.auth_user.password_confirmation") %>
         <div class="text-center mb-3">
           <%= f.button :submit, t_nf("auth/users.title.update_password"),  class: 'btn btn-primary' %>
         </div>

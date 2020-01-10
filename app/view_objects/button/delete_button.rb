@@ -1,13 +1,13 @@
 class Button::DeleteButton < Button::BaseButton
   include Button::BtnLinkOptions
 
-  TEST_ID = "delete-button-test-id"
+  BTN_CLASS = "delete-button-class"
 
   def initialize(*)
     super
     @text_key = "actions.delete"
     @style = Button::Style::DANGER
-    @test_id = TEST_ID
+    @btn_class = BTN_CLASS
   end
 
 end

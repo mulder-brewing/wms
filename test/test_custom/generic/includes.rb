@@ -34,32 +34,4 @@ module Includes
 
   end
 
-  module Title
-
-    attr_writer :test_title, :title_text_key
-
-    def title
-      I18n.t(@title_text_key)
-    end
-
-    def test_title?
-      @test_title
-    end
-
-  end
-
-  module Inputs
-
-    attr_accessor :inputs, :select_jquery_method
-
-    def add_input(input)
-      @inputs ||= []
-      @inputs << input
-    end
-
-    def test_inputs?
-      !@inputs.blank?
-    end
-
-  end
 end

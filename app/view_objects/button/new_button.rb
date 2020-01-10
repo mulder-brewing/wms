@@ -1,13 +1,13 @@
 class Button::NewButton < Button::BaseButton
   include Button::BtnLinkOptions
 
-  TEST_ID = "new-button-test-id"
+  BTN_CLASS = "new-button-class"
 
   def initialize(*)
     super
     @text_key = "actions.new"
     @style = Button::Style::SUCCESS
-    @test_id = TEST_ID
+    @btn_class = BTN_CLASS
   end
 
   def record_path(record)

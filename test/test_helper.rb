@@ -4,15 +4,7 @@ require 'rails/test_help'
 require "minitest/reporters"
 Minitest::Reporters.use!
 require 'pp'
-# Require my custom generic test object, then the subclasses
-require "test_custom/TO/generic/includes.rb"
-require "test_custom/TO/error/error_to.rb"
-require "test_custom/TO/input/input_to.rb"
-Dir.glob(Rails.root.join("test/test_custom/TO/input/sub/*.rb"), &method(:require))
-require "test_custom/TO/generic/generic_to.rb"
-require "test_custom/TO/generic/new_edit_to.rb"
-require "test_custom/TO/generic/create_update_to.rb"
-Dir.glob(Rails.root.join("test/test_custom/TO/generic/sub/*.rb"), &method(:require))
+require_all 'test/test_custom/**/*.rb'
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
@@ -88,9 +80,7 @@ class ActionDispatch::IntegrationTest
     get to.new_path, to.xhr_switch_params
     assert_equal to.validity, !redirected?(@response)
     assert_select "form", to.validity
-    verify_modal_title(to) if to.test_title?
-    verify_modal_footer(to) if to.test_buttons? || to.test_timestamps?
-    verify_form_inputs(to) if to.test_inputs?
+    verify_visibles(to) if to.test_visibles?
   end
 
   # This function uses the CreateTO to test creating a record.
@@ -114,8 +104,8 @@ class ActionDispatch::IntegrationTest
       else
         c.()
       end
+      verify_visibles(to) if to.test_visibles?
       verify_errors(to) if to.test_errors?
-      verify_form_inputs(to) if to.test_inputs?
     end
   end
 
@@ -125,9 +115,7 @@ class ActionDispatch::IntegrationTest
     get to.edit_path, to.xhr_switch_params
     assert_equal to.validity, !redirected?(@response)
     assert_select "form", to.validity
-    verify_modal_title(to) if to.test_title?
-    verify_modal_footer(to) if to.test_buttons? || to.test_timestamps?
-    verify_form_inputs(to) if to.test_inputs?
+    verify_visibles(to) if to.test_visibles?
   end
 
   # This function uses UpdateTO to test updating a record.
@@ -182,34 +170,7 @@ class ActionDispatch::IntegrationTest
     get to.index_path
     if to.validity == true
       assert_template to.index_template
-      if to.check_visibility?
-        to.visible_y_records.each do |record|
-          assert_select "tr##{Table::IndexTable.row_id(record)}"
-        end
-        to.visible_n_records.each do |record|
-          assert_select "tr##{Table::IndexTable.row_id(record)}", false
-        end
-      end
-      assert_select "header h3", to.title if to.test_title?
-      if to.test_enabled_filter?
-        assert_select "main div.action-bar div.enabled-filter" do
-            to.query = nil
-            assert_select "a[href=?]", to.index_path
-            to.query = :enabled
-            assert_select "a[href=?]", to.index_path
-            to.query = :disabled
-            assert_select "a[href=?]", to.index_path
-        end
-      end
-      if to.test_buttons?
-        to.visible_buttons.each do |id|
-          assert_select "main a.#{id}"
-        end
-      end
-      if to.test_pagination?
-        assert_select "main div.pagination-wrapper div.pagination-count",
-          /#{to.model.class.where_company(to.user.company_id).count}/
-      end
+      verify_visibles(to) if to.test_visibles?
     else
       assert redirected?(@response)
     end
@@ -224,7 +185,7 @@ class ActionDispatch::IntegrationTest
       message = I18n.t("modal.destroy.chicken_message", :to_delete=> to.to_delete)
       assert_match message, @response.body
     end
-    verify_modal_title(to) if to.test_title?
+    verify_visibles(to) if to.test_visibles?
   end
 
   # This function uses NavbarTO to test navbar links.
@@ -233,6 +194,18 @@ class ActionDispatch::IntegrationTest
     log_in_if_user(to.user)
     get root_path
     to.validity ? al.call(true) : al.call(false)
+  end
+
+  # This function helps verify things are/aren't visible in page, modal, form.
+  def verify_visibles(to)
+    vis = Proc.new { |to| to.visibles.each { |v| assert_select v.select, v.select_options } }
+    if to.select_jquery_method.present?
+      self.send(to.select_jquery_method) {
+        vis.call(to)
+      }
+    else
+      vis.call(to)
+    end
   end
 
   # This function selects the modal and allows further selects to be yielded.
@@ -248,58 +221,6 @@ class ActionDispatch::IntegrationTest
     assert_select_jquery :replaceWith, "##{RecordForm.html_id}" do
       yield
     end
-  end
-
-  # This function helps verify the modal's title.
-  def verify_modal_title(to)
-    select_modal {
-      modal_title = "div.modal-header h5.modal-title"
-      assert_select modal_title, to.title
-    }
-  end
-
-  # This function helps verify what's in the modal footer.
-  def verify_modal_footer(to)
-    select_modal {
-      assert_select "div.modal-footer" do
-        if to.test_buttons?
-          assert_select "button", to.buttons.length
-          if to.check_save_button?
-            assert_select "button[type=submit]", I18n.t("actions.save")
-          end
-          if to.check_close_button?
-            assert_select "button[data-dismiss=modal]", I18n.t("actions.close")
-          end
-        end
-        if to.test_timestamps?
-          count = to.timestamps_visible ? 1 : 0
-          assert_select "a[href=?]", "#collapseTimestamps",
-            { :text => I18n.t("timestamps.title"), :count => count }
-        end
-      end
-    }
-  end
-
-  # This function helps verify form inputs.
-  def verify_form_inputs(to)
-    self.send(to.select_jquery_method) {
-      assert_select "form" do
-        to.inputs.each do |input|
-          case input
-          when SelectTO
-            assert_select "select##{input.id}", input.visible? do
-              assert_select "option", input.options_count if input.check_count?
-              input.options.each do |option|
-                assert_select "option[value=#{option.id}]",
-                  { :text => option.label, :count => option.visible ? 1 : 0 }
-              end
-            end
-          when InputTO
-            assert_select "input##{input.id}", input.visible?
-          end
-        end
-      end
-    }
   end
 
   # This function helps verify form errors when a create or update fails.
@@ -325,6 +246,17 @@ class ActionDispatch::IntegrationTest
 
   def form_input_id(form, attribute)
     form.record_name + "_" + attribute.to_s
+  end
+
+  def verify_enabled_filter_links(to)
+    assert_select "main div.#{Page::IndexListPage::ACTION_BAR_CLASS} div.enabled-filter" do
+        to.query = nil
+        assert_select "a[href=?]", to.index_path
+        to.query = :enabled
+        assert_select "a[href=?]", to.index_path
+        to.query = :disabled
+        assert_select "a[href=?]", to.index_path
+    end
   end
 
 

@@ -1,13 +1,13 @@
 class Button::EditButton < Button::BaseButton
   include Button::BtnLinkOptions
 
-  TEST_ID = "edit-button-test-id"
+  BTN_CLASS = "edit-button-class"
 
   def initialize(*)
     super
     @text_key = "actions.edit"
     @style = Button::Style::PRIMARY
-    @test_id = TEST_ID
+    @btn_class = BTN_CLASS
   end
 
   def record_path(record)

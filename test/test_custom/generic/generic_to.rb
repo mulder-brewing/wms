@@ -3,13 +3,14 @@ include ActiveModel::Translation
 
 class GenericTO
 
-  attr_accessor :user, :validity, :model, :debug, :path, :xhr
+  attr_accessor :user, :validity, :model, :debug, :path, :xhr, :visibles, :select_jquery_method
 
   def initialize(user, model, validity)
     @user = user
     @model = model
     @validity = validity
     @xhr = true
+    @visibles = []
   end
 
   def disable_user_access_policy
@@ -32,6 +33,10 @@ class GenericTO
   def xhr_switch_params(p = {})
     p = { xhr: true }.merge(p) if xhr
     return p
+  end
+
+  def test_visibles?
+    !@visibles.empty?
   end
 
 end

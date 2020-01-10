@@ -8,7 +8,7 @@ var modal_id = '<%= modal.id %>';
       return '<%= j render partial: Page::IndexListPage::RECORD_HTML_PATH, locals: { record: record, table: table } %>'
     }
     <% if modal.role?(:new_create) %>
-      $('#<%= table.body_id %>').prepend(renderRecord());
+      $('.<%= table.body_class %>').prepend(renderRecord());
       $('#<%= table.row_id(record) %>').hide().fadeIn(1000);
     <% elsif modal.role?(:edit_update) %>
       $('#<%= table.row_id(record) %>').replaceWith(renderRecord());

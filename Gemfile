@@ -93,6 +93,8 @@ group :test do
   gem 'rails-controller-testing', '1.0.4'
   gem 'minitest',                 '5.13.0'
   gem 'minitest-reporters',       '1.1.14'
+  # Require all my custome test cllasses and modules
+  gem 'require_all'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

@@ -3,7 +3,7 @@ class Button::BaseButton
 
   BASE_CLASS = "btn"
 
-  attr_accessor :text_key, :style, :size, :classes, :test_id
+  attr_accessor :text_key, :style, :size, :classes, :btn_class
 
   def initialize(**options)
     @remote = false
@@ -12,12 +12,12 @@ class Button::BaseButton
     @size = options[:size]
     @classes = []
     @classes << options[:class]
-    @test_id = options[:test_id]
+    @btn_class = options[:test_id]
   end
 
   def btn_class
     return @final_calc_class unless @final_calc_class.nil?
-    array = [BASE_CLASS, @style, @size, @test_id] + @classes
+    array = [BASE_CLASS, @style, @size, @btn_class] + @classes
     @final_calc_class = array.select(&:present?).join(" ")
   end
 

@@ -1,11 +1,10 @@
 class CreateUpdateTO < GenericTO
-  include Includes::Inputs
 
   attr_accessor :params_key, :params_hash, :error_to_array, :attributes
 
   def initialize(user, model, params_hash, validity)
     @params_hash = params_hash
-    @select_jquery_method = "select_form"
+    @select_jquery_method = :select_form
     super(user, model, validity)
   end
 

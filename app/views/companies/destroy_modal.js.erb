@@ -1,6 +1,0 @@
-<% if @company %>
-$("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'destroy', :title => 'Delete Company', :entity => 'company', :object => @company } %>");
-$("#destroy-modal").modal('show');
-<% else %>
-  alert_custom("warning","Company no longer exists")
-<% end %>

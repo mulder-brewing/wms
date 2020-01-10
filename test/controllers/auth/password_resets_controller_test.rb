@@ -44,7 +44,7 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     to.path = auth_password_reset_path
     to.params_key = :auth_password_reset
     to.update_fields = @password
-    to.add_error_to ErrorTO.new(:same, :password)
+    to.visibles << FormErrorVisible.new(field: :password, type: :same)
     to.test(self)
     assert_template 'auth/password_resets/edit'
     # user should be able to update their password with a new password

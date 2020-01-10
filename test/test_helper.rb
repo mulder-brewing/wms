@@ -175,16 +175,21 @@ class ActionDispatch::IntegrationTest
     end
   end
 
-  # This function uses the DestroyTO to test deleting records.
+  # This function uses the DestroyModalTO to test the delete modal chicken message.
   def destroy_modal_to_test(to)
     log_in_if_user(to.user)
     get to.path, to.xhr_switch_params
     assert_equal to.validity, !redirected?(@response)
-    if to.validity == true
-      message = I18n.t("modal.destroy.chicken_message", :to_delete=> to.to_delete)
-      assert_match message, @response.body
-    end
     verify_visibles(to) if to.test_visibles?
+  end
+
+  # This function uses the DestroyTO to test deleting records.
+  def destroy_to_test(to)
+    log_in_if_user(to.user)
+    difference = to.validity ? -1 : 0
+    assert_difference 'to.model_count', difference do
+      delete to.path, to.xhr_switch_params
+    end
   end
 
   # This function uses NavbarTO to test navbar links.
@@ -198,7 +203,7 @@ class ActionDispatch::IntegrationTest
   # This function helps verify things are/aren't visible in page, modal, form.
   def verify_visibles(to)
     vis = Proc.new { |to| to.visibles.each { |v| assert_select v.select, v.select_options } }
-    if to.select_jquery_method.present?
+    if to.xhr && to.select_jquery_method.present?
       self.send(to.select_jquery_method) {
         vis.call(to)
       }

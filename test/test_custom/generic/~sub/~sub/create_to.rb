@@ -15,10 +15,6 @@ class CreateTO < CreateUpdateTO
     Rails.application.routes.url_helpers.polymorphic_path(@model)
   end
 
-  def model_count
-    model_class.count
-  end
-
   def model_last
     model_class.last
   end

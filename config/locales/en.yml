@@ -132,7 +132,6 @@ en:
       enabled: Enabled
       disabled: Disabled
     description: Description
-    name: Name
     number: Number
 
   modal:

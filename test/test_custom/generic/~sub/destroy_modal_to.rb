@@ -1,7 +1,5 @@
 class DestroyModalTO < GenericTO
 
-  attr_accessor :to_delete
-
   def initialize(*)
     super
     @select_jquery_method = :select_modal

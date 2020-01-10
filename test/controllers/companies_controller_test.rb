@@ -19,6 +19,33 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # ----------------------------------------------------------------------------
+  # Tests link in navbar.
+
+  test "app admin can see the link" do
+    to = NavbarTO.new(@app_admin, @new, true)
+    to.query = :enabled
+    to.test(self)
+  end
+
+  test "logged out user can't see the link" do
+    to = NavbarTO.new(nil, @new, false)
+    to.query = :enabled
+    to.test(self)
+  end
+
+  test "regular user can't see the link" do
+    to = NavbarTO.new(@regular_user, @new, false)
+    to.query = :enabled
+    to.test(self)
+  end
+
+  test "company admin can't see the link" do
+    to = NavbarTO.new(@company_admin, @new, false)
+    to.query = :enabled
+    to.test(self)
+  end
+
+  # ----------------------------------------------------------------------------
   # Tests for new modal.
 
   test "app admin can get new company modal" do
@@ -201,65 +228,66 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   test "app admin can get destroy modal" do
     to = DestroyModalTO.new(@app_admin, @averagejoes, true)
     to.path = destroy_modal_company_path(@averagejoes)
-    to.to_delete = @averagejoes.name
+    to.visibles << DestroyMessageVisible.new(to_delete: @averagejoes.name)
+    to.test(self)
+  end
+
+  test "destroy chicken message is there" do
+    to = DestroyModalTO.new(@app_admin, @averagejoes, true)
+    to.path = destroy_modal_company_path(@averagejoes)
     to.test(self)
   end
 
   test "destroy modal title" do
     to = DestroyModalTO.new(@app_admin, @averagejoes, true)
     to.path = destroy_modal_company_path(@averagejoes)
-    to.to_delete = @averagejoes.name
     to.visibles << ModalTitleVisible.new(text: "companies.title.destroy")
+    to.test(self)
+  end
+
+  test "should see the delete and close buttons" do
+    to = DestroyModalTO.new(@app_admin, @averagejoes, true)
+    to.path = destroy_modal_company_path(@averagejoes)
+    to.visibles << ModalFooterVisible.new(class: Button::DeleteButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
     to.test(self)
   end
 
   test "logged out can't get destroy modal" do
     to = DestroyModalTO.new(nil, @averagejoes, false)
     to.path = destroy_modal_company_path(@averagejoes)
-    to.to_delete = @averagejoes.name
     to.test(self)
   end
 
   test "regular user can't get destroy modal" do
     to = DestroyModalTO.new(@regular_user, @averagejoes, false)
     to.path = destroy_modal_company_path(@averagejoes)
-    to.to_delete = @averagejoes.name
     to.test(self)
   end
 
   test "company admin can't get destroy modal" do
     to = DestroyModalTO.new(@company_admin, @averagejoes, false)
     to.path = destroy_modal_company_path(@averagejoes)
-    to.to_delete = @averagejoes.name
     to.test(self)
   end
 
+  # ----------------------------------------------------------------------------
+  # Tests for deleting record
 
-  test 'only app admin can delete a company' do
-    # try not logged in
-    assert_no_difference 'Company.count' do
-      delete company_path(@regular_user_company), xhr: true
-    end
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a regular user
-    log_in_as(@regular_user)
-    assert_no_difference 'Company.count' do
-      delete company_path(@regular_user_company), xhr: true
-    end
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a company admin user
-    log_in_as(@company_admin)
-    assert_no_difference 'Company.count' do
-      delete company_path(@company_admin_company), xhr: true
-    end
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a app admin (should work and create a company)
-    log_in_as(@app_admin)
-    assert_difference 'Company.count', -1 do
-      delete company_path(@regular_user_company), xhr: true
-    end
-    assert_match /destroy-modal/, @response.body
-    assert_match /Company deleted successfully/, @response.body
+  test "app admin can delete a company" do
+    DestroyTO.new(@app_admin, @averagejoes, true).test(self)
+  end
+
+  test "logged out user can't delete a company" do
+    DestroyTO.new(nil, @averagejoes, false).test(self)
+  end
+
+  test "regular user can't delete a company" do
+    DestroyTO.new(@regular_user, @averagejoes, false).test(self)
+  end
+
+  test "company admin can't delete a company" do
+    DestroyTO.new(@company_admin, @averagejoes, false).test(self)
   end
 
 end

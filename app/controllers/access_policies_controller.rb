@@ -1,8 +1,5 @@
 class AccessPoliciesController < ApplicationController
-  include GenericModalFormPageHelper
-
-  before_action :skip_authorization
-  before_action :logged_in_admin
+  include FormHelper, ModalHelper, PageHelper
 
   def new
     new_modal
@@ -21,7 +18,11 @@ class AccessPoliciesController < ApplicationController
   end
 
   def index
-    index_page
+    page = new_page_prep_records(Page::IndexListPage)
+    page.table = Table::Auth::UsersIndexTable.new(current_user)
+    authorize_scope_records(page)
+    pagy_records(page)
+    render_page(page)
   end
 
   def company

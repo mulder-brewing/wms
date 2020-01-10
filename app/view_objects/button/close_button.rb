@@ -1,13 +1,13 @@
 class Button::CloseButton < Button::BaseButton
   include Button::BtnOptions
 
-  TEST_ID = "close-button-test-id"
+  BTN_CLASS = "close-button-class"
 
   def initialize(*)
     super
     @text_key = "actions.close"
     @style = Button::Style::SECONDARY
-    @test_id = TEST_ID
+    @btn_class = BTN_CLASS
   end
 
 end

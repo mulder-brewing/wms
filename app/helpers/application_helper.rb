@@ -56,13 +56,11 @@ module ApplicationHelper
 
   def btn(button, **options)
     options.reverse_merge!(button.btn_options)
-    button_tag t_nf(button.text_key), options
+    if button.link?
+      link_to t_nf(button.text_key), button.path(options[:record]), options
+    else
+      button_tag t_nf(button.text_key), options
+    end
   end
-
-  def btn_link(button, **options)
-    options.reverse_merge!(button.btn_link_options)
-    link_to t_nf(button.text_key), button.path(options[:record]), options
-  end
-
 
 end

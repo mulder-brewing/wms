@@ -27,14 +27,13 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   test "app admin field visibility new modal" do
     to = NewTO.new(@app_admin, @new, true)
-    to.add_input(InputTO.new(form_input_id(@form, :name)))
+    to.visibles << FormFieldVisible.new(form: @form, field: :name)
     to.test(self)
   end
 
   test "new modal title" do
     to = NewTO.new(@app_admin, @new, true)
-    to.title_text_key = "companies.title.new_create"
-    to.test_title = true
+    to.visibles << ModalTitleVisible.new(text: "companies.title.new_create")
     to.test(self)
   end
 
@@ -88,15 +87,14 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   test "app admin field visibility" do
     to = EditTO.new(@app_admin, @averagejoes, true)
-    to.add_input(InputTO.new(form_input_id(@form, :name)))
-    to.add_input(InputTO.new(form_input_id(@form, :enabled)))
+    to.visibles << FormFieldVisible.new(form: @form, field: :name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
     to.test(self)
   end
 
   test "edit modal title" do
     to = EditTO.new(@app_admin, @averagejoes, true)
-    to.title_text_key = "companies.title.edit_update"
-    to.test_title = true
+    to.visibles << ModalTitleVisible.new(text: "companies.title.edit_update")
     to.test(self)
   end
 
@@ -146,13 +144,41 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
     IndexTo.new(@app_admin, @new, true).test(self)
   end
 
-  test "should see the new, edit, and delete buttons" do
+  test "should see the new button" do
     to = IndexTo.new(@app_admin, @new, true)
-    to.test_buttons = true
-    to.add_visible_button(Button::NewButton::TEST_ID)
-    to.add_visible_button(Button::EditButton::TEST_ID)
-    to.add_visible_button(Button::DeleteButton::TEST_ID)
+    to.visibles << HeaderVisible.new(class: Button::NewButton::BTN_CLASS)
     to.test(self)
+  end
+
+  test "should see title" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << HeaderTitleVisible.new(text: "companies.title.index")
+    to.test(self)
+  end
+
+  test "should see the edit and delete buttons" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << IndexTBodyVisible.new(class: Button::EditButton::BTN_CLASS)
+    to.visibles << IndexTBodyVisible.new(class: Button::DeleteButton::BTN_CLASS)
+    to.test(self)
+  end
+
+  test "pagination is there" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << PaginationVisible.new
+    to.test(self)
+  end
+
+  test "enabled filter is visible" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << EnabledFilterVisible.new
+    to.test(self)
+  end
+
+  test "enabled filter has the right links" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.test(self)
+    verify_enabled_filter_links(to)
   end
 
   test "a logged out user can't index" do
@@ -166,6 +192,8 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   test "company admin can't index" do
     IndexTo.new(@company_admin, @new, false).test(self)
   end
+
+
 
   # ----------------------------------------------------------------------------
   # Tests for delete modal
@@ -181,8 +209,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
     to = DestroyModalTO.new(@app_admin, @averagejoes, true)
     to.path = destroy_modal_company_path(@averagejoes)
     to.to_delete = @averagejoes.name
-    to.title_text_key = "companies.title.destroy"
-    to.test_title = true
+    to.visibles << ModalTitleVisible.new(text: "companies.title.destroy")
     to.test(self)
   end
 

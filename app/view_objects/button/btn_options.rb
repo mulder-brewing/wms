@@ -7,4 +7,8 @@ module Button::BtnOptions
       form: @form }
   end
 
+  def link?
+    false
+  end
+
 end

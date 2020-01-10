@@ -1,11 +1,10 @@
 class CreateUpdateTO < GenericTO
-  include Includes::Inputs
 
-  attr_accessor :params_key, :params_hash, :error_to_array, :attributes
+  attr_accessor :params_key, :params_hash, :attributes
 
   def initialize(user, model, params_hash, validity)
     @params_hash = params_hash
-    @select_jquery_method = "select_form"
+    @select_jquery_method = :select_form
     super(user, model, validity)
   end
 
@@ -16,15 +15,6 @@ class CreateUpdateTO < GenericTO
 
   def merge_params_hash(to_merge)
     @params_hash = @params_hash.merge(to_merge)
-  end
-
-  def test_errors?
-    !@error_to_array.blank?
-  end
-
-  def add_error_to(error_to)
-    @error_to_array ||= []
-    @error_to_array << error_to
   end
 
   def test_attributes?

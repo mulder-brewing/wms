@@ -74,36 +74,35 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "company admin field visibility new modal" do
     to = NewTO.new(@company_admin, @new, true)
-    to.add_input(SelectTO.new(form_input_id(@form, :company_id), false))
-    to.add_input(InputTO.new(form_input_id(@form, :first_name)))
-    to.add_input(InputTO.new(form_input_id(@form, :last_name)))
-    to.add_input(InputTO.new(form_input_id(@form, :email)))
-    to.add_input(InputTO.new(form_input_id(@form, :username)))
-    to.add_input(InputTO.new(form_input_id(@form, :password)))
-    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
-    to.add_input(InputTO.new(form_input_id(@form, :send_email)))
-    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id)))
-    to.add_input(InputTO.new(form_input_id(@form, :company_admin)))
-    to.add_input(InputTO.new(form_input_id(@form, :enabled), false))
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_id, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :first_name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :last_name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :email)
+    to.visibles << FormFieldVisible.new(form: @form, field: :username)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password_confirmation)
+    to.visibles << FormFieldVisible.new(form: @form, field: :send_email)
+    to.visibles << FormFieldVisible.new(form: @form, field: :access_policy_id)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_admin)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
     to.test(self)
   end
 
   test "access policy selector has enabled policies for company admin" do
     to = NewTO.new(@company_admin, @new, true)
-    select = SelectTO.new(form_input_id(@form, :access_policy_id))
-    select.options_count = AccessPolicy
-      .enabled_where_company(@company_admin.company_id).count
-    to.add_input(select)
+    count = AccessPolicy.enabled_where_company(@company_admin.company_id).count
+    to.visibles << SelectOptionVisible.new(form: @form,
+      field: :access_policy_id, count: count)
     to.test(self)
   end
 
   test "access policy selector doesn't have disabled policies" do
     to = NewTO.new(@company_admin, @new, true)
     @averagejoe_access_policy.update_column(:enabled, false)
-    select = SelectTO.new(form_input_id(@form, :access_policy_id))
-    select.add_option(@averagejoe_access_policy.description,
-                      @averagejoe_access_policy.id, false)
-    to.add_input(select)
+    text = @averagejoe_access_policy.description,
+    id = @averagejoe_access_policy.id
+    to.visibles << SelectOptionVisible.new(form: @form,
+      field: :access_policy_id, text: text, option_id: id, visible: false)
     to.test(self)
   end
 
@@ -113,45 +112,43 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "app admin field visibility new modal" do
     to = NewTO.new(@app_admin, @new, true)
-    to.add_input(SelectTO.new(form_input_id(@form,  :company_id)))
-    to.add_input(InputTO.new(form_input_id(@form, :first_name)))
-    to.add_input(InputTO.new(form_input_id(@form, :last_name)))
-    to.add_input(InputTO.new(form_input_id(@form, :email)))
-    to.add_input(InputTO.new(form_input_id(@form, :username)))
-    to.add_input(InputTO.new(form_input_id(@form, :password)))
-    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation)))
-    to.add_input(InputTO.new(form_input_id(@form, :send_email)))
-    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id)))
-    to.add_input(InputTO.new(form_input_id(@form, :company_admin)))
-    to.add_input(InputTO.new(form_input_id(@form, :enabled), false))
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_id)
+    to.visibles << FormFieldVisible.new(form: @form, field: :first_name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :last_name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :email)
+    to.visibles << FormFieldVisible.new(form: @form, field: :username)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password_confirmation)
+    to.visibles << FormFieldVisible.new(form: @form, field: :send_email)
+    to.visibles << FormFieldVisible.new(form: @form, field: :access_policy_id)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_admin)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
     to.test(self)
   end
 
   test "access policy selector is empty for app admin" do
     to = NewTO.new(@app_admin, @new, true)
-    select = SelectTO.new(form_input_id(@form, :access_policy_id))
-    select.options_count = 0
-    to.add_input(select)
+    to.visibles << SelectOptionVisible.new(form: @form,
+      field: :access_policy_id, count: 0)
     to.test(self)
   end
 
   test "new modal title" do
     to = NewTO.new(@company_admin, @new, true)
-    to.title_text_key = "auth/users.title.new_create"
-    to.test_title = true
+    to.visibles << ModalTitleVisible.new(text: "auth/users.title.new_create")
     to.test(self)
   end
 
   test "new modal buttons" do
     to = NewTO.new(@company_admin, @new, true)
-    to.add_save_button
-    to.add_close_button
+    to.visibles << ModalFooterVisible.new(class: Button::SaveButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
     to.test(self)
   end
 
   test "new modal timestamps aren't visible" do
     to = NewTO.new(@company_admin, @new, true)
-    to.timestamps_visible = false
+    to.visibles << ModalTimestampsVisible.new(visible: false)
     to.test(self)
   end
 
@@ -195,20 +192,22 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.merge_params_hash({ company_id: @other_admin.company_id })
     # Setting this to nil so create fails.
     to.params_hash[:access_policy_id] = nil
-    select = SelectTO.new(form_input_id(@form, :access_policy_id))
-    select.add_option(@other_access_policy.description,
-                      @other_access_policy.id,
-                      true)
-    select.options_count = AccessPolicy
-      .enabled_where_company(@other_access_policy.company_id).count
-    to.add_input(select)
+    # First, check the count of the options.
+    count = AccessPolicy.enabled_where_company(@other_access_policy.company_id).count
+    to.visibles << SelectOptionVisible.new(form: @form,
+      field: :access_policy_id, count: count)
+    # Next, verify the correct option is there.
+    text = @other_access_policy.description
+    id = @other_access_policy.id
+    to.visibles << SelectOptionVisible.new(form: @form,
+      field: :access_policy_id, text: text, option_id: id)
     to.test(self)
   end
 
   test "app admin can't create user with mismatch access policy" do
     to = CreateTO.new(@app_admin, @new, @ph, false)
     to.merge_params_hash({ company_id: @other_admin.company_id })
-    to.add_error_to ErrorTO.new(:does_not_belong, :access_policy_id)
+    to.visibles << FormErrorVisible.new(field: :access_policy_id, type: :does_not_belong)
     to.test(self)
   end
 
@@ -221,7 +220,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "username should be unique across all companies" do
     CreateTO.new(@company_admin, @new, @ph, true).test(self)
     to = CreateTO.new(@other_admin, @new, @ph, false)
-    to.add_error_to ErrorTO.new(:unique, :username)
+    to.visibles << FormErrorVisible.new(field: :username, type: :unique)
     to.test(self)
   end
 
@@ -272,74 +271,70 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal title" do
     to = EditTO.new(@regular_user, @regular_user, true)
-    to.title_text_key = "auth/users.title.edit_update"
-    to.test_title = true
+    to.visibles << ModalTitleVisible.new(text: "auth/users.title.edit_update")
     to.test(self)
   end
 
-  test "edit modal buttons" do
+  test "edit modal save and close buttons" do
     to = EditTO.new(@regular_user, @regular_user, true)
-    to.add_save_button
-    to.add_close_button
+    to.visibles << ModalFooterVisible.new(class: Button::SaveButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
     to.test(self)
   end
 
   test "edit modal timestamps are visible" do
     to = EditTO.new(@regular_user, @regular_user, true)
-    to.timestamps_visible = true
+    to.visibles << ModalTimestampsVisible.new
     to.test(self)
   end
 
   test "company admin field visibility" do
     to = EditTO.new(@company_admin, @regular_user, true)
-    to.add_input(InputTO.new(form_input_id(@form, :company_id), false))
-    to.add_input(InputTO.new(form_input_id(@form, :first_name)))
-    to.add_input(InputTO.new(form_input_id(@form, :last_name)))
-    to.add_input(InputTO.new(form_input_id(@form, :email)))
-    to.add_input(InputTO.new(form_input_id(@form, :username)))
-    to.add_input(InputTO.new(form_input_id(@form, :password), false))
-    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation), false))
-    to.add_input(InputTO.new(form_input_id(@form, :send_email), false))
-    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id)))
-    to.add_input(InputTO.new(form_input_id(@form, :company_admin)))
-    to.add_input(InputTO.new(form_input_id(@form, :enabled)))
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_id, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :first_name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :last_name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :email)
+    to.visibles << FormFieldVisible.new(form: @form, field: :username)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password_confirmation, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :send_email, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :access_policy_id)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_admin)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
     to.test(self)
   end
 
   test "regular user field visibility" do
     to = EditTO.new(@regular_user, @regular_user, true)
-    to.add_input(InputTO.new(form_input_id(@form, :company_id), false))
-    to.add_input(InputTO.new(form_input_id(@form, :first_name), false))
-    to.add_input(InputTO.new(form_input_id(@form, :last_name), false))
-    to.add_input(InputTO.new(form_input_id(@form, :email)))
-    to.add_input(InputTO.new(form_input_id(@form, :username), false))
-    to.add_input(InputTO.new(form_input_id(@form, :password), false))
-    to.add_input(InputTO.new(form_input_id(@form, :password_confirmation), false))
-    to.add_input(InputTO.new(form_input_id(@form, :send_email), false))
-    to.add_input(SelectTO.new(form_input_id(@form, :access_policy_id), false))
-    to.add_input(InputTO.new(form_input_id(@form, :company_admin), false))
-    to.add_input(InputTO.new(form_input_id(@form, :enabled), false))
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_id, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :first_name, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :last_name, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :email)
+    to.visibles << FormFieldVisible.new(form: @form, field: :username, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :password_confirmation, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :send_email, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :access_policy_id, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_admin, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
     to.test(self)
   end
 
   test "the enable/disable switch isn't visible when editing self" do
     to = EditTO.new(@company_admin, @company_admin, true)
-    input = InputTO.new(form_input_id(@form, :enabled), false)
-    to.add_input(input)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
     to.test(self)
   end
 
   test "the admin checkbox isn't visible when editing self" do
     to = EditTO.new(@company_admin, @company_admin, true)
-    input = InputTO.new(form_input_id(@form, :company_admin), false)
-    to.add_input(input)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_admin, visible: false)
     to.test(self)
   end
 
   test "the company selector is visible for app admin edit modal" do
     to = EditTO.new(@app_admin, @company_admin, true)
-    input = SelectTO.new(form_input_id(@form, :company_id))
-    to.add_input(input)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_id)
     to.test(self)
   end
 
@@ -550,8 +545,6 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "company admin can't update enabled/admin for self" do
     to = UpdateTO.new(@company_admin, @company_admin, disadm0, false)
     to.update_fields = @enabled_admin
-    to.add_error_to(ErrorTO.new(:disabled_self, :enabled))
-    to.add_error_to(ErrorTO.new(:disabled_self, :company_admin))
     to.test(self)
   end
 
@@ -570,8 +563,6 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "app admin can't update enabled/admin for self" do
     to = UpdateTO.new(@app_admin, @app_admin, disadm0, false)
     to.update_fields = @enabled_admin
-    to.add_error_to(ErrorTO.new(:disabled_self, :enabled))
-    to.add_error_to(ErrorTO.new(:disabled_self, :company_admin))
     to.test(self)
   end
 
@@ -627,98 +618,100 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "company admin can index and see users except self" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.add_visible_y_record(@regular_user)
-    to.add_visible_y_record(@app_admin)
-    to.add_visible_n_record(@other_admin)
-    to.add_visible_n_record(@other_user)
-    to.add_visible_n_record(@delete_me_user)
-    to.add_visible_n_record(@company_admin)
+    to.visibles << IndexTRecordVisible.new(record: @regular_user)
+    to.visibles << IndexTRecordVisible.new(record: @app_admin)
+    to.visibles << IndexTRecordVisible.new(record: @other_admin, visible: false)
+    to.visibles << IndexTRecordVisible.new(record: @other_user, visible: false)
+    to.visibles << IndexTRecordVisible.new(record: @delete_me_user, visible: false)
+    to.visibles << IndexTRecordVisible.new(record: @company_admin, visible: false)
     to.test(self)
   end
 
   test "app admin can index and see all records except self" do
     to = IndexTo.new(@app_admin, @new, true)
-    to.add_visible_y_record(@regular_user)
-    to.add_visible_y_record(@company_admin)
-    to.add_visible_y_record(@other_admin)
-    to.add_visible_y_record(@other_user)
-    to.add_visible_y_record(@delete_me_user)
-    to.add_visible_n_record(@app_admin)
+    to.visibles << IndexTRecordVisible.new(record: @regular_user)
+    to.visibles << IndexTRecordVisible.new(record: @app_admin, visible: false)
+    to.visibles << IndexTRecordVisible.new(record: @other_admin)
+    to.visibles << IndexTRecordVisible.new(record: @other_user)
+    to.visibles << IndexTRecordVisible.new(record: @delete_me_user)
+    to.visibles << IndexTRecordVisible.new(record: @company_admin)
     to.test(self)
   end
 
   test "page title should be there" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.title_text_key = "auth/users.title.index"
-    to.test_title = true
+    to.visibles << HeaderTitleVisible.new(text: "auth/users.title.index")
     to.test(self)
   end
 
   test "page should have new record button" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.test_buttons = true
-    to.add_visible_button(Button::NewButton::TEST_ID)
+    to.visibles << HeaderVisible.new(class: Button::NewButton::BTN_CLASS)
     to.test(self)
   end
 
   test "should see the edit buttons" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.test_buttons = true
-    to.add_visible_button(Button::EditButton::TEST_ID)
+    to.visibles << IndexTBodyVisible.new(class: Button::EditButton::BTN_CLASS)
     to.test(self)
   end
 
   test "company admin should not see the become button" do
-    to = IndexTo.new(@company_admin, @new, true).test(self)
-    assert_select "a.#{Button::BecomeButton::TEST_ID}", false
+    to = IndexTo.new(@company_admin, @new, true)
+    to.visibles << IndexTBodyVisible.new(class: Button::BecomeButton::BTN_CLASS,
+      visible: false)
+    to.test(self)
   end
 
   test "app admin should see the become button" do
-    to = IndexTo.new(@app_admin, @new, true).test(self)
-    assert_select "a.#{Button::BecomeButton::TEST_ID}"
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << IndexTBodyVisible.new(class: Button::BecomeButton::BTN_CLASS)
+    to.test(self)
   end
 
   test "company admin should not see the company column" do
-    to = IndexTo.new(@company_admin, @new, true).test(self)
-    id = Table::Auth::UsersIndexTable::COMPANY_COLUMN_TEST_ID
-    assert_select "##{id}", false
+    to = IndexTo.new(@company_admin, @new, true)
+    to.visibles << IndexTHeadVisible.new(
+      id: Table::Auth::UsersIndexTable::COMPANY_COLUMN_TEST_ID, visible: false)
+    to.test(self)
   end
 
   test "app admin should see the company column" do
-    to = IndexTo.new(@app_admin, @new, true).test(self)
-    id = Table::Auth::UsersIndexTable::COMPANY_COLUMN_TEST_ID
-    assert_select "##{id}"
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << IndexTHeadVisible.new(
+      id: Table::Auth::UsersIndexTable::COMPANY_COLUMN_TEST_ID)
+    to.test(self)
   end
 
   test "page should have enabled filter" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.test_enabled_filter = true
+    to.visibles << EnabledFilterVisible.new
     to.test(self)
   end
 
   test "should see both enabled and disabled with all filter." do
     to = IndexTo.new(@company_admin, @new, true)
     @regular_user.update_column(:enabled, false)
-    to.add_visible_y_record(@regular_user)
-    to.add_visible_y_record(@app_admin)
+    to.visibles << IndexTRecordVisible.new(record: @regular_user)
+    to.visibles << IndexTRecordVisible.new(record: @app_admin)
     to.test(self)
   end
 
   test "should only see enabled with enabled filter." do
     to = IndexTo.new(@company_admin, @new, true)
     to.query = :enabled
-    to.add_visible_y_record(@app_admin)
+    to.visibles << IndexTRecordVisible.new(record: @app_admin)
     @regular_user.update_column(:enabled, false)
-    to.add_visible_n_record(@regular_user)
+    to.visibles << IndexTRecordVisible.new(record: @regular_user, visible: false)
     to.test(self)
   end
 
   test "should only see disabled with disabled filter." do
     to = IndexTo.new(@company_admin, @new, true)
     to.query = :disabled
-    to.add_visible_n_record(@app_admin)
+    to.visibles << IndexTRecordVisible.new(record: @app_admin, visible: false)
     @regular_user.update_column(:enabled, false)
-    to.add_visible_y_record(@regular_user)
+    to.visibles << IndexTRecordVisible.new(record: @regular_user)
     to.test(self)
   end
 

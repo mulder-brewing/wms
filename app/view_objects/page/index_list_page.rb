@@ -7,6 +7,7 @@ class Page::IndexListPage < Page::BasePage
   PAGINATION_HTML_PATH = SHARED_PATH + "pagination"
   ENABLED_FILTER_HTML_PATH = SHARED_PATH + "enabled_filter"
   RECORD_HTML_PATH = SHARED_PATH + "record"
+  ACTION_BAR_CLASS = "index-action-bar"
 
   attr_accessor :table, :enabled_param, :new_record, :show_new_link,
     :show_enabled_filter
@@ -42,6 +43,10 @@ class Page::IndexListPage < Page::BasePage
 
   def record_html_path
     RECORD_HTML_PATH
+  end
+
+  def action_bar_class
+    ACTION_BAR_CLASS
   end
 
   def title

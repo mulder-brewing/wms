@@ -1,24 +1,31 @@
 <%= provide(:title, (t_nf page.title)) %>
 <%= provide(:new_link, new_polymorphic_path(page.new_record)) if page.show_new_link? %>
+<% table = page.table %>
 
-<% if page.show_enabled_filter? %>
-  <%= render page.enabled_filter_html_path, page: page %>
-<% end %>
+<div class="container-fluid <%= page.action_bar_class %>">
+  <div class="row">
+    <div class="col">
+      <% if page.show_enabled_filter? %>
+        <%= render page.enabled_filter_html_path, page: page %>
+      <% end %>
+    </div>
+  </div>
+</div>
 
 <div class="table-responsive">
-  <table class="table table-striped index-table">
-    <thead>
+  <table class="table table-striped <%= table.table_class %>">
+    <thead class= <%= table.head_class %>>
       <tr>
-        <% page.table.columns.each do |column| %>
+        <% table.columns.each do |column| %>
           <th scope="col" id="<%= column.id %>"><%= t_nf column.text_key %></th>
         <% end %>
       </tr>
     </thead>
-    <tbody id=<%= page.table.body_id %>>
+    <tbody class= <%= table.body_class %>>
       <% page.records.each do |record| %>
         <%= render partial: page.record_html_path,
           locals: { record: record,
-                    table: page.table
+                    table: table
                   }
         %>
       <% end %>

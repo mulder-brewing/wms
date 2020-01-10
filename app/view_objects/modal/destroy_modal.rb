@@ -3,7 +3,7 @@ class Modal::DestroyModal < Modal::FormRecordModal
   def initialize(*)
     super
     @role = :destroy
-    @footer = Modal::Footers::DestroyFooter.new
+    @footer = Modal::Footer::DestroyFooter.new(@form)
     @title_suffix = "destroy"
   end
 

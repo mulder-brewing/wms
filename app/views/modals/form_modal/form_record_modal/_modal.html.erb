@@ -1,8 +1,8 @@
 <div id="<%= modal.id %>" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title"><%= t_nf modal.title %></h5>
+      <div class= <%= modal.header_class %>>
+        <h5 class= <%= modal.title_class %>><%= t_nf modal.title %></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -15,18 +15,12 @@
           <%= t_nf("modal.destroy.chicken_message", :to_delete=> modal.form.to_delete) %>
         <% end %>
       </div>
-      <div class="modal-footer">
+      <div class= <%= modal.footer_class %>>
         <% if modal.footer.show_timestamps? %>
           <%= render modal.timestamps_path, modal: modal %>
         <% end %>
-        <% if modal.footer.buttons.include? :close %>
-          <%= btn(Button::ModalCloseButton.new) %>
-        <% end %>
-        <% if modal.footer.buttons.include? :save %>
-          <%= btn(Button::ModalSaveButton.new(form: modal.form.html_id)) %>
-        <% end %>
-        <% if modal.footer.buttons.include? :delete %>
-          <%= btn_link(Button::ModalDeleteButton.new, record: modal.form.record) %>
+        <% modal.footer.buttons_with_margin.each do |button| %>
+          <%= btn(button) %>
         <% end %>
       </div>
     </div>

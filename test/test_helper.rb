@@ -105,7 +105,6 @@ class ActionDispatch::IntegrationTest
         c.()
       end
       verify_visibles(to) if to.test_visibles?
-      verify_errors(to) if to.test_errors?
     end
   end
 
@@ -138,7 +137,7 @@ class ActionDispatch::IntegrationTest
           assert_equal old_object.send(attribute), object.send(attribute)
         end
       end
-      verify_errors(to) if to.test_errors?
+      verify_visibles(to) if to.test_visibles?
     end
   end
 
@@ -223,13 +222,6 @@ class ActionDispatch::IntegrationTest
     end
   end
 
-  # This function helps verify form errors when a create or update fails.
-  def verify_errors(to)
-    to.error_to_array.each do |f|
-      assert_match f.error_message, @response.body
-    end
-  end
-
   # This function helps verify model attributes after a successful create or update.
   def verify_attributes(to)
     case to
@@ -244,10 +236,6 @@ class ActionDispatch::IntegrationTest
     end
   end
 
-  def form_input_id(form, attribute)
-    form.record_name + "_" + attribute.to_s
-  end
-
   def verify_enabled_filter_links(to)
     assert_select "main div.#{Page::IndexListPage::ACTION_BAR_CLASS} div.enabled-filter" do
         to.query = nil
@@ -258,7 +246,6 @@ class ActionDispatch::IntegrationTest
         assert_select "a[href=?]", to.index_path
     end
   end
-
 
   # This function helps verify the response is an error warning message.
   def verify_alert_message(type, message)

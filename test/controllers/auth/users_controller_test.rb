@@ -207,7 +207,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "app admin can't create user with mismatch access policy" do
     to = CreateTO.new(@app_admin, @new, @ph, false)
     to.merge_params_hash({ company_id: @other_admin.company_id })
-    to.add_error_to ErrorTO.new(:does_not_belong, :access_policy_id)
+    to.visibles << FormErrorVisible.new(field: :access_policy_id, type: :does_not_belong)
     to.test(self)
   end
 
@@ -220,7 +220,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "username should be unique across all companies" do
     CreateTO.new(@company_admin, @new, @ph, true).test(self)
     to = CreateTO.new(@other_admin, @new, @ph, false)
-    to.add_error_to ErrorTO.new(:unique, :username)
+    to.visibles << FormErrorVisible.new(field: :username, type: :unique)
     to.test(self)
   end
 
@@ -545,8 +545,6 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "company admin can't update enabled/admin for self" do
     to = UpdateTO.new(@company_admin, @company_admin, disadm0, false)
     to.update_fields = @enabled_admin
-    to.add_error_to(ErrorTO.new(:disabled_self, :enabled))
-    to.add_error_to(ErrorTO.new(:disabled_self, :company_admin))
     to.test(self)
   end
 
@@ -565,8 +563,6 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "app admin can't update enabled/admin for self" do
     to = UpdateTO.new(@app_admin, @app_admin, disadm0, false)
     to.update_fields = @enabled_admin
-    to.add_error_to(ErrorTO.new(:disabled_self, :enabled))
-    to.add_error_to(ErrorTO.new(:disabled_self, :company_admin))
     to.test(self)
   end
 

@@ -1,7 +1,5 @@
 class FormFieldVisible < FormVisible
 
-  attr_accessor :form, :field
-
   def initialize(*)
     super
     @id ||= form_input_id(@form, @field)

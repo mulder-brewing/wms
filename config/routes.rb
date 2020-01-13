@@ -18,6 +18,8 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :dock_groups, except: [:show, :destroy]
+  resources :docks, except: [:show, :destroy]
   resources :dock_requests do
     member do
       get :dock_assignment_edit
@@ -28,9 +30,6 @@ Rails.application.routes.draw do
     end
   end
   get '/dock_requests_history', to: 'dock_requests#history'
-
-  resources :dock_groups
-  resources :docks
 
   # Other routes
   root 'static_pages#home'

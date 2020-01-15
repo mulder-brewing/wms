@@ -1,36 +1,44 @@
 class DockGroupsController < ApplicationController
-  include GenericModalFormPageHelper
+  include FormHelper, ModalHelper, PageHelper
 
   def new
-    new_modal
+    form = new_form_prep_record(DockGroupForm)
+    authorize form.record
+    modal = Modal::NewModal.new(form)
+    render_modal(modal)
   end
 
   def create
-    create_record
+    form = new_form_prep_record(DockGroupForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::CreateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def edit
-    edit_modal
+    form = new_form_prep_record(DockGroupForm)
+    authorize form.record
+    modal = Modal::EditModal.new(form)
+    render_modal(modal)
   end
 
   def update
-    update_record
+    form = new_form_prep_record(DockGroupForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::UpdateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def index
-    index_page
+    page = new_page_prep_records(Page::IndexListPage)
+    page.table = Table::DockGroupsIndexTable.new(current_user)
+    authorize_scope_records(page)
+    pagy_records(page)
+    render_page(page)
   end
 
-  private
-    def record_params
-      params.require(:dock_group).permit(:description, :enabled)
-    end
-
-    def table_array_hash
-      [
-        { name: :actions, edit_button: true },
-        { name: :description },
-        { name: :enabled, text_key_qualifier: :enabled }
-      ]
-    end
 end

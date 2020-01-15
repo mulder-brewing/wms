@@ -5,7 +5,6 @@ class BasicRecordForm < RecordForm
   attr_accessor :record, :table_class
 
   def setup_variables; end
-  def table; end
 
   def persisted?
     @record.persisted?

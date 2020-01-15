@@ -1,53 +1,48 @@
 class DocksController < ApplicationController
-  include GenericModalFormPageHelper
+  include FormHelper, ModalHelper, PageHelper
 
   def new
-    new_modal
+    form = new_form_prep_record(DockForm)
+    authorize form.record
+    form.setup_variables
+    modal = Modal::NewModal.new(form)
+    render_modal(modal)
   end
 
   def create
-    create_record
+    form = new_form_prep_record(DockForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    form.setup_variables
+    modal = Modal::CreateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def edit
-    edit_modal
+    form = new_form_prep_record(DockForm)
+    authorize form.record
+    form.setup_variables
+    modal = Modal::EditModal.new(form)
+    render_modal(modal)
   end
 
   def update
-    update_record
+    form = new_form_prep_record(DockForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    form.setup_variables
+    modal = Modal::UpdateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def index
-    index_page
+    page = new_page_prep_records(Page::IndexListPage)
+    page.table = Table::DocksIndexTable.new(current_user)
+    authorize_scope_records(page)
+    pagy_records(page)
+    render_page(page)
   end
-
-  private
-    def record_params
-      params.require(:dock).permit(:number, :dock_group_id, :enabled)
-    end
-
-    def table_array_hash
-      array = []
-      array << { name: :actions, edit_button: true }
-      array << { name: :number }
-      array << {  name: :dock_group, text_key: "dock_groups.dock_group",
-                  send_chain: ["dock_group", "description"]
-                }
-      array << { name: :enabled, text_key_qualifier: :enabled }
-    end
-
-    def record_callback(record)
-      p = -> (x = nil) { @dock_groups = select_options(DockGroup, x) }
-      case action_sym
-      when :new, :create
-          p.()
-          if @dock_groups.length == 1
-            record.dock_group_id = @dock_groups.first.id
-          end
-        when :edit, :update
-          p.(record.dock_group_id)
-      end
-      return record
-    end
 
 end

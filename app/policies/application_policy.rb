@@ -17,7 +17,7 @@ class ApplicationPolicy
   end
 
   def create?
-    ap_check?(permission) && same_company_as_current_user?(record)
+    ap_check?(permission)
   end
 
   def new?

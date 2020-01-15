@@ -7,9 +7,10 @@ en:
       mark: '*'
     labels:
       defaults:
-        name: Name
         description: Description
         enabled: Enabled
+        name: Name
+        number: Number
       access_policy:
         everything: Everything
       auth_user:

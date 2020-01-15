@@ -42,7 +42,8 @@ class AccessPoliciesController < ApplicationController
   end
 
   def company
-    if params[:company].present?  && app_admin?
+    authorize AccessPolicy
+    if params[:company].present?
       access_policies = AccessPolicy.enabled_where_company(params[:company])
                                     .order(:description)
     else
@@ -58,7 +59,7 @@ class AccessPoliciesController < ApplicationController
   end
 
   private
-  
+
     def assign_form_attributes(form)
       form.attributes = params.require(form.record_name).permit(form.permitted_params)
     end

@@ -22,11 +22,4 @@ class Auth::PasswordResetsController < ApplicationController
     end
   end
 
-  private
-
-  def assign_form_attributes(form)
-    form.attributes = params.require(form.record_name)
-      .permit(:password, :password_confirmation)
-  end
-
 end

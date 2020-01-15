@@ -98,7 +98,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "access policy selector doesn't have disabled policies" do
     to = NewTO.new(@company_admin, @new, true)
     @averagejoe_access_policy.update_column(:enabled, false)
-    text = @averagejoe_access_policy.description,
+    text = @averagejoe_access_policy.description
     id = @averagejoe_access_policy.id
     to.visibles << SelectOptionVisible.new(form: @form,
       field: :access_policy_id, text: text, option_id: id, visible: false)

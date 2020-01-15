@@ -2,7 +2,6 @@ class DockRequest < ApplicationRecord
   # Need both of these to use the distance_of_time_in_words
   require 'action_view'
   include ActionView::Helpers::DateHelper
-  include DockGroupChecks
 
   # Class instance variable
     # Messages to the user in alert

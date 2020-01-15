@@ -4,9 +4,9 @@ require 'pp'
 class DocksControllerTest < ActionDispatch::IntegrationTest
   def setup
     # users
-    @nothing_ap_user = users(:nothing_ap_user)
-    @everything_ap_user = users(:everything_ap_user)
-    @other_admin = users(:other_company_admin)
+    @nothing_ap_user = auth_users(:nothing_ap_user)
+    @everything_ap_user = auth_users(:everything_ap_user)
+    @other_admin = auth_users(:other_company_admin)
 
     # dock groups
     @dock_group_1 = dock_groups(:cooler)
@@ -18,8 +18,8 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     @record_2 = docks(:average_joe_dock_2)
     @other_record_1 = docks(:other_dock)
 
-    # new record
     @new = Dock.new
+    @form = DockForm
 
     # used for creating and updating records
     @ph = { number: "new dock", dock_group_id: @dock_group_1.id }
@@ -133,12 +133,22 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     to.test(self)
   end
 
+  test "enabled dock group does show up in selector on new modal" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    text = @dock_group_1.description
+    id = @dock_group_1.id
+    to.visibles << SelectOptionVisible.new(form: @form,
+      field: :dock_group_id, text: text, option_id: id)
+    to.test(self)
+  end
+
   test "disabled dock group doesn't show up in selector on new modal" do
     to = NewTO.new(@everything_ap_user, @new, true)
     @dock_group_1.update_column(:enabled, false)
-    select = SelectTO.new(@new.form_input_id(:dock_group_id))
-    select.add_option(@dock_group_1.description, @dock_group_1.id, false)
-    to.add_input(select)
+    text = @dock_group_1.description
+    id = @dock_group_1.id
+    to.visibles << SelectOptionVisible.new(form: @form,
+      field: :dock_group_id, text: text, option_id: id, visible: false)
     to.test(self)
   end
 
@@ -205,7 +215,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
   test "can't create dock with dock group from another company" do
     to = CreateTO.new(@everything_ap_user, @new, @ph, false)
     @ph[:dock_group_id] = @other_dock_group.id
-    to.add_error_to ErrorTO.new(:does_not_belong, :dock_group_id)
+    to.visibles << FormErrorVisible.new(field: :dock_group_id, type: :does_not_belong)
     to.test(self)
   end
 

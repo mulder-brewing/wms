@@ -112,8 +112,6 @@ en:
       'no': 'No'
       enabled: Enabled
       disabled: Disabled
-    description: Description
-    number: Number
 
   modal:
     destroy:

@@ -28,6 +28,10 @@ class Auth::PasswordUpdateForm < BasicRecordForm
     end
   end
 
+  def permitted_params
+    [:password, :password_confirmation, :email, :send_email]
+  end
+
   private
 
   def send_password_reset_email

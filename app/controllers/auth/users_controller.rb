@@ -45,10 +45,4 @@ class Auth::UsersController < ApplicationController
       render_page(page)
     end
 
-    private
-
-    def assign_form_attributes(form)
-      form.attributes = params.require(form.record_name).permit(form.permitted_params)
-    end
-
 end

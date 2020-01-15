@@ -23,7 +23,7 @@ function populateAccessPoliciesSelect() {
       success: function (response) {
         var access_policy_select = $("#auth_user_access_policy_id");
         access_policy_select.empty();
-        access_policy_select.append("<option></option>");
+        access_policy_select.append("<option value>Please select</option>");
         var access_policies = response["access_policies"];
         for(var i=0; i< access_policies.length; i++){
           access_policy_select.append('<option value="' +

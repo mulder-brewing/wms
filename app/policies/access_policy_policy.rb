@@ -20,6 +20,10 @@ class AccessPolicyPolicy < ApplicationPolicy
     admin?
   end
 
+  def company?
+    app_admin?
+  end
+
   private
 
   def check?

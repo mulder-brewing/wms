@@ -20,10 +20,6 @@ class Auth::PasswordUpdatesController < ApplicationController
   end
 
   private
-    def assign_form_attributes(form)
-      form.attributes = params.require(form.record_name)
-        .permit(:password, :password_confirmation, :email, :send_email)
-    end
 
     def customize_modal(modal)
       modal.title = "auth/users.reset_password"

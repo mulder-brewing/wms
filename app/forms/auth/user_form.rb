@@ -22,9 +22,13 @@ class Auth::UserForm < BasicRecordForm
 
   def setup_variables
     @companies = Company.all.order(:name) if app_admin?
+
     company_id = @record.company_id || current_company_id
     @access_policies = AccessPolicy.select_options(company_id,
       record.access_policy_id).order(:description)
+    if action?(:new) && @access_policies.length == 1
+      @record.access_policy_id = @access_policies.first.id
+    end
   end
 
 end

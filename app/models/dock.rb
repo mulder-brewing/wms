@@ -1,5 +1,4 @@
 class Dock < ApplicationRecord
-  include DockGroupChecks
 
   belongs_to :company
   belongs_to :dock_group
@@ -7,6 +6,7 @@ class Dock < ApplicationRecord
   has_many :dock_request_audit_histories, dependent: :destroy
 
   validates :number, presence: true, length: { maximum: 50 }
+  validates :dock_group_id, presence: true
   validates_uniqueness_of :number, scope: :dock_group_id
 
 

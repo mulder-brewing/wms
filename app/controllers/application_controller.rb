@@ -21,6 +21,7 @@ class ApplicationController < ActionController::Base
     respond_to do |format|
       format.html { redirect_to path }
       format.js { render js: "window.location = #{path.to_json}" }
+      format.json { render json: {}, status: 401 }
     end
   end
 

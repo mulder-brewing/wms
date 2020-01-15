@@ -21,6 +21,10 @@ class Auth::PasswordResetForm < BasicRecordForm
     super
   end
 
+  def permitted_params
+    [:password, :password_confirmation]
+  end
+
   def password_repeat?
     if BCrypt::Password.new(@record.password_digest_was) == password
       errors.add(:password, I18n.t("form.errors.same"))

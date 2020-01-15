@@ -85,14 +85,14 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal title" do
     to = NewTO.new(@everything_ap_user, @new, true)
-    to.test_title = true
+    to.visibles << ModalTitleVisible.new(text: "docks.title.new_create")
     to.test(self)
   end
 
   test "new modal buttons" do
     to = NewTO.new(@everything_ap_user, @new, true)
-    to.add_save_button
-    to.add_close_button
+    to.visibles << ModalFooterVisible.new(class: Button::SaveButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
     to.test(self)
   end
 
@@ -128,8 +128,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "the enable/disable switch should not be visible on the new modal" do
     to = NewTO.new(@everything_ap_user, @new, true)
-    input = InputTO.new(@new.form_input_id(:enabled), false)
-    to.add_input(input)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
     to.test(self)
   end
 
@@ -202,7 +201,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
   test "dock number should be unique per dock group" do
     CreateTO.new(@everything_ap_user, @new, @ph, true).test(self)
     to = CreateTO.new(@everything_ap_user, @new, @ph, false)
-    to.add_error_to ErrorTO.new(:unique, :number)
+    to.visibles << FormErrorVisible.new(field: :number, type: :unique)
     to.test(self)
   end
 
@@ -232,14 +231,14 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal title" do
     to = EditTO.new(@everything_ap_user, @record_1, true)
-    to.test_title = true
+    to.visibles << ModalTitleVisible.new(text: "docks.title.edit_update")
     to.test(self)
   end
 
   test "edit modal buttons" do
     to = EditTO.new(@everything_ap_user, @record_1, true)
-    to.add_save_button
-    to.add_close_button
+    to.visibles << ModalFooterVisible.new(class: Button::SaveButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
     to.test(self)
   end
 
@@ -278,8 +277,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "the enable/disable switch should be visible on the edit modal" do
     to = EditTO.new(@everything_ap_user, @record_1, true)
-    input = InputTO.new(@record_1.form_input_id(:enabled))
-    to.add_input(input)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
     to.test(self)
   end
 
@@ -288,13 +286,14 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     to.test_nf(self)
   end
 
-  test "if record's dock group is diabled, it shows up in selector" do
+  test "if record's dock group is disabled, it shows up in selector" do
     to = EditTO.new(@everything_ap_user, @record_1, true)
     @record_1.dock_group.update_column(:enabled, false)
     record_1_dg = @record_1.dock_group
-    select = SelectTO.new(@record_1.form_input_id(:dock_group_id))
-    select.add_option(record_1_dg.description, record_1_dg.id, true)
-    to.add_input(select)
+    text = record_1_dg.description
+    id = record_1_dg.id
+    to.visibles << SelectOptionVisible.new(form: @form,
+      field: :dock_group_id, text: text, option_id: id)
     to.test(self)
   end
 
@@ -365,20 +364,20 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "page title should be there" do
     to = IndexTo.new(@everything_ap_user, @new, true)
-    to.test_title = true
+    to.visibles << HeaderTitleVisible.new(text: "docks.title.index")
     to.test(self)
   end
 
   test "page should have new record button" do
     to = IndexTo.new(@everything_ap_user, @new, true)
-    to.test_new = true
+    to.visibles << HeaderVisible.new(class: Button::NewButton::BTN_CLASS)
     to.test(self)
   end
 
   test "a everything ap user can index and only see own records" do
     to = IndexTo.new(@everything_ap_user, @new, true)
-    to.add_visible_y_record(@record_1)
-    to.add_visible_n_record(@other_record_1)
+    to.visibles << IndexTRecordVisible.new(record: @record_1)
+    to.visibles << IndexTRecordVisible.new(record: @other_record_1, visible: false)
     to.test(self)
   end
 
@@ -403,47 +402,45 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "should see the edit buttons" do
     to = IndexTo.new(@everything_ap_user, @new, true)
-    to.test_edit = true
-    to.add_visible_edit_record(@record_1)
-    to.add_visible_edit_record(@record_2)
+    to.visibles << IndexTBodyVisible.new(class: Button::EditButton::BTN_CLASS)
     to.test(self)
   end
 
   test "page should have enabled filter" do
     to = IndexTo.new(@everything_ap_user, @new, true)
-    to.test_enabled_filter = true
+    to.visibles << EnabledFilterVisible.new
     to.test(self)
   end
 
   test "should see both enabled and disabled with all filter." do
     to = IndexTo.new(@everything_ap_user, @new, true)
     @record_2.update_column(:enabled, false)
-    to.add_visible_y_record(@record_1)
-    to.add_visible_y_record(@record_2)
+    to.visibles << IndexTRecordVisible.new(record: @record_1)
+    to.visibles << IndexTRecordVisible.new(record: @record_2)
     to.test(self)
   end
 
   test "should only see enabled with enabled filter." do
     to = IndexTo.new(@everything_ap_user, @new, true)
     to.query = :enabled
-    to.add_visible_y_record(@record_1)
+    to.visibles << IndexTRecordVisible.new(record: @record_1)
     @record_2.update_column(:enabled, false)
-    to.add_visible_n_record(@record_2)
+    to.visibles << IndexTRecordVisible.new(record: @record_2, visible: false)
     to.test(self)
   end
 
   test "should only see disabled with disabled filter." do
     to = IndexTo.new(@everything_ap_user, @new, true)
     to.query = :disabled
-    to.add_visible_n_record(@record_1)
+    to.visibles << IndexTRecordVisible.new(record: @record_1, visible: false)
     @record_2.update_column(:enabled, false)
-    to.add_visible_y_record(@record_2)
+    to.visibles << IndexTRecordVisible.new(record: @record_2)
     to.test(self)
   end
 
   test "pagination is there" do
     to = IndexTo.new(@everything_ap_user, @new, true)
-    to.test_pagination = true
+    to.visibles << PaginationVisible.new
     to.test(self)
   end
 

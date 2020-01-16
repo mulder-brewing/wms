@@ -17,15 +17,15 @@ class FormErrorVisible < FormVisible
     return f.call(error) if error.is_a?(String)
     case type
     when :invalid
-      f.call("form.errors.invalid")
+      f.call("errors.messages.invalid")
     when :unique
-      f.call("form.errors.taken")
+      f.call("errors.messages.taken")
     when :does_not_belong
-      f.call("form.errors.does_not_belong")
+      f.call("activemodel.errors.messages.does_not_belong")
     when :same
-      f.call("form.errors.same")
+      f.call("activemodel.errors.models.auth/password_reset.same")
     when :disabled_self
-      f.call("form.errors.disabled_self")
+      f.call("activemodel.errors.models.auth/user.disabled_self")
     end
   end
 

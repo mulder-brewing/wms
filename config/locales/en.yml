@@ -43,6 +43,37 @@ en:
     delete: Delete
     edit: Edit
 
+  activerecord:
+    errors:
+      models:
+        auth/user:
+          confirmation: "doesn't match Password"
+
+  activemodel:
+    errors:
+      messages:
+        does_not_belong: does not belong to your company
+        disabled: is disabled
+      models:
+        auth/user:
+          disabled_self: cannot be disabled for yourself
+        auth/password_reset:
+          same: cannot be the same as it is right now
+        auth/password_update:
+          attributes:
+            send_email:
+              self: cannot send email when resetting your own password
+
+  errors:
+    attributes:
+      email:
+        blank_send: cannot be blank if you want to send email
+      send_email:
+        blank_email: cannot send email without email address
+    messages:
+      invalid: is invalid
+      taken: has already been taken
+
   alert:
     save:
       success: Saved successfully!
@@ -83,26 +114,6 @@ en:
       index: Docks
       new_create: New Dock
       edit_update: Edit Dock
-
-  form:
-    errors:
-      does_not_belong: does not belong to your company
-      disabled: is disabled
-      disabled_self: cannot be disabled for yourself
-      email:
-        blank: cannot be blank if you want to send email
-        send:
-          email_blank: cannot send email without email address
-          password_no_change: cannot send email if password does not change
-          self: cannot send email when resetting your own password
-          error: error sending email
-        password:
-          no_change: did not change.  Cannot send email.
-      invalid: is invalid
-      password_confirmation:
-        mismatch: "doesn't match Password"
-      same: cannot be the same as it is right now
-      taken: has already been taken
 
   global:
     actions: Actions

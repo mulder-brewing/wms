@@ -33,15 +33,8 @@ class DockForm < BasicRecordForm
   private
 
   def dock_group_valid
-    dock_group = DockGroup.find_by(id: dock_group_id)
-    if dock_group.present?
-      if dock_group.enabled == false
-        errors.add(:dock_group_id, I18n.t("form.errors.disabled"))
-      end
-      if dock_group.company_id != @record.company_id
-        errors.add(:dock_group_id, I18n.t("form.errors.does_not_belong"))
-      end
-    end
+    validate_company_id(DockGroup, :dock_group_id)
+    validate_enabled(DockGroup, :dock_group_id)
   end
 
 end

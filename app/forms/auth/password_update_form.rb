@@ -44,14 +44,14 @@ class Auth::PasswordUpdateForm < BasicRecordForm
 
   def email_exists_if_send_email
     unless Util::Email::SendPossible.call(@record.email, @send_email)
-      errors.add(:email, I18n.t("form.errors.email.blank"))
-      errors.add(:send_email, I18n.t("form.errors.email.send.email_blank"))
+      errors.add(:email, :blank_send)
+      errors.add(:send_email, :blank_email)
     end
   end
 
   def not_self_if_send_email
     if send_email? && self?(@record)
-      errors.add(:send_email, I18n.t("form.errors.email.send.self"))
+      errors.add(:send_email, :self)
     end
   end
 

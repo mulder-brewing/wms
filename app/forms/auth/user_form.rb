@@ -1,5 +1,7 @@
 class Auth::UserForm < BasicRecordForm
 
+  validate :access_policy_valid
+
   attr_accessor :companies, :access_policies
 
   delegate  :company_id, :company_id=,
@@ -29,6 +31,12 @@ class Auth::UserForm < BasicRecordForm
     if action?(:new) && @access_policies.length == 1
       @record.access_policy_id = @access_policies.first.id
     end
+  end
+
+  private
+
+  def access_policy_valid
+    validate_company_id(AccessPolicy, :access_policy_id)
   end
 
 end

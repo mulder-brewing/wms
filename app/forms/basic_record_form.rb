@@ -50,4 +50,23 @@ class BasicRecordForm < RecordForm
     end
   end
 
+  def find_to_validate(validate_class, validate_id)
+    return validate_class.find_by(id: self.send(validate_id))
+  end
+
+  def validate_company_id(validate_class, validate_id)
+    to_validate = find_to_validate(validate_class, validate_id)
+    if to_validate.present? && to_validate.company_id != @record.company_id
+      errors.add(validate_id, :does_not_belong)
+    end
+  end
+
+  def validate_enabled(validate_class, validate_id)
+    to_validate = find_to_validate(validate_class, validate_id)
+    if to_validate.present? && to_validate.enabled == false
+      errors.add(validate_id, :disabled)
+    end
+  end
+
+
 end

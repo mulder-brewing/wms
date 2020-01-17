@@ -1,6 +1,6 @@
 class DockForm < BasicRecordForm
 
-  validate :dock_group_valid
+  validate :dock_group_enabled
 
   attr_accessor :dock_groups
 
@@ -32,8 +32,7 @@ class DockForm < BasicRecordForm
 
   private
 
-  def dock_group_valid
-    validate_company_id(DockGroup, :dock_group_id)
+  def dock_group_enabled
     validate_enabled(DockGroup, :dock_group_id)
   end
 

@@ -17,7 +17,7 @@
     <thead class= <%= table.head_class %>>
       <tr>
         <% table.columns.each do |column| %>
-          <th scope="col" id="<%= column.id %>"><%= t_nf column.text_key %></th>
+          <th scope="col" id="<%= column.id %>"><%= column.header_title %></th>
         <% end %>
       </tr>
     </thead>

@@ -15,7 +15,7 @@ other_access_policy_everything:
   everything: true
   company: other_company
 
-delete_access_policy_everything:
+delete_me_access_policy:
   description: Everything
   enabled: true
   everything: true

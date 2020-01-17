@@ -6,7 +6,6 @@ class Button::ResetPasswordButton < Button::BaseButton
   def initialize(*)
     super
     @remote = true
-    @text_key = "auth/users.reset_password"
     @style = Button::Style::PRIMARY
     @btn_class = BTN_CLASS
     @classes << "btn-block mt-3"

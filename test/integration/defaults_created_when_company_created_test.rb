@@ -4,8 +4,8 @@ require 'pp'
 class DefaultsCreatedWhenCompanyCreatedTest < ActionDispatch::IntegrationTest
 
   def setup
-    @app_admin = users(:app_admin_user)
-    @company_admin = users(:company_admin_user)
+    @app_admin = auth_users(:app_admin_user)
+    @company_admin = auth_users(:company_admin_user)
   end
 
   def create_company_as(user, parameter, validity)
@@ -30,9 +30,8 @@ class DefaultsCreatedWhenCompanyCreatedTest < ActionDispatch::IntegrationTest
     company = create_company_as(@app_admin, company_hash, true)
     assert !company.nil?
     # Check that the default dock group is created.
-    default_dock_group = DockGroup.find_by(company_id: company.id)
-    assert !default_dock_group.nil?
-    assert_match "Default", default_dock_group.description
+    assert !DockGroup.find_by(company_id: company.id).nil?
+    assert !AccessPolicy.find_by(company_id: company.id).nil?
   end
 
 end

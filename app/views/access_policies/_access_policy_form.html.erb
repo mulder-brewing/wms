@@ -11,8 +11,8 @@
       <% end %>
       <%= f.input :everything, sf_switch %>
       <div class="individual_permissions ml-4">
-        <%= f.input :dock_groups, sf_switch(label: t_nf("dock_groups.title.index")) %>
-        <%= f.input :docks, sf_switch(label: t_nf("docks.title.index")) %>
+        <%= f.input :dock_groups, sf_switch(label: model_plur(DockGroup)) %>
+        <%= f.input :docks, sf_switch(label: model_plur(Dock)) %>
       </div>
     </div>
 <% end %>

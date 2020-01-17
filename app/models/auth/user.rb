@@ -1,4 +1,5 @@
 class Auth::User < ApplicationRecord
+  include ValidateCompanyID
 
   belongs_to :company
   belongs_to :access_policy
@@ -16,6 +17,7 @@ class Auth::User < ApplicationRecord
   # Regex for 8-64 characters, must have at least one uppercase, lowercase, number, and special character.  No spaces
   VALID_PASSWORD_REGEX = /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d.*)(?=.*\W.*)[a-zA-Z0-9\S]{8,64}\z/
   validates :password, format: { with: VALID_PASSWORD_REGEX }, allow_nil: true
+  validate :access_policy_company_id
 
   has_secure_password
 
@@ -52,6 +54,10 @@ class Auth::User < ApplicationRecord
       cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
                                                     BCrypt::Engine.cost
       BCrypt::Password.create(string, cost: cost)
+    end
+
+    def access_policy_company_id
+      validate_company_id(access_policy, :access_policy_id)
     end
 
 end

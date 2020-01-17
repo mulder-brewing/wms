@@ -1,12 +1,12 @@
-<%= simple_form_for @dock_request, remote:true, :html => { :id => form_type +'-form' } do |f| %>
+<%= simple_form_for modal.form, remote:true, :html => { :id => modal.form.html_id } do |f| %>
     <div id="feedback">
       <%= errors_for(f.object) %>
     </div>
     <div class="mb-3">
-      <%= f.input :primary_reference, as: :string %>
+      <%= f.input :primary_reference, as: :string, required: true %>
       <%= f.input :phone_number, as: :string, input_html: { class: 'phone_us' } %>
-      <%= f.input :text_message, label: 'Send text message when dock is assigned' %>
-      <%= f.input :note %>
+      <%= f.input :text_message, sf_switch %>
+      <%= f.input :note, as: :text%>
       <%= f.hidden_field :dock_group_id %>
     </div>
     <script>

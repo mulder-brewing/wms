@@ -60,7 +60,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal title" do
     to = NewTO.new(@app_admin, @new, true)
-    to.visibles << ModalTitleVisible.new(text: "companies.title.new_create")
+    to.visibles << NewModalTitleVisible.new(model_class: Company)
     to.test(self)
   end
 
@@ -121,7 +121,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal title" do
     to = EditTO.new(@app_admin, @averagejoes, true)
-    to.visibles << ModalTitleVisible.new(text: "companies.title.edit_update")
+    to.visibles << EditModalTitleVisible.new(model_class: Company)
     to.test(self)
   end
 
@@ -179,7 +179,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   test "should see title" do
     to = IndexTo.new(@app_admin, @new, true)
-    to.visibles << HeaderTitleVisible.new(text: "companies.title.index")
+    to.visibles << IndexRecordsTitleVisible.new(model_class: Company)
     to.test(self)
   end
 
@@ -241,7 +241,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   test "destroy modal title" do
     to = DestroyModalTO.new(@app_admin, @averagejoes, true)
     to.path = destroy_modal_company_path(@averagejoes)
-    to.visibles << ModalTitleVisible.new(text: "companies.title.destroy")
+    to.visibles << DestroyModalTitleVisible.new(model_class: Company)
     to.test(self)
   end
 

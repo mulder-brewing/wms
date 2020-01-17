@@ -1,4 +1,5 @@
 class Dock < ApplicationRecord
+  include ValidateCompanyID
 
   belongs_to :company
   belongs_to :dock_group
@@ -8,6 +9,7 @@ class Dock < ApplicationRecord
   validates :number, presence: true, length: { maximum: 50 }
   validates :dock_group_id, presence: true
   validates_uniqueness_of :number, scope: :dock_group_id
+  validate :dock_group_company_id
 
 
   def self.where_dock_group(dock_group_id)
@@ -28,6 +30,12 @@ class Dock < ApplicationRecord
 
   def self.includes_dg
     includes(:dock_group)
+  end
+
+  private
+
+  def dock_group_company_id
+    validate_company_id(dock_group, :dock_group_id)
   end
 
 end

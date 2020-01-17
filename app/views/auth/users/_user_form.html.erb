@@ -4,7 +4,7 @@
       <%= errors_for(f.object) %>
     </div>
     <div class="mb-3">
-      <%= f.input :company_id, label: t_nf("companies.company"),
+      <%= f.input :company_id, label: model_sing(Company),
           :collection => modal.form.companies, :label_method => :name,
           :value_method => :id, required: true, prompt: true,
           input_html: { id: "auth_user_company_id"} if app_admin? %>
@@ -19,7 +19,8 @@
       <% end %>
       <%= f.input :access_policy_id, :collection => modal.form.access_policies,
           :label_method => :description, :value_method => :id, required: true,
-          input_html: { id: "auth_user_access_policy_id" }, prompt: true if admin? %>
+          input_html: { id: "auth_user_access_policy_id" }, prompt: true,
+          label: model_sing(AccessPolicy) if admin? %>
       <%= f.input :company_admin, as: :boolean if admin? && not_self?(modal.form.record) %>
     </div>
     <% if modal.role?(:edit_update) && admin? && not_self?(modal.form.record) %>
@@ -28,7 +29,7 @@
       </div>
     <% end %>
     <% if modal.role?(:edit_update) %>
-      <%= btn(Button::ResetPasswordButton.new(record: modal.form.record)) %>
+      <%= btn(Button::ResetPasswordButton.new(record: modal.form.record, text_key: password_update_title(modal.form.record))) %>
     <% end %>
 <% end %>
 

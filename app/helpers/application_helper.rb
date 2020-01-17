@@ -39,7 +39,7 @@ module ApplicationHelper
 
   # Returns Yes for true and No for false.
   def human_boolean(boolean)
-    boolean ? "global.boolean.yes" : "global.boolean.no"
+    boolean ? "simple_form.yes" : "simple_form.no"
   end
 
   # Returns local time if not blank

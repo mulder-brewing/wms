@@ -75,7 +75,7 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal title" do
     to = NewTO.new(@everything_ap_user, @new, true)
-    to.visibles << ModalTitleVisible.new(text: "dock_groups.title.new_create")
+    to.visibles << NewModalTitleVisible.new(model_class: DockGroup)
     to.test(self)
   end
 
@@ -196,7 +196,7 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal title" do
     to = EditTO.new(@everything_ap_user, @record_1, true)
-    to.visibles << ModalTitleVisible.new(text: "dock_groups.title.edit_update")
+    to.visibles << EditModalTitleVisible.new(model_class: DockGroup)
     to.test(self)
   end
 
@@ -320,7 +320,7 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
 
   test "page title should be there" do
     to = IndexTo.new(@everything_ap_user, @new, true)
-    to.visibles << HeaderTitleVisible.new(text: "dock_groups.title.index")
+    to.visibles << IndexRecordsTitleVisible.new(model_class: DockGroup)
     to.test(self)
   end
 

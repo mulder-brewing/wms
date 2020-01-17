@@ -38,9 +38,9 @@ class WelcomeEmailTest < ActionDispatch::IntegrationTest
     to = CreateTO.new(@company_admin, @new, @ph, false)
     to.merge_params_hash({ email: "", send_email: true })
     to.visibles << FormErrorVisible.new(field: :send_email,
-      error: "form.errors.email.send.email_blank")
+      error: "errors.attributes.send_email.blank_email")
     to.visibles << FormErrorVisible.new(field: :email,
-      error: "form.errors.email.blank")
+      error: "errors.attributes.email.blank_send")
     to.test(self)
     assert_equal 0, ActionMailer::Base.deliveries.size
   end

@@ -44,9 +44,9 @@ class PasswordResetEmailTest < ActionDispatch::IntegrationTest
     to.params_key = :auth_password_update
     to.update_fields = @password
     to.visibles << FormErrorVisible.new(field: :send_email,
-      error: "form.errors.email.send.email_blank")
+      error: "errors.attributes.send_email.blank_email")
     to.visibles << FormErrorVisible.new(field: :email,
-      error: "form.errors.email.blank")
+      error: "errors.attributes.email.blank_send")
     to.test(self)
     assert_equal 0, ActionMailer::Base.deliveries.size
   end

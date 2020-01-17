@@ -1,40 +1,4 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# The following keys must be escaped otherwise they will not be retrieved by
-# the default I18n backend:
-#
-# true, false, on, off, yes, no
-#
-# Instead, surround them with single quotes.
-#
-# en:
-#   'true': 'foo'
-#
-# To learn more, please read the Rails Internationalization guide
-# available at https://guides.rubyonrails.org/i18n.html.
-
 en:
-  access_policies:
-    title:
-      index: Access Policies
-      new_create: New Access Policy
-      edit_update: Edit Access Policy
 
   actions:
     new: New
@@ -43,16 +7,67 @@ en:
     delete: Delete
     edit: Edit
 
-  activerecord:
-    errors:
-      models:
-        auth/user:
-          confirmation: "doesn't match Password"
+  attributes:
+    description: Description
+    enabled: Enabled
+    name: Name
+    number: Number
 
-  activemodel:
+
+  activerecordmodel:
+    attributes: &armattributes
+      access_policy:
+        everything: Everything
+      auth/user: &auth_user_attributes
+        username: Username
+        first_name: First Name
+        last_name: Last Name
+        email: Email
+        password: Password
+        password_confirmation: Password Confirmation
+        company_admin: Admin
+      dock_request:
+        primary_reference: Primary Reference
+        phone_number: Phone Number
+        text_message: Send text message when dock is assigned
+        note: Note
+
+  activerecord:
+    attributes:
+      <<: *armattributes
     errors:
       messages:
         does_not_belong: does not belong to your company
+      models:
+        auth/user:
+          confirmation: "doesn't match Password"
+    models:
+      access_policy:
+        one: Access Policy
+        other: Access Policies
+      auth/user:
+        one: User
+        other: Users
+      company:
+        one: Company
+        other: Companies
+      dock_group:
+        one: Dock Group
+        other: Dock Groups
+      dock:
+        one: Dock
+        other: Docks
+      dock_request:
+        one: Dock Request
+        other: Dock Requests
+
+  activemodel:
+    attributes:
+      <<: *armattributes
+      auth/password_update: *auth_user_attributes
+      auth/password_reset: *auth_user_attributes
+    errors:
+      messages:
         disabled: is disabled
       models:
         auth/user:
@@ -86,50 +101,29 @@ en:
     not_authorized: Not Authorized
 
   auth/users:
-    title:
-      new_create: New User
-      index: Users
-      edit_update: Edit User
-      update_password: Update Password
-    reset_password: Reset Password
     become: Become
 
-  companies:
+  auth/password_update:
     title:
-      index: Companies
-      new_create: New Company
-      edit_update: Edit Company
-      destroy: Delete Company
-    company: Company
+      self: Update Password
+      other: Reset Password
+    reset_msg: You are resetting password for %{user}
 
-  dock_groups:
-    title:
-      index: Dock Groups
-      new_create: New Dock Group
-      edit_update: Edit Dock Group
-    dock_group: Dock Group
-
-  docks:
-    title:
-      index: Docks
-      new_create: New Dock
-      edit_update: Edit Dock
+  auth/password_reset:
+    msg: You must update your password before you can use Mulder WMS.
 
   global:
     actions: Actions
     all: All
-    boolean:
-      'yes': 'Yes'
-      'no': 'No'
-      enabled: Enabled
-      disabled: Disabled
+    disabled: Disabled
 
   modal:
+    title:
+      new_create: New %{record}
+      edit_update: Edit %{record}
+      destroy: Delete %{record}
     destroy:
       chicken_message: 'Are you sure you want to delete %{to_delete}?  This action is irreversible.'
-
-  password_reset:
-    message: You must update your password before you can use Mulder WMS.
 
   timestamps:
     created: Created

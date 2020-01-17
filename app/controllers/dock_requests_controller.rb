@@ -1,4 +1,5 @@
 class DockRequestsController < ApplicationController
+  include FormHelper, ModalHelper, PageHelper
   include DockRequestsControllerHelper
 
   def index
@@ -18,7 +19,7 @@ class DockRequestsController < ApplicationController
     end
     if current_dock_group
       @current_dock_group = current_dock_group
-      @dock_requests = DockRequest.where_company_and_group(current_company_id, current_dock_group_id).include_docks.active.order(:created_at)
+      @dock_requests = DockRequest.where_company_and_group(current_company_id, current_dock_group_id).include_docks.active
     else
       @dock_requests = DockRequest.none
       if size == 0
@@ -30,20 +31,24 @@ class DockRequestsController < ApplicationController
         @show_new = false
       end
     end
+    authorize @dock_requests
+    @dock_requests = policy_scope(@dock_requests)
   end
 
   def new
-    @dock_request = DockRequest.new()
-    find_current_dock_group
-    respond_to :js
+    form = new_form_prep_record(DockRequestForm)
+    authorize form.record
+    modal = Modal::NewModal.new(form)
+    render_modal(modal)
   end
 
   def create
-    @dock_request = DockRequest.new(dock_request_params("create"))
-    set_context("create")
-    set_current_user_attribute("dock_request")
-    @dock_request.update(:company_id => current_company_id)
-    respond_to :js
+    form = new_form_prep_record(DockRequestForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::CreateModal.new(form)
+    render_modal(modal)
   end
 
   def show

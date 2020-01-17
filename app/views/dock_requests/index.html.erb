@@ -1,7 +1,7 @@
 <% provide(:title, 'Dock Queue') %>
 <% provide(:icon_class, 'fas fa-list-ol') %>
 <% if @show_new %>
-  <%= provide(:new_link, new_dock_request_path) %>
+  <%= provide(:new_link, new_dock_request_path(dock_group_id: @current_dock_group.id)) %>
 <% end %>
 
 

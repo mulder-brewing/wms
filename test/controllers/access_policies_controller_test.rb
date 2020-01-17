@@ -68,7 +68,7 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal title" do
     to = NewTO.new(@company_admin, @new, true)
-    to.visibles << ModalTitleVisible.new(text: "access_policies.title.new_create")
+    to.visibles << NewModalTitleVisible.new(model_class: AccessPolicy)
     to.test(self)
   end
 
@@ -146,7 +146,7 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal title" do
     to = EditTO.new(@company_admin, @averagejoe_access_policy, true)
-    to.visibles << ModalTitleVisible.new(text: "access_policies.title.edit_update")
+    to.visibles << EditModalTitleVisible.new(model_class: AccessPolicy)
     to.test(self)
   end
 
@@ -220,7 +220,7 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
 
   test "page title should be there" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.visibles << HeaderTitleVisible.new(text: "access_policies.title.index")
+    to.visibles << IndexRecordsTitleVisible.new(model_class: AccessPolicy)
     to.test(self)
   end
 

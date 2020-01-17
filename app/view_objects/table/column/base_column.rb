@@ -1,9 +1,10 @@
 class Table::Column::BaseColumn
 
-  attr_accessor :text_key, :id
+  attr_accessor :title, :text_key, :id
 
-  def initialize(text_key)
-    @text_key = text_key
+  def initialize(**options)
+    @title = options[:title]
+    @text_key = options[:text_key]
   end
 
   def actions?
@@ -12,6 +13,10 @@ class Table::Column::BaseColumn
 
   def buttons?
     false
+  end
+
+  def header_title
+    title || I18n.t(text_key)
   end
 
 end

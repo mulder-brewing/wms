@@ -4,9 +4,9 @@ class Table::DocksIndexTable < Table::IndexTable
     super
     buttons = [Button::IndexEditButton.new]
     @columns << Table::Column::ButtonColumn.new(buttons)
-    @columns << Table::Column::DataColumn.new(sfld("number"), :number)
-    @columns << Table::Column::DataColumn.new("dock_groups.dock_group",
-      [:dock_group, :description])
+    @columns << Table::Column::DataColumn.new(t_class: Dock, attribute: :number)
+    @columns << Table::Column::DataColumn.new(title: model_sing(DockGroup),
+      send_chain: [:dock_group, :description])
     @columns << Table::Column::EnabledColumn.new
   end
 end

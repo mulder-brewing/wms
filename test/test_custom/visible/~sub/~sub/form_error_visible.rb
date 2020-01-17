@@ -21,7 +21,7 @@ class FormErrorVisible < FormVisible
     when :unique
       f.call("errors.messages.taken")
     when :does_not_belong
-      f.call("activemodel.errors.messages.does_not_belong")
+      f.call("activerecord.errors.messages.does_not_belong")
     when :same
       f.call("activemodel.errors.models.auth/password_reset.same")
     when :disabled_self

@@ -134,7 +134,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal title" do
     to = NewTO.new(@company_admin, @new, true)
-    to.visibles << ModalTitleVisible.new(text: "auth/users.title.new_create")
+    to.visibles << NewModalTitleVisible.new(model_class: Auth::User)
     to.test(self)
   end
 
@@ -276,7 +276,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal title" do
     to = EditTO.new(@regular_user, @regular_user, true)
-    to.visibles << ModalTitleVisible.new(text: "auth/users.title.edit_update")
+    to.visibles << EditModalTitleVisible.new(model_class: Auth::User)
     to.test(self)
   end
 
@@ -651,7 +651,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "page title should be there" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.visibles << HeaderTitleVisible.new(text: "auth/users.title.index")
+    to.visibles << IndexRecordsTitleVisible.new(model_class: Auth::User)
     to.test(self)
   end
 

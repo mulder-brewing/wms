@@ -29,7 +29,7 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form"
     assert_select "form input[id=auth_password_reset_password]"
     assert_select "form input[id=auth_password_reset_password_confirmation]"
-    assert_select "form input[type=submit][value='#{I18n.t("auth/users.title.update_password")}']"
+    assert_select "form input[type=submit][value='#{I18n.t("auth/password_update.title.self")}']"
     # trying to load other pages should redirect the user back to password reset.
     get root_path
     assert_redirected_to edit_auth_password_reset_path(@regular_user)

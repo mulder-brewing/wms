@@ -6,32 +6,13 @@ en:
       text: 'required'
       mark: '*'
     labels:
-      defaults:
-        description: Description
-        enabled: Enabled
-        name: Name
-        number: Number
-      access_policy:
-        everything: Everything
       auth_user:
-        first_name: First Name
-        last_name: Last Name
-        email: Email
         send_email: Send email with login instructions
-        username: Username
-        password: Password
-        password_confirmation: Password Confirmation
-        access_policy_id: Access Policy
-        company_admin: Admin
       auth_password_update:
         send_email: Send email with new password
     hints:
-      auth_user:
+      auth_user: &auth_user
         username: lowercase, numbers, and underscore only with no spaces
         password: '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
-    # include_blanks:
-    #   defaults:
-    #     age: 'Rather not say'
-    # prompts:
-    #   auth_user:
-    #     company_id: Select Company
+      auth_password_update: *auth_user
+      auth_password_reset: *auth_user

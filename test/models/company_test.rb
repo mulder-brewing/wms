@@ -6,7 +6,7 @@ class CompanyTest < ActiveSupport::TestCase
     @company = Company.new(name: "Example Company")
     @other_company = Company.new(name: "Other Example Company")
     @delete_company = companies(:company_to_delete)
-    @delete_user = users(:delete_me_user)
+    @delete_user = auth_users(:delete_me_user)
   end
 
   test "should be valid" do
@@ -47,7 +47,7 @@ class CompanyTest < ActiveSupport::TestCase
 
   test "Deleteing a company should also delete it's users because of dependent destroy" do
     @delete_company.destroy
-    assert User.find_by(id: @delete_user.id).nil?
+    assert Auth::User.find_by(id: @delete_user.id).nil?
   end
 
 end

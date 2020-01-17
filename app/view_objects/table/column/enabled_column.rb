@@ -1,7 +1,7 @@
 class Table::Column::EnabledColumn < Table::Column::IndexColumn
 
-  def initialize
-    super("simple_form.labels.defaults.enabled")
+  def header_title
+    I18n.t("attributes.enabled")
   end
 
   def enabled_value?

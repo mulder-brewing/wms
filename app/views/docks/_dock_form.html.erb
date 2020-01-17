@@ -4,7 +4,7 @@
     </div>
     <div class="mb-3">
       <%= f.input :number, as: :string, required: true %>
-      <%= f.input :dock_group_id, label: t_nf("dock_groups.dock_group"),
+      <%= f.input :dock_group_id, label: DockGroup.model_name.human,
         :collection => modal.form.dock_groups, :label_method => :description,
         :value_method => :id, required: true, prompt: true %>
       <% if modal.role?(:edit_update) %>

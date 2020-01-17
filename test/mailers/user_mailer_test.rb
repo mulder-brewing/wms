@@ -3,7 +3,7 @@ require 'test_helper'
 class UserMailerTest < ActionMailer::TestCase
 
   def setup
-    @regular_user = users(:regular_user)
+    @regular_user = auth_users(:regular_user)
     @regular_user.password = "Testpassword1$$"
   end
 

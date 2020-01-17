@@ -51,9 +51,9 @@ class Page::IndexListPage < Page::BasePage
 
   def title
     if !@title.blank?
-      @title
+      I18n.t(@title)
     else
-      @records.name.tableize + ".title.index"
+      @records.model.model_name.human(count: 2)
     end
   end
 

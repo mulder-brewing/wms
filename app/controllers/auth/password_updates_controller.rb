@@ -1,5 +1,6 @@
 class Auth::PasswordUpdatesController < ApplicationController
   include FormHelper, ModalHelper
+  include Auth::PasswordUpdatesHelper
 
   def edit
     form = new_form_prep_record(Auth::PasswordUpdateForm)
@@ -22,7 +23,7 @@ class Auth::PasswordUpdatesController < ApplicationController
   private
 
     def customize_modal(modal)
-      modal.title = "auth/users.reset_password"
+      modal.title = password_update_title(modal.form.record)
       modal.footer.show_timestamps = false
     end
 

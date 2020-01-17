@@ -30,7 +30,12 @@ class Modal::FormRecordModal < Modal::FormModal
   end
 
   def title
-    @title || form.record.class.name.tableize + ".title." + @title_suffix
+    if @title.is_a? String
+      I18n.t(@title)
+    else
+      I18n.t("modal.title.#{@title_suffix}",
+        :record=> form.record.model_name.human)
+    end
   end
 
 end

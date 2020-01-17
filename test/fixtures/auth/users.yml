@@ -78,7 +78,7 @@ delete_me_user:
   company: company_to_delete
   password_digest: <%= default_password_digest %>
   password_reset: false
-  access_policy: delete_access_policy_everything
+  access_policy: delete_me_access_policy
 
 delete_me_admin:
   username: delete_me_admin
@@ -91,7 +91,7 @@ delete_me_admin:
   company: company_to_delete
   password_digest: <%= default_password_digest %>
   password_reset: false
-  access_policy: delete_access_policy_everything
+  access_policy: delete_me_access_policy
 
 other_company_user:
   username: other_company_user

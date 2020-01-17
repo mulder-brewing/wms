@@ -28,16 +28,22 @@
                     <li>
                       <%= link_to "Admin Only", '#', :class => "dropdown-item dropdown-toggle" %>
                       <ul class="dropdown-menu">
-                        <li><%= link_to "Companies",   companies_path(:enabled => "true"), class: "dropdown-item" if app_admin? %></li>
-                        <li><%= link_to "Users", auth_users_path(:enabled => "true"), class: "dropdown-item" %></li>
-                        <li><%= link_to "Access Policies", access_policies_path(:enabled => "true"), class: "dropdown-item" %></li>
+                        <li><%= link_to Company.model_name.human(count: 2),
+                          companies_path(:enabled => "true"),
+                          class: "dropdown-item" if app_admin? %></li>
+                        <li><%= link_to Auth::User.model_name.human(count: 2),
+                          auth_users_path(:enabled => "true"),
+                          class: "dropdown-item" %></li>
+                        <li><%= link_to AccessPolicy.model_name.human(count: 2),
+                          access_policies_path(:enabled => "true"),
+                          class: "dropdown-item" %></li>
                       </ul>
                     </li>
                   <% end %>
-                  <%= link_to t_nf("dock_groups.title.index"),
+                  <%= link_to DockGroup.model_name.human(count: 2),
                     dock_groups_path(:enabled => "true"),
                     class: "dropdown-item" if ap_check?(:dock_groups) %>
-                  <%= link_to t_nf("docks.title.index"),
+                  <%= link_to Dock.model_name.human(count: 2),
                     docks_path(:enabled => "true"),
                     class: "dropdown-item" if ap_check?(:docks) %>
                 </div>

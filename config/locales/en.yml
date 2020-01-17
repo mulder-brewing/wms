@@ -26,6 +26,11 @@ en:
         password: Password
         password_confirmation: Password Confirmation
         company_admin: Admin
+      dock_request:
+        primary_reference: Primary Reference
+        phone_number: Phone Number
+        text_message: Send text message when dock is assigned
+        note: Note
 
   activerecord:
     attributes:
@@ -52,6 +57,9 @@ en:
       dock:
         one: Dock
         other: Docks
+      dock_request:
+        one: Dock Request
+        other: Dock Requests
 
   activemodel:
     attributes:

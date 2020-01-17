@@ -1,7 +1,6 @@
 class ApplicationController < ActionController::Base
   include Pagy::Backend
   include Auth::SessionsHelper
-  include FindObjectHelper
   include Pundit
 
   before_action :logged_in

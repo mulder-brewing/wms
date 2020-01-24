@@ -39,7 +39,7 @@ class Auth::PasswordUpdateForm < BasicRecordForm
   end
 
   def send_email?
-    @send_email_bool = Util::Boolean::Cast.call(@send_email)
+    @send_email_bool = Util::Boolean.cast(@send_email)
   end
 
   def email_exists_if_send_email

@@ -1,0 +1,35 @@
+<%= provide(:title, (t_nf page.title)) %>
+<% provide(:icon_class, 'fas fa-list-ol') %>
+<% if page.show_new_link? %>
+  <%= provide(:new_link, new_dock_queue_dock_request_path(dock_group_id: page.dock_group.id)) %>
+<% end %>
+
+<% if page.show_dock_group_selector? %>
+  <div class="container-fluid mt-2">
+      <div class="row">
+        <div class="col-sm-auto">
+          <%= simple_form_for :dock_request, :url => dock_queue_dock_requests_path, :method => :get do |f| %>
+            <%= f.input :dock_group_id, required: false, :collection => page.dock_groups, :label_method => :description, :value_method => :id, input_html: { id: "dock_group_select", onchange: "this.form.submit();" }, wrapper_html: { class: 'mb-0' } %>
+          <% end %>
+        </div>
+      </div>
+  </div>
+
+  <script type="text/javascript">
+    <% if !page.dock_group_nil? %>
+      $("#dock_group_select").val(<%= page.dock_group.id %>);
+    <% end %>
+  </script>
+<% end %>
+
+<div class="container-fluid mt-3">
+  <div id="dock-requests-queue" class="row <%= page.table.body_class %>">
+    <% page.records.each do |record| %>
+      <%= render partial: "dock_request",
+        locals: { record: record,
+                  table: page.table
+                }
+      %>
+    <% end %>
+  </div>
+</div>

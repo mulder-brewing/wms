@@ -1,50 +1,15 @@
-class DockRequestsController < ApplicationController
+class DockQueue::DockRequestsController < ApplicationController
   include FormHelper, ModalHelper, PageHelper
-  include DockRequestsControllerHelper
-
-  def index
-    @dock_groups = DockGroup.enabled_where_company(current_company_id).order(:description)
-    size = @dock_groups.length
-    @show_new = true
-    @show_dock_group_selector = true
-    if size <= 1
-      @show_dock_group_selector = false
-    end
-    if params[:dock_request].present? && params[:dock_request][:dock_group_id].present?
-      params_group_id = params[:dock_request][:dock_group_id]
-      find_dock_group_redirect_invalid(params_group_id)
-      stash_dock_group_id(params_group_id)
-    elsif current_dock_group
-      redirect_to dock_requests_url(dock_request: { dock_group_id: current_dock_group_id })
-    end
-    if current_dock_group
-      @current_dock_group = current_dock_group
-      @dock_requests = DockRequest.where_company_and_group(current_company_id, current_dock_group_id).include_docks.active
-    else
-      @dock_requests = DockRequest.none
-      if size == 0
-        flash.now[:danger] = 'You need at least one enabled dock group before you can use the dock queue'
-        @show_new = false
-      elsif size == 1
-        redirect_to dock_requests_url(dock_request: { dock_group_id: @dock_groups.first.id })
-      else
-        @show_new = false
-      end
-    end
-    authorize @dock_requests
-    @dock_requests = policy_scope(@dock_requests)
-    @table = Table::DockRequestsIndexTable.new(current_user)
-  end
 
   def new
-    form = new_form_prep_record(DockRequestForm)
+    form = new_form_prep_record(DockQueue::DockRequestForm)
     authorize form.record
     modal = Modal::NewModal.new(form)
     render_modal(modal)
   end
 
   def create
-    form = new_form_prep_record(DockRequestForm)
+    form = new_form_prep_record(DockQueue::DockRequestForm)
     assign_form_attributes(form)
     authorize form.record
     form.submit
@@ -52,25 +17,42 @@ class DockRequestsController < ApplicationController
     render_modal(modal)
   end
 
-  def show
-    find_dock_request
-    respond_to :js
-  end
-
   def edit
-    form = new_form_prep_record(DockRequestForm)
+    form = new_form_prep_record(DockQueue::DockRequestForm)
     authorize form.record
     modal = Modal::EditModal.new(form)
     render_modal(modal)
   end
 
   def update
-    form = new_form_prep_record(DockRequestForm)
+    form = new_form_prep_record(DockQueue::DockRequestForm)
     assign_form_attributes(form)
     authorize form.record
     form.submit
     modal = Modal::UpdateModal.new(form, page: form.page, table: form.table)
     render_modal(modal)
+  end
+
+  def show
+    form = new_form_prep_record(DockQueue::DockRequestForm)
+    authorize form.record
+    modal = Modal::ShowModal.new(form, show: Show::DockRequestShow.new(record: form.record))
+    render_modal(modal)
+  end
+
+  def index
+    page = new_page_prep_records(Page::DockRequestsPage)
+    page.table = Table::DockRequestsIndexTable.new(current_user)
+    authorize_scope_records(page)
+    case page.dock_groups_count
+    when 0
+      flash.now[:danger] = I18n.t("dock_requests.no_dg_msg")
+    when 1
+      if page.dock_group_nil?
+        redirect_to dock_requests_url(dock_request: { dock_group_id: page.dock_groups.first.id }) and return
+      end
+    end
+    render_page(page)
   end
 
   def dock_assignment_edit

@@ -10,6 +10,10 @@ en:
         send_email: Send email with login instructions
       auth_password_update:
         send_email: Send email with new password
+      dock_queue_dock_request:
+        text_message: Send text message when dock is assigned
+      dock_queue_dock_assignment:
+        text_message: Send text message with dock assignment
     hints:
       auth_user: &auth_user
         username: lowercase, numbers, and underscore only with no spaces

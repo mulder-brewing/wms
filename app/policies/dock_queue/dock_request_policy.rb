@@ -1,4 +1,4 @@
-class DockRequestPolicy < ApplicationPolicy
+class DockQueue::DockRequestPolicy < ApplicationPolicy
 
   def initialize(user, scope)
     @permission = :dock_groups

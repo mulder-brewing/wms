@@ -22,7 +22,7 @@ class Page::IndexListPage < Page::BasePage
     @records = controller_model.all
     @new_record = controller_model.new
     if show_enabled_filter?
-      enabled = Util::Boolean::Cast.call(params[:enabled])
+      enabled = Util::Boolean.cast(params[:enabled])
       @records = @records.where_enabled(enabled) unless enabled.nil?
       @enabled_param = enabled
     end

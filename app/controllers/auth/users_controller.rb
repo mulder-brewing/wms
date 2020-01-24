@@ -15,7 +15,7 @@ class Auth::UsersController < ApplicationController
       authorize form.record
       form.submit
       form.setup_variables
-      modal = Modal::CreateModal.new(form, table: form.table)
+      modal = Modal::CreateModal.new(form, page: form.page, table: form.table)
       render_modal(modal)
     end
 
@@ -33,7 +33,7 @@ class Auth::UsersController < ApplicationController
       authorize form.record
       form.submit
       form.setup_variables
-      modal = Modal::UpdateModal.new(form, table: form.table)
+      modal = Modal::UpdateModal.new(form, page: form.page, table: form.table)
       render_modal(modal)
     end
 

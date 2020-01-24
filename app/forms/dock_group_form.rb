@@ -11,6 +11,7 @@ class DockGroupForm < BasicRecordForm
   def initialize(*)
     super
     @table_class = Table::DockGroupsIndexTable
+    @page_class = Page::IndexListPage
   end
 
   def permitted_params

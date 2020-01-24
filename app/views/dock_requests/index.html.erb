@@ -24,7 +24,13 @@
 <% end %>
 
 <div class="container-fluid mt-3">
-  <div id="dock-requests-queue" class="row">
-    <%= render @dock_requests %>
+  <div id="dock-requests-queue" class="row <%= @table.body_class %>">
+    <% @dock_requests.each do |record| %>
+      <%= render partial: "dock_request",
+        locals: { record: record,
+                  table: @table
+                }
+      %>
+    <% end %>
   </div>
 </div>

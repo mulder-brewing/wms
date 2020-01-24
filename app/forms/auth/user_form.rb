@@ -18,6 +18,7 @@ class Auth::UserForm < BasicRecordForm
   def initialize(*)
     super
     @table_class = Table::Auth::UsersIndexTable
+    @page_class = Page::IndexListPage
   end
 
   def setup_variables

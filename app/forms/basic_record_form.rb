@@ -2,7 +2,7 @@ class BasicRecordForm < RecordForm
 
   validate :record_valid
 
-  attr_accessor :record, :table_class
+  attr_accessor :record, :table_class, :page_class
 
   def setup_variables; end
 
@@ -40,6 +40,10 @@ class BasicRecordForm < RecordForm
 
   def table
     @table_class.new(current_user) if action?(:create, :update)
+  end
+
+  def page
+    @page_class.new(current_user, controller) if action?(:create, :update)
   end
 
   private

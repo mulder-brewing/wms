@@ -1,6 +1,6 @@
 class Modal::FormRecordModal < Modal::FormModal
 
-  attr_accessor :table, :persist, :role, :title_suffix
+  attr_accessor :table, :page, :persist, :role, :title_suffix
 
   VIEWS_PATH = "modals/form_modal/form_record_modal/"
 
@@ -8,8 +8,9 @@ class Modal::FormRecordModal < Modal::FormModal
   JS_PATH = VIEWS_PATH + "modal_js"
   SAVE_RESULT_PATH = VIEWS_PATH + "save_result"
 
-  def initialize(form, table: nil)
+  def initialize(form, page: nil, table: nil)
     super(form)
+    @page = page
     @table = table
   end
 

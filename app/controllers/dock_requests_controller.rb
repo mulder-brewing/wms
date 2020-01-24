@@ -33,6 +33,7 @@ class DockRequestsController < ApplicationController
     end
     authorize @dock_requests
     @dock_requests = policy_scope(@dock_requests)
+    @table = Table::DockRequestsIndexTable.new(current_user)
   end
 
   def new
@@ -47,7 +48,7 @@ class DockRequestsController < ApplicationController
     assign_form_attributes(form)
     authorize form.record
     form.submit
-    modal = Modal::CreateModal.new(form)
+    modal = Modal::CreateModal.new(form, page: form.page, table: form.table)
     render_modal(modal)
   end
 
@@ -57,16 +58,19 @@ class DockRequestsController < ApplicationController
   end
 
   def edit
-    find_dock_request
-    set_context("edit")
-    respond_to :js
+    form = new_form_prep_record(DockRequestForm)
+    authorize form.record
+    modal = Modal::EditModal.new(form)
+    render_modal(modal)
   end
 
   def update
-    find_dock_request
-    set_context("update")
-    update_dock_request_with_params("update")
-    respond_to :js
+    form = new_form_prep_record(DockRequestForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::UpdateModal.new(form, page: form.page, table: form.table)
+    render_modal(modal)
   end
 
   def dock_assignment_edit

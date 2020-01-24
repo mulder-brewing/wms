@@ -6,6 +6,11 @@ class Table::IndexTable < Table::BaseTable
 
   delegate :row_id, to: :class
 
+  def initialize(*)
+    super
+    @insert_method = Table::Insert::PREPEND
+  end
+
   def table_class
     TABLE_CLASS
   end

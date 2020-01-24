@@ -7,7 +7,7 @@ class Show::DockRequestShow < Show::RecordShow
       RA.new(label: han(:status), value: han("status.#{record.status}")),
       RA.new(label: DockGroup.model_name.human, value: record.dock_group.description),
       RA.new(label: han(:phone_number), value: number_to_phone(record.phone_number, area_code: true)),
-      RA.new(label: han(:send_text), value: Util::Boolean.yes_no(record.text_message)),
+      RA.new(label: han(:text_message), value: Util::Boolean.yes_no(record.text_message)),
       RA.new(label: han(:note), value: record.note),
       RA.new(label: han("status.checked_in"), value: record.created_at)
     )

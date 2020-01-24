@@ -1,4 +1,4 @@
-class DockRequest < ApplicationRecord
+class DockQueue::DockRequest < ApplicationRecord
   # Need both of these to use the distance_of_time_in_words
   require 'action_view'
   include ActionView::Helpers::DateHelper

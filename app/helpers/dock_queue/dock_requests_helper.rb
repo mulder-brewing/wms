@@ -1,0 +1,3 @@
+module DockQueue::DockRequestsHelper
+
+end

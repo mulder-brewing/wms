@@ -1,4 +1,4 @@
-class DockRequestForm < BasicRecordForm
+class DockQueue::DockRequestForm < BasicRecordForm
 
   delegate  :primary_reference, :primary_reference=,
             :phone_number, :phone_number=,
@@ -8,7 +8,7 @@ class DockRequestForm < BasicRecordForm
             to: :@record
 
   def self.model_name
-    ActiveModel::Name.new(self, nil, "DockRequest")
+    ActiveModel::Name.new(self, nil, "DockQueue::DockRequest")
   end
 
   def initialize(*)

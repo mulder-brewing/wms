@@ -27,14 +27,13 @@ en:
         password: Password
         password_confirmation: Password Confirmation
         company_admin: Admin
-      dock_request:
+      dock_queue/dock_request:
         note: Note
         primary_reference: Primary Reference
         phone_number: Phone Number
-        send_text: Send Text
-        text_message: Send text message when dock is assigned
+        text_message: Send Text
         total_time: Total Time
-      dock_request/status:
+      dock_queue/dock_request/status:
         checked_in: Checked In
         dock_assigned: Dock Assigned
         checked_out: Checked Out
@@ -119,6 +118,9 @@ en:
 
   auth/password_reset:
     msg: You must update your password before you can use Mulder WMS.
+
+  dock_requests:
+    no_dg_msg: You need at least one enabled dock group before you can use the dock queue
 
   global:
     actions: Actions

@@ -53,8 +53,10 @@ class DockRequestsController < ApplicationController
   end
 
   def show
-    find_dock_request
-    respond_to :js
+    form = new_form_prep_record(DockRequestForm)
+    authorize form.record
+    modal = Modal::ShowModal.new(form, show: Show::DockRequestShow.new(record: form.record))
+    render_modal(modal)
   end
 
   def edit

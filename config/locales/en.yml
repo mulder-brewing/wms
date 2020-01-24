@@ -12,6 +12,7 @@ en:
     enabled: Enabled
     name: Name
     number: Number
+    status: Status
 
 
   activerecordmodel:
@@ -27,10 +28,17 @@ en:
         password_confirmation: Password Confirmation
         company_admin: Admin
       dock_request:
+        note: Note
         primary_reference: Primary Reference
         phone_number: Phone Number
+        send_text: Send Text
         text_message: Send text message when dock is assigned
-        note: Note
+        total_time: Total Time
+      dock_request/status:
+        checked_in: Checked In
+        dock_assigned: Dock Assigned
+        checked_out: Checked Out
+        voided: Voided
 
   activerecord:
     attributes:
@@ -121,6 +129,7 @@ en:
     title:
       new_create: New %{record}
       edit_update: Edit %{record}
+      show: '%{record}'
       destroy: Delete %{record}
     destroy:
       chicken_message: 'Are you sure you want to delete %{to_delete}?  This action is irreversible.'

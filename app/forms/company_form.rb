@@ -11,6 +11,7 @@ class CompanyForm < BasicRecordForm
   def initialize(*)
     super
     @table_class = Table::CompaniesIndexTable
+    @page_class = Page::IndexListPage
   end
 
   def permitted_params

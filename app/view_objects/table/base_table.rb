@@ -1,9 +1,10 @@
-class Table::BaseTable
-  include Auth::SessionsHelper
-  include SimpleFormHelper
-  include TranslationHelper
+include Auth::SessionsHelper
+include SimpleFormHelper
+include TranslationHelper
 
-  attr_accessor :current_user, :columns
+class Table::BaseTable
+
+  attr_accessor :current_user, :columns, :insert_method
 
   def initialize(current_user)
     @current_user = current_user

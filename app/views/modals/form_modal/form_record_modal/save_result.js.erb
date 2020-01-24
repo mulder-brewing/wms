@@ -5,15 +5,21 @@ var modal_id = '<%= modal.id %>';
   hideModal(modal_id);
   <% if !table.nil? %>
     function renderRecord() {
-      return '<%= j render partial: Page::IndexListPage::RECORD_HTML_PATH, locals: { record: record, table: table } %>'
+      return '<%= j render partial: modal.page.record_html_path, locals: { record: record, table: table } %>'
     }
+    var trow = '#<%= table.row_id(record) %>'
     <% if modal.role?(:new_create) %>
-      $('.<%= table.body_class %>').prepend(renderRecord());
-      $('#<%= table.row_id(record) %>').hide().fadeIn(1000);
+      var tbody = '.<%= table.body_class %>';
+      <% if table.insert_method == Table::Insert::PREPEND %>
+        $(tbody).prepend(renderRecord());
+      <% elsif table.insert_method == Table::Insert::APPEND %>
+        $(tbody).append(renderRecord());
+      <% end %>
+      $().hide(trow).fadeIn(1000);
     <% elsif modal.role?(:edit_update) %>
-      $('#<%= table.row_id(record) %>').replaceWith(renderRecord());
+      $(trow).replaceWith(renderRecord());
     <% elsif modal.role?(:destroy) %>
-      $('#<%= table.row_id(record) %>').fadeOut(500, function(){
+      $(trow).fadeOut(500, function(){
         $(this).remove();
       });
     <% end %>

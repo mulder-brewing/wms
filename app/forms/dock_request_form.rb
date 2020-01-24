@@ -13,6 +13,8 @@ class DockRequestForm < BasicRecordForm
 
   def initialize(*)
     super
+    @table_class = Table::DockRequestsIndexTable
+    @page_class = Page::DockRequestsPage
   end
 
   def prep_record(params)

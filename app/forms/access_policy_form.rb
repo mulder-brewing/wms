@@ -14,6 +14,7 @@ class AccessPolicyForm < BasicRecordForm
   def initialize(*)
     super
     @table_class = Table::AccessPoliciesIndexTable
+    @page_class = Page::IndexListPage
   end
 
   def permitted_params

@@ -7,7 +7,8 @@ class Modal::BaseModal
   BODY_CLASS = "modal-body"
   FOOTER_CLASS = "modal-footer"
 
-  attr_accessor :footer, :title
+  attr_accessor :footer, :title, :error, :error_js_path
+  attr_writer :error_msg
 
   def id
     ID
@@ -31,6 +32,14 @@ class Modal::BaseModal
 
   def footer_class
     FOOTER_CLASS
+  end
+
+  def error?
+    Util::Boolean.cast(error)
+  end
+
+  def error_msg
+    @error_msg ||= I18n.t("errors.unknown")
   end
 
 end

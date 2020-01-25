@@ -39,11 +39,11 @@ class BasicRecordForm < RecordForm
   end
 
   def table
-    @table_class.new(current_user) if action?(:create, :update)
+    @table_class.new(current_user)
   end
 
   def page
-    @page_class.new(current_user, controller) if action?(:create, :update)
+    @page_class.new(current_user, controller)
   end
 
   private

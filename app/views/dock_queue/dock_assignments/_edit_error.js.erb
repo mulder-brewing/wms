@@ -1,0 +1,7 @@
+<% record = modal.form.record %>
+var id = '<%= modal.recordID %>'
+<% if record.status_dock_assigned? %>
+  replaceRecord(id, '<%= j modal.renderRecord %>');
+<% elsif record.status_checked_out? || record.status_voided? %>
+  removeRecord(id);
+<% end %>

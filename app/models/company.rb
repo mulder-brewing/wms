@@ -2,7 +2,7 @@ class Company < ApplicationRecord
   has_many :users, class_name: "Auth::User", dependent: :destroy
   has_many :dock_groups, dependent: :destroy
   has_many :docks, dependent: :destroy
-  has_many :dock_requests, dependent: :destroy
+  has_many :dock_requests, class_name: "DockQueue::DockRequest", dependent: :destroy
   has_many :dock_request_audit_histories, dependent: :destroy
   has_many :access_policies, dependent: :destroy
 

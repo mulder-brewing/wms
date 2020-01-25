@@ -64,9 +64,9 @@ en:
       dock:
         one: Dock
         other: Docks
-      dock_request:
+      dock_queue/dock_request:
         one: Dock Request
-        other: Dock Requests
+        other: Dock Queue
 
   activemodel:
     attributes:
@@ -85,6 +85,10 @@ en:
           attributes:
             send_email:
               self: cannot send email when resetting your own password
+        dock_queue/dock_assignment:
+          attributes:
+            status:
+              no_longer_checked_in: is no longer checked in
 
   errors:
     attributes:
@@ -95,6 +99,7 @@ en:
     messages:
       invalid: is invalid
       taken: has already been taken
+    unknown: Unknown Error
 
   alert:
     save:
@@ -119,7 +124,14 @@ en:
   auth/password_reset:
     msg: You must update your password before you can use Mulder WMS.
 
-  dock_requests:
+  dock_queue/dock_assignments:
+    assign_dock: Assign Dock
+    error:
+      dock_assigned: Dock has already been assigned
+      voided: Already voided
+      checked_out: Already checked out
+
+  dock_queue/dock_requests:
     no_dg_msg: You need at least one enabled dock group before you can use the dock queue
 
   global:

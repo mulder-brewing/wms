@@ -21,6 +21,7 @@ class DockQueue::DockRequestsController < ApplicationController
     form = new_form_prep_record(DockQueue::DockRequestForm)
     authorize form.record
     modal = Modal::EditModal.new(form)
+    modal.footer.show_timestamps = false
     render_modal(modal)
   end
 
@@ -46,7 +47,7 @@ class DockQueue::DockRequestsController < ApplicationController
     authorize_scope_records(page)
     case page.dock_groups_count
     when 0
-      flash.now[:danger] = I18n.t("dock_requests.no_dg_msg")
+      flash.now[:danger] = I18n.t("dock_queue/dock_requests.no_dg_msg")
     when 1
       if page.dock_group_nil?
         redirect_to dock_requests_url(dock_request: { dock_group_id: page.dock_groups.first.id }) and return

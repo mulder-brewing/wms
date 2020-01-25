@@ -6,7 +6,8 @@ class Page::DockRequestsPage < Page::IndexListPage
     @new_record = DockQueue::DockRequest.new
     @dock_groups = DockGroup.enabled_where_company(current_company_id).order(:description)
     if params[:dock_request].present? && params[:dock_request][:dock_group_id].present?
-      @dock_group = DockGroup.find_by(id: params[:dock_request][:dock_group_id], company_id: current_company_id)
+      id = params[:dock_request][:dock_group_id].to_i
+      @dock_group = @dock_groups.find { |dg| dg.id == id }
     end
     unless dock_group.nil?
       @records = DockQueue::DockRequest.where_company_and_group(current_company_id, dock_group.id).include_docks.active

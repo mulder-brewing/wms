@@ -39,4 +39,12 @@ class Modal::FormRecordModal < Modal::FormModal
     end
   end
 
+  def renderRecord
+    ApplicationController.render partial: page.record_html_path, locals: { record: form.record, table: table }
+  end
+
+  def recordID
+    '#' << table.row_id(form.record)
+  end
+
 end

@@ -19,14 +19,22 @@ class RecordForm < BaseForm
     self.model_name.to_s.underscore.sub("/", "_")
   end
 
+  def controller_view_path
+    controller.controller_path + "/"
+  end
+
   def view_path
-    path = @controller.controller_path + "/"
+    path = controller_view_path
     if action?(:show)
       path << "show"
     else
       path << @view_class.name.demodulize.underscore
     end
     return path
+  end
+
+  def error_js_path
+    controller_view_path + controller.action_name + "_error"
   end
 
 end

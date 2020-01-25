@@ -9,7 +9,12 @@
       <div class="row">
         <div class="col-sm-auto">
           <%= simple_form_for :dock_request, :url => dock_queue_dock_requests_path, :method => :get do |f| %>
-            <%= f.input :dock_group_id, required: false, :collection => page.dock_groups, :label_method => :description, :value_method => :id, input_html: { id: "dock_group_select", onchange: "this.form.submit();" }, wrapper_html: { class: 'mb-0' } %>
+            <%= f.input :dock_group_id, label: DockGroup.model_name.human,
+              required: false, :collection => page.dock_groups,
+              :label_method => :description, :value_method => :id,
+              input_html: { id: "dock_group_select",
+              onchange: "this.form.submit();" },
+              wrapper_html: { class: 'mb-0' } %>
           <% end %>
         </div>
       </div>

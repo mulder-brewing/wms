@@ -4,24 +4,20 @@ var modal_id = '<%= modal.id %>';
 <% if modal.form.submit_success %>
   hideModal(modal_id);
   <% if !table.nil? %>
-    function renderRecord() {
-      return '<%= j render partial: modal.page.record_html_path, locals: { record: record, table: table } %>'
-    }
-    var trow = '#<%= table.row_id(record) %>'
+    var record = '<%= j modal.renderRecord %>'
+    var id = '<%= modal.recordID %>'
     <% if modal.role?(:new_create) %>
       var tbody = '.<%= table.body_class %>';
       <% if table.insert_method == Table::Insert::PREPEND %>
-        $(tbody).prepend(renderRecord());
+        prependRecord(tbody, record)
       <% elsif table.insert_method == Table::Insert::APPEND %>
-        $(tbody).append(renderRecord());
+        appendRecord(tbody, record)
       <% end %>
-      $().hide(trow).fadeIn(1000);
+      $(id).hide(id).fadeIn(1000);
     <% elsif modal.role?(:edit_update) %>
-      $(trow).replaceWith(renderRecord());
+      replaceRecord(id, record);
     <% elsif modal.role?(:destroy) %>
-      $(trow).fadeOut(500, function(){
-        $(this).remove();
-      });
+      removeRecord(id);
     <% end %>
   <% end %>
   alert_custom('<%= Constants::Alert::SUCCESS %>', '<%= t "alert.save.success" %>');

@@ -1,4 +1,12 @@
-$("#<%= modal.id %>").removeClass("fade");
-$("#<%= modal.id %>").modal("hide");
-$("#<%= modal.wrapper %>").html("<%= j render modal.html_path, modal: modal %>");
-$("#<%= modal.id %>").modal("show");
+<% unless modal.error? %>
+  $("#<%= modal.id %>").removeClass("fade");
+  $("#<%= modal.id %>").modal("hide");
+  $("#<%= modal.wrapper %>").html("<%= j render modal.html_path, modal: modal %>");
+  $("#<%= modal.id %>").modal("show");
+<% else %>
+  alert_custom("danger", "<%= modal.error_msg %>")
+  <% ejp = modal.error_js_path %>
+  <% if ejp.present? && ejp.respond_to?(:to_str) %>
+    <%= render ejp, modal: modal %>
+  <% end %>
+<% end %>

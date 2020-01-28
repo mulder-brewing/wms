@@ -36,6 +36,11 @@ footer {
   width: 50%;
 }
 
+// use this to make sure alert gets above modal fading screen.
+.high-z {
+  z-index: 999999;
+}
+
 @media (max-width : 800px) {
   .fixed-alert {
     width: 100%;

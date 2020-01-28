@@ -1,19 +1,16 @@
-class Modal::DestroyModal < Modal::FormRecordModal
+class Modal::DestroyModal < Modal::ChickenModal
 
   def initialize(*)
     super
     @role = :destroy
     @footer = Modal::Footer::DestroyFooter.new(@form)
     @title_suffix = "destroy"
+    @success_msg = I18n.t("alert.delete.success")
+    @error_msg = I18n.t("alert.delete.failure")
   end
 
-  def form?
-    false
-  end
-
-  def render_path
-    post_submit_path = Modal::FormRecordModal::VIEWS_PATH + "destroy"
-    @form.post_submit? ? post_submit_path : Modal::FormRecordModal::JS_PATH
+  def chicken_message
+    super(I18n.t("actions.delete").downcase)
   end
 
 end

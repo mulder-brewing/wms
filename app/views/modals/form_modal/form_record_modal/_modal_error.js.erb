@@ -1,0 +1,5 @@
+alert_custom("danger", "<%= modal.error_msg %>", "<%= modal.secondary_error_msg %>")
+<% ejp = modal.error_js_path %>
+<% if ejp.present? && ejp.respond_to?(:to_str) %>
+  <%= render ejp, modal: modal %>
+<% end %>

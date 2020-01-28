@@ -6,12 +6,19 @@ function removeRecord(target) {
 
 function replaceRecord(target, content) {
   $(target).replaceWith(content);
+  fadeInRecord(target);
 }
 
-function appendRecord(target, content) {
+function appendRecord(target, content, id) {
   $(target).append(content);
+  fadeInRecord(id);
 }
 
-function prependRecord(target, content) {
+function prependRecord(target, content, id) {
   $(target).prepend(content);
+  fadeInRecord(id);
+}
+
+function fadeInRecord(target) {
+  $(target).hide().fadeIn(500);
 }

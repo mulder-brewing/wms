@@ -1,4 +1,4 @@
-class DockQueue::DockRequestForm < BasicRecordForm
+class DockQueue::DockRequestForm < DockQueue::BaseDockQueueForm
 
   delegate  :primary_reference, :primary_reference=,
             :phone_number, :phone_number=,
@@ -13,8 +13,7 @@ class DockQueue::DockRequestForm < BasicRecordForm
 
   def initialize(*)
     super
-    @table_class = Table::DockRequestsIndexTable
-    @page_class = Page::DockRequestsPage
+    @valid_status_before_change.push("checked_in", "dock_assigned")
   end
 
   def prep_record(params)

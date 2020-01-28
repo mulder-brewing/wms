@@ -1,7 +1,6 @@
 class DockQueue::AssignDockForm < DockQueue::DockAssignmentForm
 
   validates :dock_id, presence: true
-  validate :status_is_checked_in
 
   attr_accessor :docks
 
@@ -9,10 +8,9 @@ class DockQueue::AssignDockForm < DockQueue::DockAssignmentForm
             :text_message, :text_message=,
             to: :@record
 
-  def submit
-    record.status = "dock_assigned"
-    record.dock_assigned_at = DateTime.now
+  def initialize(*)
     super
+    @valid_status_before_change << "checked_in"
   end
 
   def setup_variables
@@ -27,24 +25,12 @@ class DockQueue::AssignDockForm < DockQueue::DockAssignmentForm
     !record.phone_number.blank?
   end
 
-  def error_check_modal(modal)
-    unless record.status_checked_in?
-      modal.error = true
-      modal.error_msg = error_msg_for_status(record.status)
-      modal.error_js_path = error_js_path
-    end
-  end
-
   private
 
-  def status_is_checked_in
-    unless record.status_was == "checked_in"
-      errors.add(:status, :no_longer_checked_in)
-    end
-  end
-
-  def error_msg_for_status(status)
-    I18n.t("dock_queue/dock_assignments.error." << status)
+  def private_submit
+    record.status = "dock_assigned"
+    record.dock_assigned_at = DateTime.now
+    super
   end
 
 end

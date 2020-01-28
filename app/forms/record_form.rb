@@ -2,7 +2,7 @@ class RecordForm < BaseForm
 
   HTML_ID = "record-form"
 
-  attr_accessor :submit_success, :view_class
+  attr_accessor :record, :submit_success, :view_class
 
   delegate :record_name, :html_id, to: :class
 

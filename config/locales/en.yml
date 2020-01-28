@@ -5,6 +5,7 @@ en:
     close: Close
     save: Save
     delete: Delete
+    void: Void
     edit: Edit
 
   attributes:
@@ -85,10 +86,6 @@ en:
           attributes:
             send_email:
               self: cannot send email when resetting your own password
-        dock_queue/dock_assignment:
-          attributes:
-            status:
-              no_longer_checked_in: is no longer checked in
 
   errors:
     attributes:
@@ -100,6 +97,9 @@ en:
       invalid: is invalid
       taken: has already been taken
     unknown: Unknown Error
+    stale:
+      data: Stale data detected, please refresh
+      status: Status of %{record} is now %{status}
 
   alert:
     save:
@@ -108,6 +108,9 @@ en:
     delete:
       success: Deleted successfully!
       failure: Failed to delete
+    void:
+      success: Voided successfully!
+      failure: Failed to void
     record:
       not_found: Record not found
     not_authorized: Not Authorized
@@ -126,10 +129,6 @@ en:
 
   dock_queue/dock_assignments:
     assign_dock: Assign Dock
-    error:
-      dock_assigned: Dock has already been assigned
-      voided: Already voided
-      checked_out: Already checked out
 
   dock_queue/dock_requests:
     no_dg_msg: You need at least one enabled dock group before you can use the dock queue
@@ -145,8 +144,8 @@ en:
       edit_update: Edit %{record}
       show: '%{record}'
       destroy: Delete %{record}
-    destroy:
-      chicken_message: 'Are you sure you want to delete %{to_delete}?  This action is irreversible.'
+      void: Void %{record}
+    chicken_message: 'Are you sure you want to %{action} %{target}?  This action is irreversible.'
 
   timestamps:
     created: Created

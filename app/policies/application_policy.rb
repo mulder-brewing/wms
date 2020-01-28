@@ -36,6 +36,10 @@ class ApplicationPolicy
     ap_check?(permission) && same_company_as_current_user?(record)
   end
 
+  def destroy?
+    ap_check?(permission) && same_company_as_current_user?(record)
+  end
+
   private
     attr_reader :permission
 

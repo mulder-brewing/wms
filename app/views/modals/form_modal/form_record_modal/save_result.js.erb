@@ -1,7 +1,8 @@
-<% record = modal.form.record %>
+<% form = modal.form %>
+<% record = form.record %>
 <% table = modal.table %>
 var modal_id = '<%= modal.id %>';
-<% if modal.form.submit_success %>
+<% if form.submit_success %>
   hideModal(modal_id);
   <% if !table.nil? %>
     var record = '<%= j modal.renderRecord %>'
@@ -9,18 +10,22 @@ var modal_id = '<%= modal.id %>';
     <% if modal.role?(:new_create) %>
       var tbody = '.<%= table.body_class %>';
       <% if table.insert_method == Table::Insert::PREPEND %>
-        prependRecord(tbody, record)
+        prependRecord(tbody, record, id)
       <% elsif table.insert_method == Table::Insert::APPEND %>
-        appendRecord(tbody, record)
+        appendRecord(tbody, record, id)
       <% end %>
-      $(id).hide(id).fadeIn(1000);
     <% elsif modal.role?(:edit_update) %>
       replaceRecord(id, record);
-    <% elsif modal.role?(:destroy) %>
+    <% elsif modal.role?(:destroy, :void) %>
       removeRecord(id);
     <% end %>
   <% end %>
-  alert_custom('<%= Constants::Alert::SUCCESS %>', '<%= t "alert.save.success" %>');
+  alert_custom('<%= Constants::Alert::SUCCESS %>', '<%= modal.success_msg %>');
 <% else %>
-  $("#<%= modal.form.html_id %>").replaceWith("<%=  j render modal.form.view_path, modal: modal %>");
+  <% unless form.view_path.nil? %>
+    $("#<%= form.html_id %>").replaceWith("<%=  j render form.view_path, modal: modal %>");
+  <% end %>
+<% end %>
+<% if modal.error? %>
+  <%= render modal.error_path, modal: modal %>
 <% end %>

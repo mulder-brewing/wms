@@ -1,19 +1,21 @@
 class DestroyRecordForm < RecordForm
 
-  attr_accessor :record, :to_delete, :post_submit
-
   def prep_record(params)
     @record = controller_model.find(params[:id])
   end
 
-  def submit
-    @post_submit = true
-    @record.destroy
-    @submit_success = true
+  def view_path
+    nil
   end
 
-  def post_submit?
-    @post_submit
+  private
+
+  def private_submit(modal)
+    if record.destroy
+      @submit_success = true
+    else
+      modal.error = true
+    end
   end
 
 end

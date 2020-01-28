@@ -16,11 +16,6 @@ class Auth::PasswordResetForm < BasicRecordForm
     @record = Auth::User.find(params[:id])
   end
 
-  def submit
-    @record.password_reset = false
-    super
-  end
-
   def permitted_params
     [:password, :password_confirmation]
   end
@@ -29,6 +24,13 @@ class Auth::PasswordResetForm < BasicRecordForm
     if BCrypt::Password.new(@record.password_digest_was) == password
       errors.add(:password, :same)
     end
+  end
+
+  private
+
+  def private_submit
+    @record.password_reset = false
+    super
   end
 
 end

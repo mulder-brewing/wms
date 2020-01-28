@@ -20,19 +20,19 @@ class Auth::PasswordUpdateForm < BasicRecordForm
     @record = Auth::User.find(params[:id])
   end
 
-  def submit
+  def permitted_params
+    [:password, :password_confirmation, :email, :send_email]
+  end
+
+  private
+
+  def private_submit
     @record.password_reset = true unless self?(@record)
     super
     if send_email? && @submit_success
       send_password_reset_email
     end
   end
-
-  def permitted_params
-    [:password, :password_confirmation, :email, :send_email]
-  end
-
-  private
 
   def send_password_reset_email
     UserMailer.password_reset(@record).deliver_now

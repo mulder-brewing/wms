@@ -7,23 +7,29 @@ class Modal::FormRecordModal < Modal::FormModal
   HTML_PATH = VIEWS_PATH + "modal"
   JS_PATH = VIEWS_PATH + "modal_js"
   SAVE_RESULT_PATH = VIEWS_PATH + "save_result"
+  ERROR_PATH = VIEWS_PATH + "modal_error"
 
   def initialize(form, page: nil, table: nil)
     super(form)
     @page = page
     @table = table
+    @success_msg = I18n.t("alert.save.success")
   end
 
   def html_path
     HTML_PATH
   end
 
+  def error_path
+    ERROR_PATH
+  end
+
   def persist?
     @persist
   end
 
-  def role?(role)
-    @role == role
+  def role?(*args)
+    args.include? role
   end
 
   def render_path

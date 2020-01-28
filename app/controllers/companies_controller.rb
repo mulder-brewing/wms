@@ -43,18 +43,17 @@ class CompaniesController < ApplicationController
 
   def destroy_modal
     form = new_form_prep_record(DestroyRecordForm)
-    form.to_delete = form.record.name
     authorize form.record
     modal = Modal::DestroyModal.new(form)
+    modal.chicken_msg_target = form.record.name
     render_modal(modal)
   end
 
   def destroy
     form = new_form_prep_record(DestroyRecordForm)
-    form.to_delete = form.record.name
     authorize form.record
-    form.submit
     modal = Modal::DestroyModal.new(form)
+    form.submit(modal)
     modal.table = Table::CompaniesIndexTable.new(current_user)
     render_modal(modal)
   end

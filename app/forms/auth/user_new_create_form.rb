@@ -14,13 +14,6 @@ class Auth::UserNewCreateForm < Auth::UserForm
     @view_class = self.class.superclass
   end
 
-  def submit
-    super
-    if @submit_success && Util::Boolean.cast(@send_email)
-      send_welcome_email
-    end
-  end
-
   def permitted_params
     permitted = [:first_name, :last_name, :username, :company_admin,
         :access_policy_id, :password, :password_confirmation,
@@ -37,6 +30,13 @@ class Auth::UserNewCreateForm < Auth::UserForm
   end
 
   private
+
+  def private_submit
+    super
+    if @submit_success && Util::Boolean.cast(@send_email)
+      send_welcome_email
+    end
+  end
 
   def email_exists_if_send_email
     unless Util::Email::SendPossible.call(@record.email, @send_email)

@@ -2,7 +2,7 @@ class BasicRecordForm < RecordForm
 
   validate :record_valid
 
-  attr_accessor :record, :table_class, :page_class
+  attr_accessor :table_class, :page_class
 
   def setup_variables; end
 
@@ -22,11 +22,8 @@ class BasicRecordForm < RecordForm
     end
   end
 
-  def submit
-    if @record.has_attribute?(:company_id)
-      @record.company_id ||= current_company_id
-    end
-    validate_and_save(@record)
+  def permitted_params
+    []
   end
 
   def validate_and_save(record)
@@ -48,6 +45,13 @@ class BasicRecordForm < RecordForm
 
   private
 
+  def private_submit
+    if @record.has_attribute?(:company_id)
+      @record.company_id ||= current_company_id
+    end
+    validate_and_save(@record)
+  end
+
   def record_valid
     unless @record.valid?
       errors.merge!(@record.errors)
@@ -64,6 +68,5 @@ class BasicRecordForm < RecordForm
       errors.add(validate_id, :disabled)
     end
   end
-
 
 end

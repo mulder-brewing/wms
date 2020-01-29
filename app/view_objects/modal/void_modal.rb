@@ -3,6 +3,7 @@ class Modal::VoidModal < Modal::ChickenModal
   def initialize(*)
     super
     @role = :void
+    @save_result = Table::SaveResult::REMOVE
     @footer = Modal::Footer::VoidFooter.new(@form)
     @title_suffix = "void"
     @success_msg = I18n.t("alert.void.success")

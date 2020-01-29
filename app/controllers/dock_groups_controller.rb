@@ -1,5 +1,5 @@
 class DockGroupsController < ApplicationController
-  include FormHelper, ModalHelper, PageHelper
+  include FormHelper, ModalHelper, PageHelper, TableHelper
 
   def new
     form = new_form_prep_record(DockGroupForm)
@@ -13,7 +13,7 @@ class DockGroupsController < ApplicationController
     assign_form_attributes(form)
     authorize form.record
     form.submit
-    modal = Modal::CreateModal.new(form, page: form.page, table: form.table)
+    modal = Modal::CreateModal.new(form, table: form.table)
     render_modal(modal)
   end
 
@@ -29,14 +29,15 @@ class DockGroupsController < ApplicationController
     assign_form_attributes(form)
     authorize form.record
     form.submit
-    modal = Modal::UpdateModal.new(form, page: form.page, table: form.table)
+    modal = Modal::UpdateModal.new(form, table: form.table)
     render_modal(modal)
   end
 
   def index
-    page = new_page_prep_records(Page::IndexListPage)
-    page.table = Table::DockGroupsIndexTable.new(current_user)
-    authorize_scope_records(page)
+    page = prep_new_page(Page::IndexListPage)
+    table = new_table_prep_records(Table::DockGroupsIndexTable)
+    authorize_scope_records(table)
+    page.table = table
     pagy_records(page)
     render_page(page)
   end

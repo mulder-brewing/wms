@@ -7,16 +7,16 @@ var modal_id = '<%= modal.id %>';
   <% if !table.nil? %>
     var record = '<%= j modal.renderRecord %>'
     var id = '<%= modal.recordID %>'
-    <% if modal.role?(:new_create) %>
+    <% if modal.save_result == Table::SaveResult::INSERT %>
       var tbody = '.<%= table.body_class %>';
       <% if table.insert_method == Table::Insert::PREPEND %>
         prependRecord(tbody, record, id)
       <% elsif table.insert_method == Table::Insert::APPEND %>
         appendRecord(tbody, record, id)
       <% end %>
-    <% elsif modal.role?(:edit_update) %>
+    <% elsif modal.save_result == Table::SaveResult::UPDATE %>
       replaceRecord(id, record);
-    <% elsif modal.role?(:destroy, :void) %>
+    <% elsif modal.save_result == Table::SaveResult::REMOVE %>
       removeRecord(id);
     <% end %>
   <% end %>

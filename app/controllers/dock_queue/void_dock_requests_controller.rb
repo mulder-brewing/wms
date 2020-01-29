@@ -13,8 +13,9 @@ class DockQueue::VoidDockRequestsController < ApplicationController
   def update
     form = new_form_prep_record(DockQueue::VoidDockRequestForm)
     authorize form.record
-    form.submit
-    modal = Modal::VoidModal.new(form, page: form.page, table: form.table)
+    modal = Modal::VoidModal.new(form, table: form.table)
+    form.status_fresh_check(modal)
+    form.submit unless modal.error?
     render_modal(modal)
   end
 

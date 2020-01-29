@@ -36,7 +36,7 @@ class BasicRecordForm < RecordForm
   end
 
   def table
-    @table_class.new(current_user)
+    @table_class.new(current_user, controller)
   end
 
   def page

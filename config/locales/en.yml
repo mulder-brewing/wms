@@ -127,6 +127,12 @@ en:
   auth/password_reset:
     msg: You must update your password before you can use Mulder WMS.
 
+  dock_queue/check_out_dock_requests:
+    title:
+      check_out: Check Out
+    check_out_msg: You are checking out %{target}.  This action is irreversible.  Total time from check in to now is %{time}.  
+
+
   dock_queue/dock_assignments:
     assign_dock: Assign Dock
 

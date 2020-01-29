@@ -1,0 +1,2 @@
+class DockQueue::DockRequestAuditHistoriesController < ApplicationController
+end

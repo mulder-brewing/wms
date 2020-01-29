@@ -3,6 +3,7 @@ class Modal::EditUpdateModal < Modal::FormRecordModal
   def initialize(*)
     super
     @role = :edit_update
+    @save_result = Table::SaveResult::UPDATE
     @footer = Modal::Footer::EditUpdateFooter.new(@form)
     @title_suffix = "edit_update"
   end

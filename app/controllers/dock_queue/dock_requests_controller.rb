@@ -1,5 +1,5 @@
 class DockQueue::DockRequestsController < ApplicationController
-  include FormHelper, ModalHelper, PageHelper
+  include FormHelper, ModalHelper, PageHelper, TableHelper
 
   def new
     form = new_form_prep_record(DockQueue::DockRequestForm)
@@ -13,7 +13,7 @@ class DockQueue::DockRequestsController < ApplicationController
     assign_form_attributes(form)
     authorize form.record
     form.submit
-    modal = Modal::CreateModal.new(form, page: form.page, table: form.table)
+    modal = Modal::CreateModal.new(form, table: form.table)
     render_modal(modal)
   end
 
@@ -21,6 +21,7 @@ class DockQueue::DockRequestsController < ApplicationController
     form = new_form_prep_record(DockQueue::DockRequestForm)
     authorize form.record
     modal = Modal::EditModal.new(form)
+    form.status_fresh_check(modal)
     modal.footer.show_timestamps = false
     render_modal(modal)
   end
@@ -29,8 +30,9 @@ class DockQueue::DockRequestsController < ApplicationController
     form = new_form_prep_record(DockQueue::DockRequestForm)
     assign_form_attributes(form)
     authorize form.record
+    modal = Modal::UpdateModal.new(form, table: form.table)
+    form.status_fresh_check(modal)
     form.submit
-    modal = Modal::UpdateModal.new(form, page: form.page, table: form.table)
     render_modal(modal)
   end
 
@@ -42,9 +44,11 @@ class DockQueue::DockRequestsController < ApplicationController
   end
 
   def index
-    page = new_page_prep_records(Page::DockRequestsPage)
-    page.table = Table::DockRequestsIndexTable.new(current_user)
-    authorize_scope_records(page)
+    page = prep_new_page(Page::DockRequestsPage)
+    table = new_table(Table::DockRequestsIndexTable)
+    table.prep_records(page.dock_group)
+    authorize_scope_records(table)
+    page.table = table
     case page.dock_groups_count
     when 0
       flash.now[:danger] = I18n.t("dock_queue/dock_requests.no_dg_msg")

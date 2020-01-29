@@ -3,7 +3,7 @@ class Dock < ApplicationRecord
 
   belongs_to :company
   belongs_to :dock_group
-  has_many :dock_requests, dependent: :destroy
+  has_many :dock_requests, class_name: "DockQueue::DockRequest", dependent: :destroy
   has_many :dock_request_audit_histories, dependent: :destroy
 
   validates :number, presence: true, length: { maximum: 50 }

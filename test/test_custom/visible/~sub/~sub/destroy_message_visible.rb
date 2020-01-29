@@ -5,7 +5,8 @@ class DestroyMessageVisible < ModalBodyVisible
   def initialize(*)
     super
     raise ArgumentError if @to_delete.nil?
-    @text = I18n.t("modal.destroy.chicken_message", :to_delete=> @to_delete)
+    @text = I18n.t("modal.chicken_message", :target=> @to_delete,
+      :action=>I18n.t("actions.delete").downcase)
   end
 
 end

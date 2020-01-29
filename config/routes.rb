@@ -25,13 +25,7 @@ Rails.application.routes.draw do
     resources :dock_requests, except: [:destroy]
     resources :dock_assignments, only: [:edit, :update, :destroy]
     resources :void_dock_requests, only: [:edit, :update]
-    # member do
-    #   get :dock_assignment_edit
-    #   patch :dock_assignment_update
-    #   patch :unassign_dock
-    #   patch :check_out
-    #   patch :void
-    # end
+    resources :check_out_dock_requests, only: [:edit, :update]
   end
 
   get '/dock_requests_history', to: 'dock_requests#history'

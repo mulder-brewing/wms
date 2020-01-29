@@ -4,27 +4,14 @@ module PageHelper
     return page_class.new(current_user, self)
   end
 
-  def new_page_prep_records(page_class)
+  def prep_new_page(page_class)
     page = new_page(page_class)
-    page.prep_records(params)
+    page.prep(params)
     return page
   end
 
-  def authorize_records(page)
-    authorize page.records
-  end
-
-  def scope_records(page)
-    page.records = policy_scope(page.records)
-  end
-
-  def authorize_scope_records(page)
-    authorize_records(page)
-    page.records = policy_scope(page.records)
-  end
-
   def pagy_records(page)
-    page.pagy, page.records = pagy(page.records, items:25)
+    page.pagy, page.table.records = pagy(page.table.records, items:25)
   end
 
   def render_page(page)

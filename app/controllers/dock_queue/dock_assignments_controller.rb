@@ -18,7 +18,7 @@ class DockQueue::DockAssignmentsController < ApplicationController
     form = new_form_prep_record(DockQueue::AssignDockForm)
     assign_form_attributes(form)
     authorize form.record
-    modal = Modal::UpdateModal.new(form, page: form.page, table: form.table)
+    modal = Modal::UpdateModal.new(form, table: form.table)
     form.status_fresh_check(modal)
     form.submit
     form.setup_variables
@@ -28,7 +28,7 @@ class DockQueue::DockAssignmentsController < ApplicationController
   def destroy
     form = new_form_prep_record(DockQueue::UnassignDockForm)
     authorize form.record
-    modal = Modal::UpdateModal.new(form, page: form.page, table: form.table)
+    modal = Modal::UpdateModal.new(form, table: form.table)
     form.status_fresh_check(modal)
     form.submit unless modal.error?
     render_modal(modal)

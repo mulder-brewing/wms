@@ -1,6 +1,6 @@
 class Modal::FormRecordModal < Modal::FormModal
 
-  attr_accessor :table, :page, :persist, :role, :title_suffix
+  attr_accessor :table, :save_result, :page, :persist, :role, :title_suffix
 
   VIEWS_PATH = "modals/form_modal/form_record_modal/"
 
@@ -46,7 +46,7 @@ class Modal::FormRecordModal < Modal::FormModal
   end
 
   def renderRecord
-    ApplicationController.render partial: page.record_html_path, locals: { record: form.record, table: table }
+    ApplicationController.render partial: table.record_html_path, locals: { record: form.record, table: table }
   end
 
   def recordID

@@ -38,7 +38,7 @@
             <%= link_to '&#10094; Unassign Dock'.html_safe, dock_queue_dock_assignment_path(record), :remote => true, method: :delete, :class => 'btn btn-danger btn-sm btn-block text-left'  %>
           </div>
           <div class="row mb-2">
-            <%= link_to 'Check Out &#10097;'.html_safe, '#', :remote => true, method: :patch, :class => 'btn btn-primary btn-sm btn-block text-right'  %>
+            <%= link_to 'Check Out &#10097;'.html_safe, edit_dock_queue_check_out_dock_request_path(record), :remote => true, :class => 'btn btn-primary btn-sm btn-block text-right'  %>
           </div>
         <% end %>
       </div>

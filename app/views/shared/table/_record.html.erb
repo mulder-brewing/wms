@@ -6,7 +6,7 @@
           <%= btn(button, record: record) %>
         <% end %>
       <% else %>
-        <%= column.field_value(record) %>
+        <%= time_or_value(column.field_value(record)) %>
       <% end %>
     </td>
   <% end %>

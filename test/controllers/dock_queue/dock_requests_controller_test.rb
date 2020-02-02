@@ -34,16 +34,16 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
 
     # dock_requests
       # These dock requests belongs to averagejoes company
-      @dock_request_1 = dock_requests(:dock_request_1)
-      @dock_request_3 = dock_requests(:dock_request_3)
-      @dock_request_dock_assigned = dock_requests(:dock_request_dock_assigned)
-      @dock_request_checked_out = dock_requests(:dock_request_checked_out)
-      @dock_request_voided = dock_requests(:dock_request_voided)
-      @dock_request_no_docks = dock_requests(:dock_request_no_docks)
+      @dock_request_1 = dock_queue_dock_requests(:dock_request_1)
+      @dock_request_3 = dock_queue_dock_requests(:dock_request_3)
+      @dock_request_dock_assigned = dock_queue_dock_requests(:dock_request_dock_assigned)
+      @dock_request_checked_out = dock_queue_dock_requests(:dock_request_checked_out)
+      @dock_request_voided = dock_queue_dock_requests(:dock_request_voided)
+      @dock_request_no_docks = dock_queue_dock_requests(:dock_request_no_docks)
       # This dock request belongs to other company
-      @dock_request_2 = dock_requests(:dock_request_2)
+      @dock_request_2 = dock_queue_dock_requests(:dock_request_2)
       # This dock request eblongs to the company_to_delete
-      @delete_me_dock_request = dock_requests(:delete_me_dock_request)
+      @delete_me_dock_request = dock_queue_dock_requests(:delete_me_dock_request)
 
     # hashes
       # dock request hash

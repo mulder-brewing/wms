@@ -1,18 +1,18 @@
 require 'test_helper'
 require 'pp'
 
-class DockRequestAuditHistoryTest < ActiveSupport::TestCase
+class DockQueue::DockRequestAuditHistoryTest < ActiveSupport::TestCase
 
   def setup
-    @dock_request_audit_entry_checked_in = dock_request_audit_histories(:dock_request_audit_entry_checked_in)
-    @dock_request_audit_entry_dock_assigned = dock_request_audit_histories(:dock_request_audit_entry_dock_assigned)
-    @dock_request_audit_entry_text_message_sent = dock_request_audit_histories(:dock_request_audit_entry_text_message_sent)
+    @dock_request_audit_entry_checked_in = dock_queue_dock_request_audit_histories(:dock_request_audit_entry_checked_in)
+    @dock_request_audit_entry_dock_assigned = dock_queue_dock_request_audit_histories(:dock_request_audit_entry_dock_assigned)
+    @dock_request_audit_entry_text_message_sent = dock_queue_dock_request_audit_histories(:dock_request_audit_entry_text_message_sent)
   end
 
   test "a dock request audit entry is invalid without a user_id" do
     invalid_without(@dock_request_audit_entry_checked_in, "user_id")
   end
-  
+
   test "a dock request audit entry is invalid without a dock_request_id" do
     invalid_without(@dock_request_audit_entry_checked_in, "dock_request_id")
   end

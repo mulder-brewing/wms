@@ -49,6 +49,10 @@ module ApplicationHelper
     end
   end
 
+  def time_or_value(v)
+    return (v.respond_to?(:strftime) ? local_time_if_not_blank(v) : v)
+  end
+
   def t_nf(key, **options)
     options.merge!( { :default=> key } )
     I18n.t(key, options)

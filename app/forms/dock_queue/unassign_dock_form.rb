@@ -18,4 +18,8 @@ class DockQueue::UnassignDockForm < DockQueue::DockAssignmentForm
     super
   end
 
+  def audit
+    create_audit_history_entry(event: "dock_unassigned")
+  end
+
 end

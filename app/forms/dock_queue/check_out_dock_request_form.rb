@@ -22,4 +22,8 @@ class DockQueue::CheckOutDockRequestForm < DockQueue::StatusChangeForm
     super
   end
 
+  def audit
+    create_audit_history_entry(event: "checked_out")
+  end
+
 end

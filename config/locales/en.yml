@@ -9,14 +9,22 @@ en:
     edit: Edit
 
   attributes:
+    created_at: Created
     description: Description
     enabled: Enabled
     name: Name
     number: Number
     status: Status
+    updated: &updated Updated
+    updated_at: *updated
+
 
 
   activerecordmodel:
+    dock_request_status: &dock_request_status
+      checked_in: Checked In
+      checked_out: Checked Out
+      voided: Voided
     attributes: &armattributes
       access_policy:
         everything: Everything
@@ -35,10 +43,15 @@ en:
         text_message: Send Text
         total_time: Total Time
       dock_queue/dock_request/status:
-        checked_in: Checked In
+        <<: *dock_request_status
         dock_assigned: Dock Assigned
-        checked_out: Checked Out
-        voided: Voided
+      dock_queue/dock_request_audit_history:
+        event: Event
+      dock_queue/dock_request_audit_history/event:
+        <<: *dock_request_status
+        dock_assigned: Dock %{number} Assigned
+        text_message_sent: Text message sent to %{number}
+        dock_unassigned: Dock Unassigned
 
   activerecord:
     attributes:
@@ -130,7 +143,7 @@ en:
   dock_queue/check_out_dock_requests:
     title:
       check_out: Check Out
-    check_out_msg: You are checking out %{target}.  This action is irreversible.  Total time from check in to now is %{time}.  
+    check_out_msg: You are checking out %{target}.  This action is irreversible.  Total time from check in to now is %{time}.
 
 
   dock_queue/dock_assignments:
@@ -142,6 +155,7 @@ en:
   global:
     actions: Actions
     all: All
+    date_time: Date/Time
     disabled: Disabled
 
   modal:
@@ -154,6 +168,4 @@ en:
     chicken_message: 'Are you sure you want to %{action} %{target}?  This action is irreversible.'
 
   timestamps:
-    created: Created
-    updated: Updated
     title: Timestamps

@@ -7,11 +7,11 @@ class BasicRecordForm < RecordForm
   def setup_variables; end
 
   def persisted?
-    @record.persisted?
+    record.persisted?
   end
 
   def id
-    @record.id
+    record.id
   end
 
   def prep_record(params)
@@ -26,35 +26,39 @@ class BasicRecordForm < RecordForm
     []
   end
 
-  def validate_and_save(record)
+  def table
+    table_class.new(current_user, controller)
+  end
+
+  def page
+    page_class.new(current_user, controller)
+  end
+
+  private
+
+  def private_submit
+    if record.has_attribute?(:company_id)
+      record.company_id ||= current_company_id
+    end
+    validate_and_save
+  end
+
+  def validate_and_save
     if valid?
-      record.save!
+      save
       @submit_success = true
     else
       @submit_success = false
     end
   end
 
-  def table
-    @table_class.new(current_user, controller)
-  end
-
-  def page
-    @page_class.new(current_user, controller)
-  end
-
-  private
-
-  def private_submit
-    if @record.has_attribute?(:company_id)
-      @record.company_id ||= current_company_id
-    end
-    validate_and_save(@record)
+  def save
+    record.save!
   end
 
   def record_valid
-    unless @record.valid?
-      errors.merge!(@record.errors)
+    unless record.valid?
+      errors.merge!(record.errors)
     end
   end
 

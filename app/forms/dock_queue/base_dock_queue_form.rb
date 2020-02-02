@@ -26,6 +26,20 @@ class DockQueue::BaseDockQueueForm < BasicRecordForm
 
   private
 
+  def save
+    ActiveRecord::Base.transaction do
+      record.save!
+      audit
+    end
+  end
+
+  def create_audit_history_entry(**options)
+    attributes = {:dock_request_id => record.id,
+                  :company_id => record.company_id,
+                  :user_id => current_user.id }.merge(options)
+    DockQueue::DockRequestAuditHistory.create!(attributes)
+  end
+
   def status_valid?(*args)
     args.include? record.status_was
   end

@@ -27,4 +27,18 @@ class DockQueue::DockRequestForm < DockQueue::BaseDockQueueForm
     [:primary_reference, :phone_number, :text_message, :note, :dock_group_id]
   end
 
+  private
+
+  def audit
+    event = nil
+    if action?(:create)
+      event = "checked_in"
+    elsif action?(:update) && record.saved_changes?
+      event = "updated"
+    end
+    unless event.nil?
+      create_audit_history_entry(event: event)
+    end
+  end
+
 end

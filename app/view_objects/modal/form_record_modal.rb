@@ -45,11 +45,11 @@ class Modal::FormRecordModal < Modal::FormModal
     end
   end
 
-  def renderRecord
+  def render_record
     ApplicationController.render partial: table.record_html_path, locals: { record: form.record, table: table }
   end
 
-  def recordID
+  def record_id
     '#' << table.row_id(form.record)
   end
 

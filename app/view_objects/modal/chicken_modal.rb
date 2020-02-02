@@ -6,7 +6,7 @@ class Modal::ChickenModal < Modal::FormRecordModal
     false
   end
 
-  def renderRecord
+  def render_record
     nil
   end
 

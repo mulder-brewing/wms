@@ -21,4 +21,8 @@ class DockQueue::VoidDockRequestForm < DockQueue::StatusChangeForm
     super
   end
 
+  def audit
+    create_audit_history_entry(event: "voided")
+  end
+
 end

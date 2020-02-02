@@ -5,7 +5,8 @@ class Table::IndexTable < Table::BaseTable
   BODY_CLASS = "index-table-body"
 
   SHARED_PATH = "shared/table/"
-  TABLE_HTML_PATH = SHARED_PATH + "table"
+  JS_PATH = SHARED_PATH + "table_js"
+  HTML_PATH = SHARED_PATH + "table"
   RECORD_HTML_PATH = SHARED_PATH + "record"
 
   delegate :row_id, to: :class
@@ -34,8 +35,12 @@ class Table::IndexTable < Table::BaseTable
     BODY_CLASS
   end
 
-  def table_html_path
-    TABLE_HTML_PATH
+  def js_path
+    JS_PATH
+  end
+
+  def html_path
+    HTML_PATH
   end
 
   def record_html_path
@@ -44,6 +49,10 @@ class Table::IndexTable < Table::BaseTable
 
   def self.row_id(record)
     record.class.name.parameterize + "-" + record.id.to_s;
+  end
+
+  def render_table
+    ApplicationController.render partial: html_path, locals: { table: self }
   end
 
 end

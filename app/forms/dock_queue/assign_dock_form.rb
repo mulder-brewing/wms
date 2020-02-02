@@ -33,4 +33,12 @@ class DockQueue::AssignDockForm < DockQueue::DockAssignmentForm
     super
   end
 
+  def audit
+    create_audit_history_entry(event: "dock_assigned", dock_id: record.dock_id)
+    if record.text_message
+      create_audit_history_entry(event: "text_message_sent",
+        phone_number: record.phone_number)
+    end
+  end
+
 end

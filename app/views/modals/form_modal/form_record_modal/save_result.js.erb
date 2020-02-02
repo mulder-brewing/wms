@@ -5,8 +5,8 @@ var modal_id = '<%= modal.id %>';
 <% if form.submit_success %>
   hideModal(modal_id);
   <% if !table.nil? %>
-    var record = '<%= j modal.renderRecord %>'
-    var id = '<%= modal.recordID %>'
+    var record = '<%= j modal.render_record %>'
+    var id = '<%= modal.record_id %>'
     <% if modal.save_result == Table::SaveResult::INSERT %>
       var tbody = '.<%= table.body_class %>';
       <% if table.insert_method == Table::Insert::PREPEND %>

@@ -23,4 +23,13 @@ module TableHelper
     table.records = policy_scope(table.records)
   end
 
+  def render_table(table)
+    respond_to do |format|
+      format.js {
+        render  :template => table.js_path,
+                :locals => { table: table }
+      }
+    end
+  end
+
 end

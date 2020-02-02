@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     resources :dock_assignments, only: [:edit, :update, :destroy]
     resources :void_dock_requests, only: [:edit, :update]
     resources :check_out_dock_requests, only: [:edit, :update]
+    resources :dock_request_audit_histories, only: [:index]
   end
 
   get '/dock_requests_history', to: 'dock_requests#history'

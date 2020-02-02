@@ -4,7 +4,8 @@ include TranslationHelper
 
 class Table::BaseTable
 
-  attr_accessor :records, :current_user, :controller, :columns, :insert_method
+  attr_accessor :records, :current_user, :controller, :columns, :insert_method,
+    :wrapper
 
   def initialize(current_user, controller)
     @current_user = current_user

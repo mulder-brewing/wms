@@ -3,7 +3,7 @@ class Company < ApplicationRecord
   has_many :dock_groups, dependent: :destroy
   has_many :docks, dependent: :destroy
   has_many :dock_requests, class_name: "DockQueue::DockRequest", dependent: :destroy
-  has_many :dock_request_audit_histories, dependent: :destroy
+  has_many :dock_request_audit_histories, class_name: "DockQueue::DockRequestAuditHistory", dependent: :destroy
   has_many :access_policies, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 50 }, uniqueness: { case_sensitive: false }

@@ -3,7 +3,7 @@ class Auth::User < ApplicationRecord
 
   belongs_to :company
   belongs_to :access_policy
-  has_many :dock_request_audit_histories, dependent: :destroy
+  has_many :dock_request_audit_histories, class_name: "DockQueue::DockRequestAuditHistory", dependent: :destroy
 
   before_validation :strip_whitespace
   validates :company_id, presence: true

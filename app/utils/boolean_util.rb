@@ -1,4 +1,4 @@
-module Util::Boolean
+module BooleanUtil
 
   def self.cast(boolean)
     return ActiveModel::Type::Boolean.new.cast(boolean)

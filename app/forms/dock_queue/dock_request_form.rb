@@ -1,5 +1,7 @@
 class DockQueue::DockRequestForm < DockQueue::BaseDockQueueForm
 
+  validate :phone_number_if_text_message
+
   delegate  :primary_reference, :primary_reference=,
             :phone_number, :phone_number=,
             :text_message, :text_message=,
@@ -38,6 +40,12 @@ class DockQueue::DockRequestForm < DockQueue::BaseDockQueueForm
     end
     unless event.nil?
       create_audit_history_entry(event: event)
+    end
+  end
+
+  def phone_number_if_text_message
+    if text_message && phone_number.blank?
+      errors.add(:phone_number, :blank_send_sms)
     end
   end
 

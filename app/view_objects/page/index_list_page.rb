@@ -7,7 +7,7 @@ class Page::IndexListPage < Page::BasePage
   ACTION_BAR_CLASS = "index-action-bar"
 
   attr_accessor :table, :enabled_param, :new_record, :show_new_link,
-    :show_enabled_filter
+    :show_enabled_filter, :icon_class
 
   delegate :records, to: :table
 
@@ -20,7 +20,7 @@ class Page::IndexListPage < Page::BasePage
   def prep(params)
     @new_record = controller_model.new
     if show_enabled_filter?
-      @enabled_param = Util::Boolean.cast(params[:enabled])
+      @enabled_param = BooleanUtil.cast(params[:enabled])
     end
   end
 
@@ -54,6 +54,10 @@ class Page::IndexListPage < Page::BasePage
 
   def show_enabled_filter?
     @show_enabled_filter
+  end
+
+  def icon_class?
+    icon_class.present?
   end
 
   def button_class(button)

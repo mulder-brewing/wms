@@ -35,7 +35,7 @@ class Modal::BaseModal
   end
 
   def error?
-    Util::Boolean.cast(error)
+    BooleanUtil.cast(error)
   end
 
   def error_msg

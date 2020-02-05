@@ -1,5 +1,4 @@
 class Auth::SessionsController < ApplicationController
-  include DockRequestsControllerHelper
 
   skip_before_action :logged_in, :only => [:new, :create]
   skip_before_action :check_reset_password, :only => [:destroy]
@@ -21,7 +20,6 @@ class Auth::SessionsController < ApplicationController
   end
 
   def destroy
-    clear_dock_group
     log_out
     all_formats_redirect_to(root_url)
   end

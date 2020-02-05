@@ -4,6 +4,7 @@ class ApplicationRecord < ActiveRecord::Base
   delegate :human_attribute_name, to: :class
 
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+  VALID_PHONE_REGEX = /\A\d{10}\z/
 
   NORMAL_LENGTH = 50
   EMAIL_LENGTH = 255

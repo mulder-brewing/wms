@@ -33,7 +33,7 @@ class Auth::UserNewCreateForm < Auth::UserForm
 
   def private_submit
     super
-    if @submit_success && Util::Boolean.cast(@send_email)
+    if @submit_success && BooleanUtil.cast(@send_email)
       send_welcome_email
     end
   end

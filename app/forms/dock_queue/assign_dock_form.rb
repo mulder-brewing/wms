@@ -31,6 +31,12 @@ class DockQueue::AssignDockForm < DockQueue::DockAssignmentForm
     record.status = "dock_assigned"
     record.dock_assigned_at = DateTime.now
     super
+    if submit_success && record.text_message
+      SMS::Send.call(
+        phone_number: record.phone_number,
+        message: I18n.t("dock_queue/dock_assignments.text_message", number: record.dock.number)
+      )
+    end
   end
 
   def audit

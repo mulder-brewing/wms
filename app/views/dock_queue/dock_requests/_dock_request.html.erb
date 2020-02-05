@@ -4,13 +4,13 @@
       <%= record.primary_reference %>
     </div>
     <div class="card-body">
-      <% if record.status == "checked_in" %>
-        <h4 class="card-title">Checked In</h4>
+      <% if record.status_checked_in? %>
+        <h4 class="card-title"><%= record.status_human_readable %></h4>
         <p><%= local_time_ago(record.created_at) %></p>
-      <% elsif record.status == "dock_assigned" %>
-        <h4 class="card-title">Dock <%= record.dock.number %></h4>
+      <% elsif record.status_dock_assigned? %>
+        <h4 class="card-title"><%= dock_number(record) %></h4>
         <p><%= local_time_ago(record.dock_assigned_at) %></p>
-        <h5>Checked In</h5>
+        <h5><%= record.human_attribute_name("status.checked_in") %></h5>
         <p><%= local_time_ago(record.created_at) %></p>
       <% end %>
       <p class="card-text"><%= record.note %></p>

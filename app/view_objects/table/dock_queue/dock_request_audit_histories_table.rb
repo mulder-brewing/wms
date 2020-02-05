@@ -1,4 +1,4 @@
-class Table::DockRequestAuditHistoriesTable < Table::IndexTable
+class Table::DockQueue::DockRequestAuditHistoriesTable < Table::IndexTable
 
   def initialize(*)
     super

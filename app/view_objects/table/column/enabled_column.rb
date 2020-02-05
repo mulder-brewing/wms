@@ -9,7 +9,7 @@ class Table::Column::EnabledColumn < Table::Column::IndexColumn
   end
 
   def field_value(record)
-    Util::Boolean.yes_no(record.enabled)
+    BooleanUtil.yes_no(record.enabled)
   end
 
 end

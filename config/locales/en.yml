@@ -18,8 +18,6 @@ en:
     updated: &updated Updated
     updated_at: *updated
 
-
-
   activerecordmodel:
     dock_request_status: &dock_request_status
       checked_in: Checked In
@@ -99,6 +97,10 @@ en:
           attributes:
             send_email:
               self: cannot send email when resetting your own password
+        dock_queue/dock_request:
+          attributes:
+            phone_number:
+              blank_send_sms: cannot be blank if you want to send a text message
 
   errors:
     attributes:
@@ -145,12 +147,16 @@ en:
       check_out: Check Out
     check_out_msg: You are checking out %{target}.  This action is irreversible.  Total time from check in to now is %{time}.
 
-
   dock_queue/dock_assignments:
     assign_dock: Assign Dock
+    text_message: Dock %{number} is ready for you.  Please back in ASAP.
 
   dock_queue/dock_requests:
     no_dg_msg: You need at least one enabled dock group before you can use the dock queue
+    dock_number: Dock %{number}
+
+  dock_queue/history_dock_requests:
+    title: Dock Queue History
 
   global:
     actions: Actions

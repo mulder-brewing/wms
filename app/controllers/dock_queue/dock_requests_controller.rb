@@ -45,7 +45,7 @@ class DockQueue::DockRequestsController < ApplicationController
 
   def index
     page = prep_new_page(Page::DockRequestsPage)
-    table = new_table(Table::DockRequestsIndexTable)
+    table = new_table(Table::DockQueue::DockRequestsIndexTable)
     table.prep_records(page.dock_group)
     authorize_scope_records(table)
     page.table = table

@@ -9,7 +9,7 @@ class DockQueue::BaseDockQueueForm < BasicRecordForm
 
   def initialize(*)
     super
-    @table_class = Table::DockRequestsIndexTable
+    @table_class = Table::DockQueue::DockRequestsIndexTable
     @page_class = Page::DockRequestsPage
     @valid_status_before_change = []
   end

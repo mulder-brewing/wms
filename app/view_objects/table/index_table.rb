@@ -18,7 +18,7 @@ class Table::IndexTable < Table::BaseTable
 
   def prep_records(params)
     @records = controller_model.all
-    enabled = Util::Boolean.cast(params[:enabled])
+    enabled = BooleanUtil.cast(params[:enabled])
     @records = @records.where_enabled(enabled) unless enabled.nil?
     return records
   end

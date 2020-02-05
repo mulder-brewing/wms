@@ -1,8 +1,0 @@
-<% if @dock_request.save_success %>
-$('#create-modal').modal('hide');
-$('#dock-requests-queue').append('<%= j render @dock_request, dock_request: @dock_request %>');
-$('#dock_request_<%=@dock_request.id%>').hide().fadeIn(1000);
-alert_custom("success","Dock Request created successfully!");
-<% else %>
-$("#create-form").replaceWith("<%=  j render 'new_edit_form', form_type: 'create' %>");
-<% end %>

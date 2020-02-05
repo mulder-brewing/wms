@@ -1,4 +1,4 @@
-class Table::DockRequestsIndexTable < Table::IndexTable
+class Table::DockQueue::DockRequestsIndexTable < Table::IndexTable
 
   def initialize(*)
     super

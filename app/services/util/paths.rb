@@ -22,6 +22,17 @@ module Util::Paths
     end
   end
 
+  class Show < ApplicationService
+    def initialize(record)
+      @record = record
+    end
+
+    def call
+      Rails.application.routes.url_helpers.polymorphic_url(@record,
+        routing_type: :path)
+    end
+  end
+
   class Path < ApplicationService
     def initialize(path, **args)
       @path = path

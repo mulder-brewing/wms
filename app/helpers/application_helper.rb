@@ -2,6 +2,7 @@ module ApplicationHelper
 
   #Pagination
   include Pagy::Frontend
+  include TableHelper
 
   # Returns the full title on a per-page basis.
   def full_title(page_title = '')
@@ -49,10 +50,6 @@ module ApplicationHelper
     end
   end
 
-  def time_or_value(v)
-    return (v.respond_to?(:strftime) ? local_time_if_not_blank(v) : v)
-  end
-
   def t_nf(key, **options)
     options.merge!( { :default=> key } )
     I18n.t(key, options)
@@ -64,6 +61,19 @@ module ApplicationHelper
       link_to t_nf(button.text_key), button.path(options[:record]), options
     else
       button_tag t_nf(button.text_key), options
+    end
+  end
+
+  def time_or_value(v)
+    return (v.respond_to?(:strftime) ? local_time_if_not_blank(v) : v)
+  end
+
+  def link_time_or_value(column, record)
+    fv = column.field_value(record)
+    if column.respond_to?(:link_path)
+      link_to fv, column.link_path(record: record), column.link_options
+    else
+      time_or_value(fv)
     end
   end
 

@@ -122,16 +122,7 @@ class DockQueue::DockRequest < ApplicationRecord
   end
 
   def status_human_readable
-    case status
-    when "checked_in"
-      "Checked In"
-    when "dock_assigned"
-      "Dock Assigned"
-    when "checked_out"
-      "Checked Out"
-    when "voided"
-      "Voided"
-    end
+    human_attribute_name("status." + status)
   end
 
   def name_with_id

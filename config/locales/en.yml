@@ -18,8 +18,6 @@ en:
     updated: &updated Updated
     updated_at: *updated
 
-
-
   activerecordmodel:
     dock_request_status: &dock_request_status
       checked_in: Checked In
@@ -151,6 +149,9 @@ en:
 
   dock_queue/dock_requests:
     no_dg_msg: You need at least one enabled dock group before you can use the dock queue
+
+  dock_queue/history_dock_requests:
+    title: Dock Queue History
 
   global:
     actions: Actions

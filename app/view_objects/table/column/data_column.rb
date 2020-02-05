@@ -18,8 +18,8 @@ class Table::Column::DataColumn < Table::Column::IndexColumn
   end
 
   def field_value(record)
-    unless @send_chain.empty?
-      @send_chain.inject(record, :send)
+    unless send_chain.empty?
+      send_chain.inject(record, :send)
     else
       record.send(attribute)
     end

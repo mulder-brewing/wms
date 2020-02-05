@@ -5,8 +5,8 @@
         <% column.buttons.each do |button| %>
           <%= btn(button, record: record) %>
         <% end %>
-      <% else %>
-        <%= time_or_value(column.field_value(record)) %>
+      <% elsif column.respond_to?(:field_value) %>
+        <%= link_time_or_value(column, record) %>
       <% end %>
     </td>
   <% end %>

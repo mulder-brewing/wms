@@ -8,4 +8,5 @@ class Table::DockGroupsIndexTable < Table::IndexTable
       attribute: :description)
     @columns << Table::Column::EnabledColumn.new
   end
+  
 end

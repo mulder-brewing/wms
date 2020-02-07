@@ -7,6 +7,7 @@ en:
     delete: Delete
     void: Void
     edit: Edit
+    show: Details
 
   attributes:
     created_at: Created
@@ -149,6 +150,7 @@ en:
 
   dock_queue/dock_assignments:
     assign_dock: Assign Dock
+    unassign_dock: Unassign Dock
     text_message: Dock %{number} is ready for you.  Please back in ASAP.
 
   dock_queue/dock_requests:

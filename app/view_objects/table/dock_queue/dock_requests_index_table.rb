@@ -1,8 +1,26 @@
 class Table::DockQueue::DockRequestsIndexTable < Table::IndexTable
 
+  attr_accessor :card_column_btns, :card_row_btns
+
   def initialize(*)
     super
     @insert_method = Table::Insert::APPEND
+
+    @card_column_btns = []
+    card_column_btn_options = {
+      remote: true,
+      size: Button::Size::SMALL,
+      block: true
+    }
+    @card_column_btns << Button::EditButton.new(card_column_btn_options)
+    @card_column_btns << Button::ShowButton.new(card_column_btn_options)
+
+    @card_row_btns = []
+    @card_row_btns << Button::DockQueue::CardVoidButton.new
+    @card_row_btns << Button::DockQueue::AssignDockButton.new
+    @card_row_btns << Button::DockQueue::UnassignDockButton.new
+    @card_row_btns << Button::DockQueue::CheckOutButton.new
+
   end
 
   def prep_records(dock_group)

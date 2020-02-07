@@ -58,9 +58,9 @@ module ApplicationHelper
   def btn(button, **options)
     options.reverse_merge!(button.btn_options)
     if button.link?
-      link_to t_nf(button.text_key), button.path(options[:record]), options
+      link_to button.text, button.path(options[:record]), options
     else
-      button_tag t_nf(button.text_key), options
+      button_tag button.text, options
     end
   end
 

@@ -1,0 +1,13 @@
+<div class="container">
+  <div class="row">
+    <% show.attributes.each do |attribute| %>
+      <div class="col-lg-<%= show.label_col_width %> text-lg-right">
+        <strong><%= attribute.label %>:</strong>
+      </div>
+      <div class="col">
+        <%= time_or_value(attribute.value) %>
+      </div>
+      <div class="w-100"></div>
+    <% end %>
+  </div>
+</div>

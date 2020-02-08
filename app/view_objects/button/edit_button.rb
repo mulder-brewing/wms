@@ -7,11 +7,10 @@ class Button::EditButton < Button::BaseButton
     super
     @text_key = "actions.edit"
     @style = Button::Style::PRIMARY
-    @btn_class = BTN_CLASS
   end
 
   def record_path(record)
-    Util::Paths::Edit.call(record)
+    PathUtil.edit(record)
   end
 
 end

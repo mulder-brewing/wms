@@ -3,6 +3,7 @@ class AccessPolicyForm < BasicRecordForm
   delegate  :description, :description=,
             :enabled, :enabled=,
             :everything, :everything=,
+            :dock_queue, :dock_queue=,
             :dock_groups, :dock_groups=,
             :docks, :docks=,
             to: :@record
@@ -18,7 +19,7 @@ class AccessPolicyForm < BasicRecordForm
   end
 
   def permitted_params
-    [:description, :enabled, :everything, :dock_groups, :docks]
+    [:description, :enabled, :everything, :dock_queue, :dock_groups, :docks]
   end
 
 end

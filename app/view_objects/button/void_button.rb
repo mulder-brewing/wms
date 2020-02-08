@@ -7,7 +7,6 @@ class Button::VoidButton < Button::BaseButton
     super
     @text_key = "actions.void"
     @style = Button::Style::DANGER
-    @btn_class = BTN_CLASS
   end
 
 end

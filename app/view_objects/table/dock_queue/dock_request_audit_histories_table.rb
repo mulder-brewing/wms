@@ -1,8 +1,10 @@
 class Table::DockQueue::DockRequestAuditHistoriesTable < Table::IndexTable
 
+  WRAPPER_ID = "dock_request_audit_history_wrapper"
+
   def initialize(*)
     super
-    @wrapper = "#dock_request_audit_history_wrapper"
+    @wrapper = "##{WRAPPER_ID}"
     @c = DockQueue::DockRequestAuditHistory
     @columns << Table::Column::DataColumn.new(t_class: @c, attribute: :event,
       send_chain: [:event_human_readable])

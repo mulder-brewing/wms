@@ -1,7 +1,7 @@
 class DockQueue::DockRequestPolicy < ApplicationPolicy
 
   def initialize(user, scope)
-    @permission = :dock_groups
+    @permission = :dock_queue
     super(user, scope)
   end
 

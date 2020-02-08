@@ -4,7 +4,7 @@ module Button::BtnOptions
 
   def btn_options
     { type: @type, 'data-dismiss': @data_dismiss, class: btn_class,
-      form: @form }
+      form: @form, id: btn_id }
   end
 
   def link?

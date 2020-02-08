@@ -3,7 +3,8 @@ class Button::BaseButton
 
   BASE_CLASS = "btn"
 
-  attr_accessor :remote, :text_key, :style, :size, :classes, :block, :btn_class
+  attr_accessor :remote, :text_key, :style, :size, :classes, :block, :btn_class,
+    :btn_id
 
   def initialize(**options)
     @remote = false
@@ -13,7 +14,8 @@ class Button::BaseButton
     @classes = []
     @classes << options[:class]
     @block = options[:block]
-    @btn_class = options[:test_id]
+    @btn_class = options[:btn_class] || safe_const_get("BTN_CLASS")
+    @btn_id = options[:btn_id] || safe_const_get("BTN_ID")
   end
 
   def btn_class
@@ -29,6 +31,12 @@ class Button::BaseButton
 
   def text
     I18n.t(text_key)
+  end
+
+  private
+
+  def safe_const_get(const)
+    self.class.const_get(const) if self.class.const_defined?(const)
   end
 
 end

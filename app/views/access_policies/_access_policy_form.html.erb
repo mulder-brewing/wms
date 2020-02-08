@@ -11,13 +11,18 @@
       <% end %>
       <%= f.input :everything, sf_switch %>
       <div class="individual_permissions ml-4">
-        <%= f.input :dock_groups, sf_switch(label: model_plur(DockGroup)) %>
-        <%= f.input :docks, sf_switch(label: model_plur(Dock)) %>
+        <%= f.input :dock_queue, sf_switch(label: model_plur(DockQueue::DockRequest)) %>
+        <div class="dock_queue_sub_permissions ml-4">
+          <%= f.input :dock_groups, sf_switch(label: model_plur(DockGroup)) %>
+          <%= f.input :docks, sf_switch(label: model_plur(Dock)) %>
+        </div>
       </div>
     </div>
 <% end %>
 
 <script type="text/javascript">
-  hideAccessPolicyPermissions();
-  $('#access_policy_everything').change(hideAccessPolicyPermissions);
+  hideShowEverythingPermissions();
+  hideShowDockQueuePermissions();
+  $('#access_policy_everything').change(hideShowEverythingPermissions);
+  $('#access_policy_dock_queue').change(hideShowDockQueuePermissions);
 </script>

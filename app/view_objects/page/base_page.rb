@@ -11,7 +11,7 @@ class Page::BasePage
   end
 
   def controller_model
-    Controller::Model.call(@controller)
+    ControllerUtil.model(@controller)
   end
 
 end

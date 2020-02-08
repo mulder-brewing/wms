@@ -1,12 +1,14 @@
-<nav class="navbar navbar-default navbar-expand-md" id="dummy-navbar"><!-- Dummy nav bar in order to offset the padding for the fixed-top navbar -->
-  <span class= "navbar-brand">MULDER WMS</span>
-  <% if logged_in? %>
-    <button type="button" class = "btn btn-sm align-middle btn-primary ml-auto order-md-last mr-3 mr-sm-4 mr-md-0">Log Out</button>
-    <button class="navbar-toggler" type="button">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  <% end %>
-</nav> <!-- Dummy nav bar in order to offset the padding for the fixed-top navbar-->
+<!-- Dummy nav bar in order to offset the padding for the fixed-top navbar -->
+  <nav class="navbar navbar-default navbar-expand-md" id="dummy-navbar">
+    <span class= "navbar-brand">MULDER WMS</span>
+    <% if logged_in? %>
+      <button type="button" class = "btn btn-sm align-middle btn-primary ml-auto order-md-last mr-3 mr-sm-4 mr-md-0">Log Out</button>
+      <button class="navbar-toggler" type="button">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    <% end %>
+  </nav>
+<!-- Dummy nav bar in order to offset the padding for the fixed-top navbar-->
 <nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark" id="main-navbar">
   <div class="container-fluid">
     <%= link_to "MULDER WMS", root_path, class: "navbar-brand" %>
@@ -18,9 +20,17 @@
       <% if !needs_password_reset? %>
         <div class="collapse navbar-collapse" id="navbarToggler">
           <div class="navbar-nav">
-            <%= link_to "Dock Queue", dock_queue_dock_requests_path, class: "nav-item nav-link" %>
-            <%= link_to "Dock Queue History", dock_queue_history_dock_requests_path, class: "nav-item nav-link" %>
-
+            <%-# Dock Queue Dropdown -%>
+              <% if ap_check?(:dock_queue) %>
+                <div class="nav-item dropdown">
+                  <%= link_to "Dock Queue",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDockQueueDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
+                  <div class="dropdown-menu" aria-labelledby="navbarDockQueueDropdown">
+                    <%= link_to "Dock Queue", dock_queue_dock_requests_path, class: "dropdown-item" %>
+                    <%= link_to "Dock Queue History", dock_queue_history_dock_requests_path, class: "dropdown-item" %>
+                  </div>
+                </div>
+              <% end %>
+            <%-# Administration Dropdown -%>
               <div class="nav-item dropdown">
                 <%= link_to "Administration",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarAdministrationDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
                 <div class="dropdown-menu" aria-labelledby="navbarAdministrationDropdown">
@@ -48,8 +58,7 @@
                     class: "dropdown-item" if ap_check?(:docks) %>
                 </div>
               </div>
-
-          </div>
+            </div>
           <div class="navbar-nav ml-auto">
             <%= link_to current_user.username, edit_auth_user_path(current_user), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => "nav-item nav-link mr-4" %>
           </div>

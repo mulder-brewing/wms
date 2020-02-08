@@ -7,12 +7,11 @@ class Button::BecomeButton < Button::BaseButton
     super
     @text_key = "auth/users.become"
     @style = Button::Style::PRIMARY
-    @btn_class = BTN_CLASS
     index_action_style
   end
 
   def record_path(record)
-    Util::Paths::Path.call(:become_user_path, id: record.id)
+    PathUtil.path(:become_user_path, id: record.id)
   end
 
 end

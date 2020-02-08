@@ -7,7 +7,6 @@ class Button::SaveButton < Button::BaseButton
     super
     @text_key = "actions.save"
     @style = Button::Style::PRIMARY
-    @btn_class = BTN_CLASS
   end
 
 end

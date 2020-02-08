@@ -7,11 +7,10 @@ class Button::NewButton < Button::BaseButton
     super
     @text_key = "actions.new"
     @style = Button::Style::SUCCESS
-    @btn_class = BTN_CLASS
   end
 
   def record_path(record)
-    Util::Paths::New.call(record)
+    PathUtil.new(record)
   end
 
 end

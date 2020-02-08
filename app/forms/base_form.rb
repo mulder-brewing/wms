@@ -10,7 +10,7 @@ class BaseForm
   end
 
   def controller_model
-    Controller::Model.call(@controller)
+    ControllerUtil.model(@controller)
   end
 
   def action?(*args)

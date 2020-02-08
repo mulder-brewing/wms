@@ -7,7 +7,6 @@ class Button::CloseButton < Button::BaseButton
     super
     @text_key = "actions.close"
     @style = Button::Style::SECONDARY
-    @btn_class = BTN_CLASS
   end
 
 end

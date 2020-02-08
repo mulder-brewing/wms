@@ -11,8 +11,8 @@ module Button::BtnLinkOptions
   end
 
   def btn_options
-    { remote: @remote, path: @path, method: @method, record: @record,
-      class: btn_class }
+    { remote: remote, path: @path, method: method, record: record,
+      class: btn_class, id: btn_id }
   end
 
   def path(record = nil)

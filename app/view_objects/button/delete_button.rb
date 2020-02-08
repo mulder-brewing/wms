@@ -7,7 +7,6 @@ class Button::DeleteButton < Button::BaseButton
     super
     @text_key = "actions.delete"
     @style = Button::Style::DANGER
-    @btn_class = BTN_CLASS
   end
 
 end

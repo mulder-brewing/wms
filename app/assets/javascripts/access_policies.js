@@ -1,4 +1,4 @@
-function hideAccessPolicyPermissions() {
+function hideShowEverythingPermissions() {
   var $everything = $('#access_policy_everything')
   var $individual_permissions = $('div.individual_permissions')
   if($everything.is(':checked')) {
@@ -6,6 +6,17 @@ function hideAccessPolicyPermissions() {
     $individual_permissions.hide();
   } else {
     $individual_permissions.show();
+  }
+}
+
+function hideShowDockQueuePermissions() {
+  var $dock_queue = $('#access_policy_dock_queue')
+  var $dock_queue_sub_permissions = $('div.dock_queue_sub_permissions')
+  if($dock_queue.is(':checked')) {
+    $dock_queue_sub_permissions.show();
+  } else {
+    $dock_queue_sub_permissions.find(':input').prop("checked", false);
+    $dock_queue_sub_permissions.hide();
   }
 }
 

@@ -8,21 +8,29 @@ module DockQueue::DockRequestsHelper
     tag.p local_time_ago(record.created_at)
   end
 
-  def card_column_btns(table, record)
-    html = ""
-    table.card_column_btns.each do |btn|
-      html << content_tag(:div, btn(btn, record: record), class: "col")
+  def card_title(record)
+    if record.status_checked_in?
+      t = record.human_attribute_name("status.checked_in")
+    else
+      t = dock_number(record)
     end
-    return html.html_safe
+    content_tag(:h4, t, class: "card-title")
   end
 
-  def status_change_btns(table, record)
-    buttons = table.card_row_btns.select { |b| b.show_status == record.status }
-    html = ""
-    buttons.each do |btn|
-      html << content_tag(:div, btn(btn, record: record), class: "row mb-2")
+  def card_buttons(table, record)
+    html = "".html_safe
+    table.card_buttons[:column_btns].each do |b|
+      html << content_tag(:div, btn(b, record: record), class: "col")
     end
-    return html.html_safe
+    html = button_row(html)
+    table.buttons_for_status(record.status).each do |b|
+      html << button_row(btn(b, record: record))
+    end
+    return html
+  end
+
+  def button_row(html)
+    content_tag(:div, html, class: "row mb-2")
   end
 
 end

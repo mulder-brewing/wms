@@ -6,7 +6,7 @@ class Table::Column::ShowRecordColumn < Table::Column::LinkDataColumn
   end
 
   def link_path(**options)
-    Util::Paths::Show.call(options[:record])
+    PathUtil.show(options[:record])
   end
 
 end

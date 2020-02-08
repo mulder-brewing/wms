@@ -2,7 +2,7 @@ class Modal::FormRecordModal < Modal::FormModal
 
   attr_accessor :table, :save_result, :page, :persist, :role, :title_suffix
 
-  VIEWS_PATH = "modals/form_modal/form_record_modal/"
+  VIEWS_PATH = "shared/modal/form_record_modal/"
 
   HTML_PATH = VIEWS_PATH + "modal"
   JS_PATH = VIEWS_PATH + "modal_js"

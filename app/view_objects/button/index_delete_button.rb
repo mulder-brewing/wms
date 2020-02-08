@@ -10,7 +10,7 @@ class Button::IndexDeleteButton < Button::DeleteButton
   end
 
   def record_path(record)
-    Util::Paths::Path.call(@destroy_path, id: record.id)
+    PathUtil.path(@destroy_path, id: record.id)
   end
 
 end

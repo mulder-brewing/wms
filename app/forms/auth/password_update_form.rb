@@ -43,7 +43,7 @@ class Auth::PasswordUpdateForm < BasicRecordForm
   end
 
   def email_exists_if_send_email
-    unless Util::Email::SendPossible.call(@record.email, @send_email)
+    unless EmailUtil.send_possible?(@record.email, @send_email)
       errors.add(:email, :blank_send)
       errors.add(:send_email, :blank_email)
     end

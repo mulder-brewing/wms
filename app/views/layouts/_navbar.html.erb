@@ -20,10 +20,13 @@
       <% if !needs_password_reset? %>
         <div class="collapse navbar-collapse" id="navbarToggler">
           <div class="navbar-nav">
+            <% navbar = setup_navbar %>
+            <%-# Dock Queue Dropdown Test -%>
+              <%= navbar_dropdown(navbar.roots[0]) %>
             <%-# Dock Queue Dropdown -%>
               <% if ap_check?(:dock_queue) %>
                 <div class="nav-item dropdown">
-                  <%= link_to "Dock Queue",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarDockQueueDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
+                  <%= link_to "Dock Queue",   "#", { :class => "nav-link dropdown-toggle", :id => "navbarDockQueueDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
                   <div class="dropdown-menu" aria-labelledby="navbarDockQueueDropdown">
                     <%= link_to "Dock Queue", dock_queue_dock_requests_path, class: "dropdown-item" %>
                     <%= link_to "Dock Queue History", dock_queue_history_dock_requests_path, class: "dropdown-item" %>

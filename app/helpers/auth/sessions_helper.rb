@@ -8,13 +8,13 @@ module Auth::SessionsHelper
   # Logs the user out with session
   def log_out
     session.delete(:user_id)
-    @current_user = nil
+    Current.user = nil
   end
 
   # Returns the current logged-in user (if any).
   def current_user
    if session[:user_id]
-     @current_user ||= Auth::User.find_by(id: session[:user_id])
+     Current.user ||= Auth::User.find_by(id: session[:user_id])
    end
   end
 
@@ -87,7 +87,7 @@ module Auth::SessionsHelper
 
   # Returns the current user's access policy
   def current_access_policy
-     @current_access_policy ||= current_user.access_policy
+    AccessPolicyUtil.current_access_policy
   end
 
   def ap_check?(permission)

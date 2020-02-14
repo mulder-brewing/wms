@@ -74,8 +74,8 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal buttons" do
     to = NewTO.new(@company_admin, @new, true)
-    to.visibles << ModalFooterVisible.new(class: Button::SaveButton::BTN_CLASS)
-    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
     to.test(self)
   end
 
@@ -152,8 +152,8 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal save and close buttons" do
     to = EditTO.new(@company_admin, @averagejoe_access_policy, true)
-    to.visibles << ModalFooterVisible.new(class: Button::SaveButton::BTN_CLASS)
-    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
     to.test(self)
   end
 
@@ -226,13 +226,13 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
 
   test "page should have new record button" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.visibles << HeaderVisible.new(class: Button::NewButton::BTN_CLASS)
+    to.visibles << HeaderVisible.new(class: Button::NewButton.class_name)
     to.test(self)
   end
 
   test "should see the edit buttons" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.visibles << IndexTBodyVisible.new(class: Button::EditButton::BTN_CLASS)
+    to.visibles << IndexTBodyVisible.new(class: Button::IndexEditButton.class_name)
     to.test(self)
   end
 

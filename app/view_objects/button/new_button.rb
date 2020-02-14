@@ -1,8 +1,6 @@
 class Button::NewButton < Button::BaseButton
   include Button::BtnLinkOptions
 
-  BTN_CLASS = "new-button-class"
-
   def initialize(*)
     super
     @text_key = "actions.new"

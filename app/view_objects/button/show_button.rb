@@ -1,8 +1,6 @@
 class Button::ShowButton < Button::BaseButton
   include Button::BtnLinkOptions
 
-  BTN_CLASS = "show-button-class"
-
   def initialize(*)
     super
     @text_key = "actions.show"

@@ -173,7 +173,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   test "should see the new button" do
     to = IndexTo.new(@app_admin, @new, true)
-    to.visibles << HeaderVisible.new(class: Button::NewButton::BTN_CLASS)
+    to.visibles << HeaderVisible.new(class: Button::NewButton.class_name)
     to.test(self)
   end
 
@@ -185,8 +185,8 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   test "should see the edit and delete buttons" do
     to = IndexTo.new(@app_admin, @new, true)
-    to.visibles << IndexTBodyVisible.new(class: Button::EditButton::BTN_CLASS)
-    to.visibles << IndexTBodyVisible.new(class: Button::DeleteButton::BTN_CLASS)
+    to.visibles << IndexTBodyVisible.new(class: Button::IndexEditButton.class_name)
+    to.visibles << IndexTBodyVisible.new(class: Button::IndexDeleteButton.class_name)
     to.test(self)
   end
 
@@ -248,8 +248,8 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   test "should see the delete and close buttons" do
     to = DestroyModalTO.new(@app_admin, @averagejoes, true)
     to.path = destroy_modal_company_path(@averagejoes)
-    to.visibles << ModalFooterVisible.new(class: Button::DeleteButton::BTN_CLASS)
-    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalDeleteButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
     to.test(self)
   end
 

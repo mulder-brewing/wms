@@ -54,7 +54,7 @@ class DockQueue::DockRequestsController < ApplicationController
       flash.now[:danger] = I18n.t("dock_queue/dock_requests.no_dg_msg")
     when 1
       if page.dock_group_nil?
-        redirect_to dock_requests_url(dock_request: { dock_group_id: page.dock_groups.first.id }) and return
+        redirect_to dock_queue_dock_requests_path(dock_request: { dock_group_id: page.dock_groups.first.id }) and return
       end
     end
     render_page(page)

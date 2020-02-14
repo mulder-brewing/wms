@@ -1,69 +1,33 @@
+<% navbar = Navbar::MainNavbar.new %>
+
 <!-- Dummy nav bar in order to offset the padding for the fixed-top navbar -->
   <nav class="navbar navbar-default navbar-expand-md" id="dummy-navbar">
-    <span class= "navbar-brand">MULDER WMS</span>
+    <%= link_to t("global.app_name").upcase, root_path, class: "navbar-brand" %>
     <% if logged_in? %>
-      <button type="button" class = "btn btn-sm align-middle btn-primary ml-auto order-md-last mr-3 mr-sm-4 mr-md-0">Log Out</button>
+      <%= btn(navbar.log_out_button) %>
       <button class="navbar-toggler" type="button">
         <span class="navbar-toggler-icon"></span>
       </button>
     <% end %>
   </nav>
 <!-- Dummy nav bar in order to offset the padding for the fixed-top navbar-->
-<nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark" id="main-navbar">
+<nav class="<%= navbar.navbar_class %>" id="<%= navbar.id %>">
   <div class="container-fluid">
-    <%= link_to "MULDER WMS", root_path, class: "navbar-brand" %>
+    <%= link_to t("global.app_name").upcase, root_path, class: "navbar-brand" %>
     <% if logged_in? %>
-      <%= link_to "Log Out", logout_path, method: :delete, :role => 'button', :class => 'btn btn-sm align-middle btn-primary ml-auto order-md-last mr-3 mr-sm-4 mr-md-0 ' %>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <%= btn(navbar.log_out_button) %>
+      <%= navbar_toggler(navbar) %>
       <% if !needs_password_reset? %>
-        <div class="collapse navbar-collapse" id="navbarToggler">
-          <div class="navbar-nav">
-            <% navbar = setup_navbar %>
-            <%-# Dock Queue Dropdown Test -%>
-              <%= navbar_dropdown(navbar.roots[0]) %>
-            <%-# Dock Queue Dropdown -%>
-              <% if ap_check?(:dock_queue) %>
-                <div class="nav-item dropdown">
-                  <%= link_to "Dock Queue",   "#", { :class => "nav-link dropdown-toggle", :id => "navbarDockQueueDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
-                  <div class="dropdown-menu" aria-labelledby="navbarDockQueueDropdown">
-                    <%= link_to "Dock Queue", dock_queue_dock_requests_path, class: "dropdown-item" %>
-                    <%= link_to "Dock Queue History", dock_queue_history_dock_requests_path, class: "dropdown-item" %>
-                  </div>
-                </div>
-              <% end %>
-            <%-# Administration Dropdown -%>
-              <div class="nav-item dropdown">
-                <%= link_to "Administration",   '#', { :class => "nav-link dropdown-toggle", :id => "navbarAdministrationDropdown", :role => "button", :'data-toggle' => "dropdown", :'aria-haspopup' => "true", :'aria-expanded' => "false" } %>
-                <div class="dropdown-menu" aria-labelledby="navbarAdministrationDropdown">
-                  <% if admin? %>
-                    <li>
-                      <%= link_to "Admin Only", '#', :class => "dropdown-item dropdown-toggle" %>
-                      <ul class="dropdown-menu">
-                        <li><%= link_to Company.model_name.human(count: 2),
-                          companies_path(:enabled => "true"),
-                          class: "dropdown-item" if app_admin? %></li>
-                        <li><%= link_to Auth::User.model_name.human(count: 2),
-                          auth_users_path(:enabled => "true"),
-                          class: "dropdown-item" %></li>
-                        <li><%= link_to AccessPolicy.model_name.human(count: 2),
-                          access_policies_path(:enabled => "true"),
-                          class: "dropdown-item" %></li>
-                      </ul>
-                    </li>
-                  <% end %>
-                  <%= link_to DockGroup.model_name.human(count: 2),
-                    dock_groups_path(:enabled => "true"),
-                    class: "dropdown-item" if ap_check?(:dock_groups) %>
-                  <%= link_to Dock.model_name.human(count: 2),
-                    docks_path(:enabled => "true"),
-                    class: "dropdown-item" if ap_check?(:docks) %>
-                </div>
-              </div>
-            </div>
+        <div class="collapse navbar-collapse" id="<%= navbar.toggler_id %>">
+          <ul class="navbar-nav">
+            <%= build_navigation(navbar) %>
+          </ul>
           <div class="navbar-nav ml-auto">
-            <%= link_to current_user.username, edit_auth_user_path(current_user), :remote => true, :'data-toggle' =>  "modal", :'data-target' => '#update-modal', :class => "nav-item nav-link mr-4" %>
+            <%= link_to current_user.username,
+                edit_auth_user_path(current_user),
+                :remote => true,
+                :class => "nav-item nav-link mr-4"
+            %>
           </div>
         </div>
       <% end %>

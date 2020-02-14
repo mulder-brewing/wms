@@ -1,14 +1,16 @@
 module NavbarHelper
 
-  def setup_navbar
-    return Navbar::MainNavbar.new
+  def build_navigation(navbar)
+    html = "".html_safe
+    navbar.roots.each { |root| html << navbar_dropdown(root) }
+    return html
   end
 
   def navbar_dropdown(dropdown)
     html = "".html_safe
     return html unless dropdown.show?
     html << (
-      content_tag :div, class: "nav-item dropdown" do
+      content_tag :li, class: "nav-item dropdown" do
         nav_item_link(dropdown) + dropdown_items(dropdown)
       end
     )
@@ -16,24 +18,47 @@ module NavbarHelper
   end
 
   def dropdown_items(dropdown)
-    items = dropdown.items
-    html = "".html_safe
-    return html if items.empty?
-    items.each do |item|
-      html << nav_item_link(item) if item.show?
-    end
+    html = build_dropdown(dropdown)
+    return html unless html.present?
     return content_tag(
-      :div,
+      :ul,
       html,
       class: "dropdown-menu",
       :'aria-labelledby' => dropdown.id
     )
   end
 
-  def nav_item_link(nav_item)
-    link_to nav_item.name, nav_item.path, nav_item.html_options
+  def build_dropdown(dropdown)
+    html = "".html_safe
+    items = dropdown.items
+    return html unless items.present?
+    items.each { |item| html << link_or_sub_dropdown(item) }
+    return html
   end
 
+  def link_or_sub_dropdown(item)
+    return "" unless item.show?
+    html = tag.li(item.respond_to?(:items) ? sub_dropdown(item) : nav_item_link(item))
+    return html
+  end
 
+  def nav_item_link(item)
+    link_to item.name, item.path, item.html_options
+  end
+
+  def sub_dropdown(dropdown)
+    html = build_dropdown(dropdown)
+    return html unless html.present?
+    html = tag.ul(html, class: "dropdown-menu")
+    return html.prepend(nav_item_link(dropdown))
+  end
+
+  def navbar_toggler(navbar)
+    button_tag(class: "navbar-toggler", type: "button", data: { toggle: "collapse", target: navbar.toggler_target }, aria: { controls: "navbarToggler",  expanded: "false", label: "Toggle navigation" } ) do
+      tag.span(class: "navbar-toggler-icon")
+    end
+
+
+  end
 
 end

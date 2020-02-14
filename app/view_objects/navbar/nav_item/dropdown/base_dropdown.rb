@@ -11,4 +11,8 @@ class Navbar::NavItem::Dropdown::BaseDropdown < Navbar::NavItem::BaseNavItem
     items.any?{ |item| item.show? }
   end
 
+  def path
+    "#"
+  end
+
 end

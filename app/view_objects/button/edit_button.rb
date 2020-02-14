@@ -1,8 +1,6 @@
 class Button::EditButton < Button::BaseButton
   include Button::BtnLinkOptions
 
-  BTN_CLASS = "edit-button-class"
-
   def initialize(*)
     super
     @text_key = "actions.edit"

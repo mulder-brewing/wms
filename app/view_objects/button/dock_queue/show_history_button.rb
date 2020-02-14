@@ -1,9 +1,6 @@
 class Button::DockQueue::ShowHistoryButton < Button::BaseButton
   include Button::BtnLinkOptions
 
-  BTN_CLASS = "dock-request-history-button-class"
-  BTN_ID = "button_show_audit_history"
-
   def initialize
     super
     @text_key = "global.history"

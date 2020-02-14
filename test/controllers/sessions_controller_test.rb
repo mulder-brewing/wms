@@ -16,7 +16,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form"
     assert_select "form input[id=session_username]"
     assert_select "form input[id=session_password]"
-    assert_select 'form input[type=submit][value="Log in"]'
+    assert_select "form input[type=submit][value='#{ I18n.t("actions.log_in") }']"
   end
 
   test 'login as regular user, check available links, logout' do

@@ -1,8 +1,6 @@
 class Button::ResetPasswordButton < Button::BaseButton
   include Button::BtnLinkOptions
 
-  BTN_CLASS = "reset-password-button-class"
-
   def initialize(*)
     super
     @remote = true

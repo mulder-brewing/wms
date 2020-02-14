@@ -8,8 +8,4 @@ class Navbar::NavItem::Dropdown::MainDropdown < Navbar::NavItem::Dropdown::BaseD
     :'aria-expanded' => "false"
   }
 
-  def path
-    "#"
-  end
-
 end

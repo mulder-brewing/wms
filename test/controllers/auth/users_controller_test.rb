@@ -140,8 +140,8 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal buttons" do
     to = NewTO.new(@company_admin, @new, true)
-    to.visibles << ModalFooterVisible.new(class: Button::SaveButton::BTN_CLASS)
-    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
     to.test(self)
   end
 
@@ -153,7 +153,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal doesn't show reset password button" do
     to = NewTO.new(@company_admin, @new, true)
-    to.visibles << ModalBodyVisible.new(class: Button::ResetPasswordButton::BTN_CLASS, visible: false)
+    to.visibles << ModalBodyVisible.new(class: Button::ResetPasswordButton.class_name, visible: false)
     to.test(self)
   end
 
@@ -282,14 +282,14 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal save and close buttons" do
     to = EditTO.new(@regular_user, @regular_user, true)
-    to.visibles << ModalFooterVisible.new(class: Button::SaveButton::BTN_CLASS)
-    to.visibles << ModalFooterVisible.new(class: Button::CloseButton::BTN_CLASS)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
     to.test(self)
   end
 
   test "edit modal does show reset password button" do
     to = EditTO.new(@regular_user, @regular_user, true)
-    to.visibles << ModalBodyVisible.new(class: Button::ResetPasswordButton::BTN_CLASS)
+    to.visibles << ModalBodyVisible.new(class: Button::ResetPasswordButton.class_name)
     to.test(self)
   end
 
@@ -657,26 +657,26 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "page should have new record button" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.visibles << HeaderVisible.new(class: Button::NewButton::BTN_CLASS)
+    to.visibles << HeaderVisible.new(class: Button::NewButton.class_name)
     to.test(self)
   end
 
   test "should see the edit buttons" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.visibles << IndexTBodyVisible.new(class: Button::EditButton::BTN_CLASS)
+    to.visibles << IndexTBodyVisible.new(class: Button::IndexEditButton.class_name)
     to.test(self)
   end
 
   test "company admin should not see the become button" do
     to = IndexTo.new(@company_admin, @new, true)
-    to.visibles << IndexTBodyVisible.new(class: Button::BecomeButton::BTN_CLASS,
+    to.visibles << IndexTBodyVisible.new(class: Button::BecomeButton.class_name,
       visible: false)
     to.test(self)
   end
 
   test "app admin should see the become button" do
     to = IndexTo.new(@app_admin, @new, true)
-    to.visibles << IndexTBodyVisible.new(class: Button::BecomeButton::BTN_CLASS)
+    to.visibles << IndexTBodyVisible.new(class: Button::BecomeButton.class_name)
     to.test(self)
   end
 

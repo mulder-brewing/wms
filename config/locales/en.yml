@@ -1,13 +1,15 @@
 en:
 
   actions:
-    new: New
     close: Close
-    save: Save
     delete: Delete
-    void: Void
     edit: Edit
+    log_in: Log In
+    log_out: Log Out
+    new: New
+    save: Save
     show: Details
+    void: Void
 
   attributes:
     created_at: Created
@@ -162,10 +164,28 @@ en:
 
   global:
     actions: Actions
+    administration: Administration
+    admin_only: Admin Only
     all: All
+    app_name: Mulder WMS
     date_time: Date/Time
     disabled: Disabled
     history: History
+
+  home:
+    jumbo:
+      welcome: Welcome to Mulder WMS!
+      lead: A easy to use, responsive, fully cloud SaaS for all your warehouse management needs.
+    card:
+      easy:
+        title: EASY
+        text: Skip hours of setup.  Add users and get going.  We believe that it should just work.  Customization and complex setup should be optional and only when necessary.
+      responsive:
+        title: RESPONSIVE
+        text: Get your work done on whatever device you choose.  The world is on the move and we believe you should be able to manage your warehouse from any device.
+      saas:
+        title: FULLY CLOUD SaaS
+        text: Available wherever you have an internet connection.  Nothing to install, nothing to maintain.  We support the most popular current web browsers.
 
   modal:
     title:

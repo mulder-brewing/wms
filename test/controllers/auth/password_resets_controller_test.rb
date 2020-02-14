@@ -22,10 +22,12 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_redirected_to edit_auth_password_reset_path(@regular_user)
     follow_redirect!
-    # Should be 2 links, one being the Mulder WMS logo top left, the other being the log out link.
-    assert_select 'a[href]', 2
-    assert_select 'a[href=?]', logout_path
-    assert_select 'a[href=?]', root_path
+    # Should be 3 links.
+    assert_select 'a[href]', 4
+    # 2 log out links bc of the dummy navbar
+    assert_select 'a[href=?]', logout_path, count: 2
+    # 2 root links bc of the dummy navbar
+    assert_select 'a[href=?]', root_path, count: 2
     assert_select "form"
     assert_select "form input[id=auth_password_reset_password]"
     assert_select "form input[id=auth_password_reset_password_confirmation]"

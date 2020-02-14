@@ -3,26 +3,30 @@ class Button::BaseButton
 
   BASE_CLASS = "btn"
 
-  attr_accessor :remote, :text_key, :style, :size, :classes, :block, :btn_class,
-    :btn_id
+  attr_accessor :remote, :text_key, :style, :size, :classes, :block, :btn_id
+
+  delegate :class_name, to: :class
 
   def initialize(**options)
-    @remote = false
+    @remote = options[:remote] || false
     @text_key = options[:text_key]
     @style = options[:style]
     @size = options[:size]
     @classes = []
     @classes << options[:class]
     @block = options[:block]
-    @btn_class = options[:btn_class] || safe_const_get("BTN_CLASS")
-    @btn_id = options[:btn_id] || safe_const_get("BTN_ID")
+    @btn_id = options[:btn_id]
   end
 
   def btn_class
     return @final_calc_class unless @final_calc_class.nil?
     @classes << "btn-block" if block?
-    array = [BASE_CLASS, @style, @size, @btn_class] + @classes
+    array = [BASE_CLASS, style, size, class_name] + classes
     @final_calc_class = array.select(&:present?).join(" ")
+  end
+
+  def self.class_name
+    name.demodulize
   end
 
   def block?
@@ -31,12 +35,6 @@ class Button::BaseButton
 
   def text
     I18n.t(text_key)
-  end
-
-  private
-
-  def safe_const_get(const)
-    self.class.const_get(const) if self.class.const_defined?(const)
   end
 
 end

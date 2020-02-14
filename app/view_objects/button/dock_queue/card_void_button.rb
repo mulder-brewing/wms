@@ -1,7 +1,5 @@
 class Button::DockQueue::CardVoidButton < Button::DockQueue::StatusBackButton
 
-  BTN_CLASS = "card-void-button-class"
-
   def initialize(*)
     super
     @text_key = "actions.void"

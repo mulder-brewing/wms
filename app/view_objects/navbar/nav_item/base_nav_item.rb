@@ -2,14 +2,19 @@ class Navbar::NavItem::BaseNavItem
 
   HTML_OPTIONS = {}
 
-  attr_accessor :id, :name, :text_key, :path, :show
+  attr_accessor :name, :text_key, :path, :show
+
+  delegate :id, to: :class
 
   def initialize(**options)
-    @id = options[:id]
     @name = options[:name]
     @text_key = options[:text_key]
     @path = options[:path]
     @show = options[:show]
+  end
+
+  def self.id
+    name.demodulize
   end
 
   def name

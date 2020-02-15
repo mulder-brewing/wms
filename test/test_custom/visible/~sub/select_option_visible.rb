@@ -1,4 +1,4 @@
-class SelectOptionVisible < FormFieldVisible
+class SelectOptionVisible < VisibleTO
 
   attr_accessor :option_id
 

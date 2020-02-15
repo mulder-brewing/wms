@@ -25,4 +25,8 @@ class CreateUpdateTO < GenericTO
     super({ params: params })
   end
 
+  def path
+    @path || PathUtil.record(@model)
+  end
+
 end

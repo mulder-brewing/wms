@@ -136,7 +136,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     to = NewTO.new(@everything_ap_user, @new, true)
     text = @dock_group_1.description
     id = @dock_group_1.id
-    to.visibles << SelectOptionVisible.new(form: @form,
+    to.visibles << FormSelectOptionVisible.new(form: @form,
       field: :dock_group_id, text: text, option_id: id)
     to.test(self)
   end
@@ -146,7 +146,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     @dock_group_1.update_column(:enabled, false)
     text = @dock_group_1.description
     id = @dock_group_1.id
-    to.visibles << SelectOptionVisible.new(form: @form,
+    to.visibles << FormSelectOptionVisible.new(form: @form,
       field: :dock_group_id, text: text, option_id: id, visible: false)
     to.test(self)
   end
@@ -201,7 +201,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
   test "dock number should be unique per dock group" do
     CreateTO.new(@everything_ap_user, @new, @ph, true).test(self)
     to = CreateTO.new(@everything_ap_user, @new, @ph, false)
-    to.visibles << FormErrorVisible.new(field: :number, type: :unique)
+    to.visibles << FormFieldErrorVisible.new(field: :number, type: :unique)
     to.test(self)
   end
 
@@ -214,7 +214,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
   test "can't create dock with dock group from another company" do
     to = CreateTO.new(@everything_ap_user, @new, @ph, false)
     @ph[:dock_group_id] = @other_dock_group.id
-    to.visibles << FormErrorVisible.new(field: :dock_group_id, type: :does_not_belong)
+    to.visibles << FormBaseErrorVisible.new(field: :dock_group, type: :does_not_belong)
     to.test(self)
   end
 
@@ -292,7 +292,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     record_1_dg = @record_1.dock_group
     text = record_1_dg.description
     id = record_1_dg.id
-    to.visibles << SelectOptionVisible.new(form: @form,
+    to.visibles << FormSelectOptionVisible.new(form: @form,
       field: :dock_group_id, text: text, option_id: id)
     to.test(self)
   end

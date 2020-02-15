@@ -114,6 +114,8 @@ en:
     messages:
       invalid: is invalid
       taken: has already been taken
+      exist: must exist
+      blank: can't be blank
     unknown: Unknown Error
     stale:
       data: Stale data detected, please refresh

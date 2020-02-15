@@ -11,10 +11,6 @@ class CreateTO < CreateUpdateTO
     test.create_to_test(self)
   end
 
-  def create_path
-    Rails.application.routes.url_helpers.polymorphic_path(@model)
-  end
-
   def model_last
     model_class.last
   end

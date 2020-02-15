@@ -8,14 +8,6 @@ module Includes
 
   end
 
-  module NewPath
-
-    def new_path
-      Rails.application.routes.url_helpers.new_polymorphic_path(@model)
-    end
-
-  end
-
   module IndexPath
 
     attr_accessor :query
@@ -25,6 +17,8 @@ module Includes
       case @query
       when nil
         return path
+      when String
+        return path + "?#{@query}"
       when :enabled
         return path + "?enabled=true"
       when :disabled

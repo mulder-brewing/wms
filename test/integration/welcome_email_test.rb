@@ -37,9 +37,9 @@ class WelcomeEmailTest < ActionDispatch::IntegrationTest
   test "email doesn't send if email is blank" do
     to = CreateTO.new(@company_admin, @new, @ph, false)
     to.merge_params_hash({ email: "", send_email: true })
-    to.visibles << FormErrorVisible.new(field: :send_email,
+    to.visibles << FormFieldErrorVisible.new(field: :send_email,
       error: "errors.attributes.send_email.blank_email")
-    to.visibles << FormErrorVisible.new(field: :email,
+    to.visibles << FormFieldErrorVisible.new(field: :email,
       error: "errors.attributes.email.blank_send")
     to.test(self)
     assert_equal 0, ActionMailer::Base.deliveries.size
@@ -48,7 +48,7 @@ class WelcomeEmailTest < ActionDispatch::IntegrationTest
   test "email doesn't send if email is invalid" do
     to = CreateTO.new(@company_admin, @new, @ph, false)
     to.merge_params_hash({ email: "invalid", send_email: true })
-    to.visibles << FormErrorVisible.new(field: :email, type: :invalid)
+    to.visibles << FormFieldErrorVisible.new(field: :email, type: :invalid)
     to.test(self)
     assert_equal 0, ActionMailer::Base.deliveries.size
   end

@@ -90,7 +90,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "access policy selector has enabled policies for company admin" do
     to = NewTO.new(@company_admin, @new, true)
     count = AccessPolicy.enabled_where_company(@company_admin.company_id).count
-    to.visibles << SelectOptionVisible.new(form: @form,
+    to.visibles << FormSelectOptionVisible.new(form: @form,
       field: :access_policy_id, count: count)
     to.test(self)
   end
@@ -100,7 +100,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     @averagejoe_access_policy.update_column(:enabled, false)
     text = @averagejoe_access_policy.description
     id = @averagejoe_access_policy.id
-    to.visibles << SelectOptionVisible.new(form: @form,
+    to.visibles << FormSelectOptionVisible.new(form: @form,
       field: :access_policy_id, text: text, option_id: id, visible: false)
     to.test(self)
   end
@@ -127,7 +127,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   test "access policy selector is empty for app admin" do
     to = NewTO.new(@app_admin, @new, true)
-    to.visibles << SelectOptionVisible.new(form: @form,
+    to.visibles << FormSelectOptionVisible.new(form: @form,
       field: :access_policy_id, count: 0)
     to.test(self)
   end
@@ -199,12 +199,12 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to.params_hash[:access_policy_id] = nil
     # First, check the count of the options.
     count = AccessPolicy.enabled_where_company(@other_access_policy.company_id).count
-    to.visibles << SelectOptionVisible.new(form: @form,
+    to.visibles << FormSelectOptionVisible.new(form: @form,
       field: :access_policy_id, count: count)
     # Next, verify the correct option is there.
     text = @other_access_policy.description
     id = @other_access_policy.id
-    to.visibles << SelectOptionVisible.new(form: @form,
+    to.visibles << FormSelectOptionVisible.new(form: @form,
       field: :access_policy_id, text: text, option_id: id)
     to.test(self)
   end
@@ -212,7 +212,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "app admin can't create user with mismatch access policy" do
     to = CreateTO.new(@app_admin, @new, @ph, false)
     to.merge_params_hash({ company_id: @other_admin.company_id })
-    to.visibles << FormErrorVisible.new(field: :access_policy_id, type: :does_not_belong)
+    to.visibles << FormBaseErrorVisible.new(field: :access_policy, type: :does_not_belong)
     to.test(self)
   end
 
@@ -225,7 +225,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "username should be unique across all companies" do
     CreateTO.new(@company_admin, @new, @ph, true).test(self)
     to = CreateTO.new(@other_admin, @new, @ph, false)
-    to.visibles << FormErrorVisible.new(field: :username, type: :unique)
+    to.visibles << FormFieldErrorVisible.new(field: :username, type: :unique)
     to.test(self)
   end
 

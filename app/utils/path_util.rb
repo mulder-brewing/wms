@@ -19,4 +19,9 @@ module PathUtil
       routing_type: :path, action: :edit)
   end
 
+  def self.record(record)
+    Rails.application.routes.url_helpers.polymorphic_url(record,
+      routing_type: :path)
+  end
+
 end

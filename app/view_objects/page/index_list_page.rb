@@ -10,6 +10,7 @@ class Page::IndexListPage < Page::BasePage
     :show_enabled_filter, :icon_class
 
   delegate :records, to: :table
+  delegate :render_path, to: :class
 
   def initialize(*)
     super
@@ -24,7 +25,7 @@ class Page::IndexListPage < Page::BasePage
     end
   end
 
-  def render_path
+  def self.render_path
     INDEX_HTML_PATH
   end
 

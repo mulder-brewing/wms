@@ -2,6 +2,8 @@ class Page::DockRequestsPage < Page::IndexListPage
 
   attr_accessor :dock_groups, :dock_group
 
+  delegate :dg_select_id, to: :class
+
   def prep(params)
     @new_record = DockQueue::DockRequest.new
     @dock_groups = DockGroup.enabled_where_company(current_company_id).order(:description)
@@ -11,8 +13,12 @@ class Page::DockRequestsPage < Page::IndexListPage
     end
   end
 
-  def render_path
+  def self.render_path
     "dock_queue/dock_requests/index"
+  end
+
+  def self.dg_select_id
+    "dock_group_select"
   end
 
   def dock_groups_count

@@ -22,12 +22,10 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_redirected_to edit_auth_password_reset_path(@regular_user)
     follow_redirect!
-    # Should be 3 links.
-    assert_select 'a[href]', 4
-    # 2 log out links bc of the dummy navbar
-    assert_select 'a[href=?]', logout_path, count: 2
-    # 2 root links bc of the dummy navbar
-    assert_select 'a[href=?]', root_path, count: 2
+    # Should be 3 links, log out and home page.
+    assert_select 'a[href]', 2
+    assert_select 'a[href=?]', logout_path
+    assert_select 'a[href=?]', root_path
     assert_select "form"
     assert_select "form input[id=auth_password_reset_password]"
     assert_select "form input[id=auth_password_reset_password_confirmation]"
@@ -46,7 +44,7 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     to.path = auth_password_reset_path
     to.params_key = :auth_password_reset
     to.update_fields = @password
-    to.visibles << FormErrorVisible.new(field: :password, type: :same)
+    to.visibles << FormFieldErrorVisible.new(field: :password, type: :same)
     to.test(self)
     assert_template 'auth/password_resets/edit'
     # user should be able to update their password with a new password

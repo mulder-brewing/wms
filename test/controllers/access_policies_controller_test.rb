@@ -116,7 +116,7 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
   test "description must be unique within company" do
     CreateTO.new(@company_admin, @new, @ph, true).test(self)
     to = CreateTO.new(@company_admin, @new, @ph, false)
-    to.visibles << FormErrorVisible.new(field: :description, type: :unique)
+    to.visibles << FormFieldErrorVisible.new(field: :description, type: :unique)
     to.test(self)
   end
 

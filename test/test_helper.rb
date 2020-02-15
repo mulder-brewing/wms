@@ -74,10 +74,10 @@ class ActionDispatch::IntegrationTest
     log_in_as(user) if !user.nil?
   end
 
-  # This function uses the NewTO to test the new modal.
-  def new_to_test(to)
+  # This function is for testing the modal for get requests
+  def basic_modal_to_test(to)
     log_in_if_user(to.user)
-    get to.new_path, to.xhr_switch_params
+    get to.path, to.xhr_switch_params
     assert_equal to.validity, !redirected?(@response)
     assert_select "form", to.validity
     verify_visibles(to) if to.test_visibles?
@@ -86,7 +86,7 @@ class ActionDispatch::IntegrationTest
   # This function uses the CreateTO to test creating a record.
   def create_to_test(to)
     log_in_if_user(to.user)
-    c = -> { post to.create_path, to.xhr_switch_params }
+    c = -> { post to.path, to.xhr_switch_params }
     if to.validity == true
       if to.check_count?
         assert_difference 'to.model_count', 1 do
@@ -108,19 +108,10 @@ class ActionDispatch::IntegrationTest
     end
   end
 
-  # This function uses the EditTO to test the edit modal.
-  def edit_to_test(to)
-    log_in_if_user(to.user)
-    get to.edit_path, to.xhr_switch_params
-    assert_equal to.validity, !redirected?(@response)
-    assert_select "form", to.validity
-    verify_visibles(to) if to.test_visibles?
-  end
-
   # This function uses UpdateTO to test updating a record.
   def update_to_test(to)
     log_in_if_user(to.user)
-    patch to.update_path, to.xhr_switch_params
+    patch to.path, to.xhr_switch_params
     object = to.model
     old_object = object.dup
     object.reload
@@ -145,7 +136,7 @@ class ActionDispatch::IntegrationTest
     log_in_if_user(to.user)
     nf = Proc.new {|x| assert_equal x, not_found?(@response) }
     if to.instance_of? UpdateTO
-      path = to.update_path
+      path = to.path
       patch = Proc.new { patch path, xhr: true, params: to.params }
       patch.call
       nf.call(false)
@@ -153,7 +144,7 @@ class ActionDispatch::IntegrationTest
       patch.call
       nf.call(true)
     elsif to.instance_of? EditTO
-      path = to.edit_path
+      path = to.path
       get = Proc.new { get path, xhr:true }
       get.call
       nf.call(false)

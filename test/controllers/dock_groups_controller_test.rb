@@ -174,7 +174,7 @@ class DockGroupsControllerTest < ActionDispatch::IntegrationTest
   test "description should be unique per company" do
     CreateTO.new(@everything_ap_user, @new, ph, true).test(self)
     to = CreateTO.new(@everything_ap_user, @new, ph, false)
-    to.visibles << FormErrorVisible.new(field: :description, type: :unique)
+    to.visibles << FormFieldErrorVisible.new(field: :description, type: :unique)
     to.test(self)
   end
 

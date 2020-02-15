@@ -54,11 +54,21 @@ module NavbarHelper
   end
 
   def navbar_toggler(navbar)
-    button_tag(class: "navbar-toggler", type: "button", data: { toggle: "collapse", target: navbar.toggler_target }, aria: { controls: "navbarToggler",  expanded: "false", label: "Toggle navigation" } ) do
+    button_tag(
+        class: "navbar-toggler",
+        type: "button",
+        data: {
+          toggle: "collapse",
+          target: navbar.toggler_target
+        },
+        aria: {
+          controls: "navbarToggler",
+          expanded: "false",
+          label: "Toggle navigation"
+        }
+    ) do
       tag.span(class: "navbar-toggler-icon")
     end
-
-
   end
 
 end

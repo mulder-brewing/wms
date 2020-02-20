@@ -104,7 +104,7 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal timestamps aren't visible" do
     to = NewTO.new(@everything_ap_user, @new, true)
-    to.timestamps_visible = false
+    to.visibles << ModalTimestampsVisible.new(visible: false)
     to.test(self)
   end
 
@@ -219,7 +219,7 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal timestamps are not visible" do
     to = EditTO.new(@everything_ap_user, @record_1, true)
-    to.timestamps_visible = false
+    to.visibles << ModalTimestampsVisible.new(visible: false)
     to.test(self)
   end
 
@@ -306,6 +306,67 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test "user is warned about a deleted/not found record for update" do
     to = UpdateTO.new(@everything_ap_user, @record_1, @phu, nil)
+    to.test_nf(self)
+  end
+
+  # ----------------------------------------------------------------------------
+  # Tests for showing record
+
+  test "logged out user can't get show modal" do
+    ShowTO.new(nil, @record_1, false).test(self)
+  end
+
+  test "a nothing ap user can't get show modal" do
+    ShowTO.new(@nothing_ap_user, @record_1, false).test(self)
+  end
+
+  test "show modal title" do
+    to = ShowTO.new(@everything_ap_user, @record_1, true)
+    to.visibles << ShowModalTitleVisible.new(model_class: DockQueue::DockRequest)
+    to.test(self)
+  end
+
+  test "show modal buttons" do
+    to = ShowTO.new(@everything_ap_user, @record_1, true)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
+    to.test(self)
+  end
+
+  test "show modal timestamps are not visible" do
+    to = ShowTO.new(@everything_ap_user, @record_1, true)
+    to.visibles << ModalTimestampsVisible.new(visible: false)
+    to.test(self)
+  end
+
+  test "a everything ap user can get the show modal" do
+    ShowTO.new(@everything_ap_user, @record_1, true).test(self)
+  end
+
+  test "a everything ap(disabled) user can't get the show modal" do
+    to = ShowTO.new(@everything_ap_user, @record_1, false)
+    to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a dock queue ap user can get the show modal" do
+    to = ShowTO.new(@nothing_ap_user, @record_1, true)
+    to.enable_model_permission("dock_queue")
+    to.test(self)
+  end
+
+  test "a dock queue ap(disabled) user can't get the show modal" do
+    to = ShowTO.new(@nothing_ap_user, @record_1, false)
+    to.enable_model_permission("dock_queue")
+    to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a everything ap user can't get show modal for another company" do
+    ShowTO.new(@everything_ap_user, @other_record_1, false).test(self)
+  end
+
+  test "user is warned about a deleted/not found record for show modal" do
+    to = ShowTO.new(@everything_ap_user, @record_1, nil)
     to.test_nf(self)
   end
 

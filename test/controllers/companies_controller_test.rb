@@ -226,27 +226,27 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   # Tests for delete modal
 
   test "app admin can get destroy modal" do
-    to = DestroyModalTO.new(@app_admin, @averagejoes, true)
+    to = ModalTO.new(@app_admin, @averagejoes, true)
+    to.path = destroy_modal_company_path(@averagejoes)
+    to.test(self)
+  end
+
+  test "destroy chicken message is there" do
+    to = ModalTO.new(@app_admin, @averagejoes, true)
     to.path = destroy_modal_company_path(@averagejoes)
     to.visibles << DestroyMessageVisible.new(to_delete: @averagejoes.name)
     to.test(self)
   end
 
-  test "destroy chicken message is there" do
-    to = DestroyModalTO.new(@app_admin, @averagejoes, true)
-    to.path = destroy_modal_company_path(@averagejoes)
-    to.test(self)
-  end
-
   test "destroy modal title" do
-    to = DestroyModalTO.new(@app_admin, @averagejoes, true)
+    to = ModalTO.new(@app_admin, @averagejoes, true)
     to.path = destroy_modal_company_path(@averagejoes)
     to.visibles << DestroyModalTitleVisible.new(model_class: Company)
     to.test(self)
   end
 
   test "should see the delete and close buttons" do
-    to = DestroyModalTO.new(@app_admin, @averagejoes, true)
+    to = ModalTO.new(@app_admin, @averagejoes, true)
     to.path = destroy_modal_company_path(@averagejoes)
     to.visibles << ModalFooterVisible.new(class: Button::ModalDeleteButton.class_name)
     to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
@@ -254,19 +254,19 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "logged out can't get destroy modal" do
-    to = DestroyModalTO.new(nil, @averagejoes, false)
+    to = ModalTO.new(nil, @averagejoes, false)
     to.path = destroy_modal_company_path(@averagejoes)
     to.test(self)
   end
 
   test "regular user can't get destroy modal" do
-    to = DestroyModalTO.new(@regular_user, @averagejoes, false)
+    to = ModalTO.new(@regular_user, @averagejoes, false)
     to.path = destroy_modal_company_path(@averagejoes)
     to.test(self)
   end
 
   test "company admin can't get destroy modal" do
-    to = DestroyModalTO.new(@company_admin, @averagejoes, false)
+    to = ModalTO.new(@company_admin, @averagejoes, false)
     to.path = destroy_modal_company_path(@averagejoes)
     to.test(self)
   end

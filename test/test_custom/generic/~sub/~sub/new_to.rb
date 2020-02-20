@@ -1,7 +1,12 @@
 class NewTO < ModalTO
 
-  def path
-    @path || PathUtil.new(@model)
+  def initialize(*)
+    super
+    @action = :new
+  end
+
+  def modal_path
+    PathUtil.new(model)
   end
 
 end

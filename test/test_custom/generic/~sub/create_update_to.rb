@@ -3,9 +3,9 @@ class CreateUpdateTO < GenericTO
   attr_accessor :params_key, :params_hash, :attributes
 
   def initialize(user, model, params_hash, validity)
+    super(user, model, validity)
     @params_hash = params_hash
     @select_jquery_method = :select_form
-    super(user, model, validity)
   end
 
   def params

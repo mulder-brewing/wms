@@ -2,9 +2,10 @@ class CreateTO < CreateUpdateTO
 
   attr_writer :check_count
 
-  def initialize(user, model, params_hash, validity)
-    @check_count = true
+  def initialize(*)
     super
+    @check_count = true
+    @action = :create
   end
 
   def test(test)

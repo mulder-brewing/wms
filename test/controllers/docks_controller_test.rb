@@ -98,7 +98,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "new modal timestamps aren't visible" do
     to = NewTO.new(@everything_ap_user, @new, true)
-    to.timestamps_visible = false
+    to.visibles << ModalTimestampsVisible.new(visible: false)
     to.test(self)
   end
 
@@ -244,7 +244,7 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "edit modal timestamps are visible" do
     to = EditTO.new(@everything_ap_user, @record_1, true)
-    to.timestamps_visible = true
+    to.visibles << ModalTimestampsVisible.new
     to.test(self)
   end
 

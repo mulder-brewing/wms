@@ -3,14 +3,26 @@ include ActiveModel::Translation
 
 class GenericTO
 
-  attr_accessor :user, :validity, :model, :debug, :path, :xhr, :visibles, :select_jquery_method
+  attr_accessor :user,
+                :model,
+                :validity,
+                :visibles,
+                :debug,
+                :path,
+                :xhr,
+                :select_jquery_method,
+                :controller,
+                :action
 
-  def initialize(user, model, validity)
+  def initialize(user, model, validity, **options)
     @user = user
     @model = model
     @validity = validity
-    @xhr = true
     @visibles = []
+    @debug = options[:debug]
+    @xhr = options[:xhr] || true
+    @select_jquery_method = options[:select_jquery_method]
+    @controller = options[:controller]
   end
 
   def disable_user_access_policy
@@ -45,6 +57,11 @@ class GenericTO
 
   def xhr?
     @xhr
+  end
+
+  def controller_action_path(**args)
+    return nil unless controller.present? && action.present?
+    PathUtil.controller_action(controller, action, args)
   end
 
 end

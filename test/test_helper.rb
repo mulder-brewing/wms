@@ -79,7 +79,6 @@ class ActionDispatch::IntegrationTest
     log_in_if_user(to.user)
     get to.path, to.xhr_switch_params
     assert_equal to.validity, !redirected?(@response)
-    assert_select "form", to.validity
     verify_visibles(to) if to.test_visibles?
   end
 
@@ -164,14 +163,6 @@ class ActionDispatch::IntegrationTest
     else
       assert redirected?(@response)
     end
-  end
-
-  # This function uses the DestroyModalTO to test the delete modal chicken message.
-  def destroy_modal_to_test(to)
-    log_in_if_user(to.user)
-    get to.path, to.xhr_switch_params
-    assert_equal to.validity, !redirected?(@response)
-    verify_visibles(to) if to.test_visibles?
   end
 
   # This function uses the DestroyTO to test deleting records.

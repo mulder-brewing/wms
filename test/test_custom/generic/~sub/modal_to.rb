@@ -1,7 +1,5 @@
 class ModalTO < GenericTO
 
-  attr_accessor :timestamps_visible
-
   def initialize(*)
     super
     @select_jquery_method = :select_modal
@@ -11,8 +9,15 @@ class ModalTO < GenericTO
     test.basic_modal_to_test(self)
   end
 
-  def test_timestamps?
-    !@timestamps_visible.nil?
+  def path
+    @path || controller_action_path || modal_path
+  end
+
+  def modal_path; end
+
+  def visibles
+    @visibles << ModalBodyVisible.new if validity
+    return @visibles
   end
 
 end

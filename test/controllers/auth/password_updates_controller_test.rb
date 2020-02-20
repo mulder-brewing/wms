@@ -96,7 +96,7 @@ class Auth::PasswordUpdatesControllerTest < ActionDispatch::IntegrationTest
   test "timestamps aren't visible" do
     to = EditTO.new(@company_admin, @regular_user, true)
     to.path = edit_auth_password_update_path(@regular_user)
-    to.timestamps_visible = false
+    to.visibles << ModalTimestampsVisible.new(visible: false)
     to.test(self)
   end
 

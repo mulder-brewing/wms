@@ -39,7 +39,7 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_auth_password_reset_path(@regular_user)
     # user should not be able to use the same password they
     # logged in with as their new updated password.
-    to = UpdateTO.new(@regular_user, @regular_user, @current_password, false)
+    to = UpdateTO.new(@regular_user, @regular_user, false, params_hash: @current_password)
     to.xhr = false
     to.path = auth_password_reset_path
     to.params_key = :auth_password_reset

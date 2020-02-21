@@ -80,28 +80,28 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   # Tests for creating a record.
 
   test "app admin can create" do
-    to = CreateTO.new(@app_admin, @new, @ph, true)
+    to = CreateTO.new(@app_admin, @new, true, params_hash: @ph)
     to.test(self)
   end
 
   test "record should be enabled by default when it's created" do
-    to = CreateTO.new(@app_admin, @new, @ph, true)
+    to = CreateTO.new(@app_admin, @new, true, params_hash: @ph)
     to.attributes = { :enabled => true }
     to.test(self)
   end
 
   test "logged out can't create" do
-    to = CreateTO.new(nil, @new, @ph, false)
+    to = CreateTO.new(nil, @new, false, params_hash: @ph)
     to.test(self)
   end
 
   test "regular user can't create" do
-    to = CreateTO.new(@regular_user, @new, @ph, false)
+    to = CreateTO.new(@regular_user, @new, false, params_hash: @ph)
     to.test(self)
   end
 
   test "company admin can't create" do
-    to = CreateTO.new(@company_admin, @new, @ph, false)
+    to = CreateTO.new(@company_admin, @new, false, params_hash: @ph)
     to.test(self)
   end
 
@@ -141,25 +141,25 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   # Tests for updating a record
 
   test "app admin can update record" do
-    to = UpdateTO.new(@app_admin, @averagejoes, @pu, true)
+    to = UpdateTO.new(@app_admin, @averagejoes, true, params_hash: @pu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "logged out can't update record" do
-    to = UpdateTO.new(nil, @averagejoes, @pu, false)
+    to = UpdateTO.new(nil, @averagejoes, false, params_hash: @pu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "regular user can't update record" do
-    to = UpdateTO.new(@regular_user, @averagejoes, @pu, false)
+    to = UpdateTO.new(@regular_user, @averagejoes, false, params_hash: @pu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "company admin can't update record" do
-    to = UpdateTO.new(@company_admin, @averagejoes, @pu, false)
+    to = UpdateTO.new(@company_admin, @averagejoes, false, params_hash: @pu)
     to.update_fields = @update_fields
     to.test(self)
   end

@@ -12,6 +12,12 @@ average_joe_dock_2:
     dock_group: cooler
     company: averagejoes
 
+disabled_dock:
+  number: disabled
+  enabled: false
+  dock_group: cooler
+  company: averagejoes
+
 other_dock:
   number: other
   enabled: true

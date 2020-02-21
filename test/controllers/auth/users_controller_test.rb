@@ -22,6 +22,11 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
       access_policy_id: @averagejoe_access_policy.id }
     @pu = { password: "NewPassword123$",
       password_confirmation: "NewPassword123$" }
+    @emu = { email: "updated@updated.com" }
+    @nu = { username: "updated", first_name: "updated", last_name: "updated" }
+    @appadm = { app_admin: true }
+    @disadm1 = { enabled: false, company_admin: true }
+    @disadm0 = { enabled: false, company_admin: false }
 
     @email = [:email]
     @password = [:password_digest]
@@ -161,31 +166,31 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   # Tests for creating a record.
 
   test "a logged out user can't create" do
-    CreateTO.new(nil, @new, @ph, false).test(self)
+    CreateTO.new(nil, @new, false, params_hash: @ph).test(self)
   end
 
   test "a regular user can't create" do
-    CreateTO.new(@regular_user, @new, @ph, false).test(self)
+    CreateTO.new(@regular_user, @new, false, params_hash: @ph).test(self)
   end
 
   test "a company admin can create" do
-    CreateTO.new(@company_admin, @new, @ph, true).test(self)
+    CreateTO.new(@company_admin, @new, true, params_hash: @ph).test(self)
   end
 
   test "a app admin can create" do
-    to = CreateTO.new(@app_admin, @new, @ph, true)
+    to = CreateTO.new(@app_admin, @new, true, params_hash: @ph)
     to.test(self)
   end
 
   test "company admin can only create own company user" do
-    to = CreateTO.new(@company_admin, @new, @ph, true)
+    to = CreateTO.new(@company_admin, @new, true, params_hash: @ph)
     to.merge_params_hash({ company_id: @other_admin.company_id })
     to.attributes = { :company_id => @company_admin.company_id }
     to.test(self)
   end
 
   test "app admin can create user in any company" do
-    to = CreateTO.new(@app_admin, @new, @ph, true)
+    to = CreateTO.new(@app_admin, @new, true, params_hash: @ph)
     to.merge_params_hash({ company_id: @other_admin.company_id })
     to.params_hash[:access_policy_id] = @other_access_policy.id
     to.attributes = { :company_id => @other_admin.company_id }
@@ -193,7 +198,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "access policy select should have options for record's company" do
-    to = CreateTO.new(@app_admin, @new, @ph, false)
+    to = CreateTO.new(@app_admin, @new, false, params_hash: @ph)
     to.merge_params_hash({ company_id: @other_admin.company_id })
     # Setting this to nil so create fails.
     to.params_hash[:access_policy_id] = nil
@@ -210,27 +215,27 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "app admin can't create user with mismatch access policy" do
-    to = CreateTO.new(@app_admin, @new, @ph, false)
+    to = CreateTO.new(@app_admin, @new, false, params_hash: @ph)
     to.merge_params_hash({ company_id: @other_admin.company_id })
     to.visibles << FormBaseErrorVisible.new(field: :access_policy, type: :does_not_belong)
     to.test(self)
   end
 
   test "record should be enabled by default when it's created" do
-    to = CreateTO.new(@company_admin, @new, @ph, true)
+    to = CreateTO.new(@company_admin, @new, true, params_hash: @ph)
     to.attributes = { :enabled => true }
     to.test(self)
   end
 
   test "username should be unique across all companies" do
-    CreateTO.new(@company_admin, @new, @ph, true).test(self)
-    to = CreateTO.new(@other_admin, @new, @ph, false)
+    CreateTO.new(@company_admin, @new, true, params_hash: @ph).test(self)
+    to = CreateTO.new(@other_admin, @new, false, params_hash: @ph)
     to.visibles << FormFieldErrorVisible.new(field: :username, type: :unique)
     to.test(self)
   end
 
   test "password_reset flag is true when user created" do
-    to = CreateTO.new(@company_admin, @new, @ph, true)
+    to = CreateTO.new(@company_admin, @new, true, params_hash: @ph)
     to.attributes = { :password_reset => true }
     to.test(self)
   end
@@ -359,52 +364,50 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
 
   # test who can and can't update email addresses
 
-  emu = { email: "updated@updated.com" }
-
   test "a logged out user can't update email" do
-    to = UpdateTO.new(nil, @regular_user, emu, false)
+    to = UpdateTO.new(nil, @regular_user, false, params_hash: @emu)
     to.update_fields = @email
     to.test(self)
   end
 
   test "regular user can update email for self" do
-    to = UpdateTO.new(@regular_user, @regular_user, emu, true)
+    to = UpdateTO.new(@regular_user, @regular_user, true, params_hash: @emu)
     to.update_fields = @email
     to.test(self)
   end
 
   test "company admin can update email for self" do
-    to = UpdateTO.new(@company_admin, @company_admin, emu, true)
+    to = UpdateTO.new(@company_admin, @company_admin, true, params_hash: @emu)
     to.update_fields = @email
     to.test(self)
   end
 
   test "app admin can update email for self" do
-    to = UpdateTO.new(@app_admin, @app_admin, emu, true)
+    to = UpdateTO.new(@app_admin, @app_admin, true, params_hash: @emu)
     to.update_fields = @email
     to.test(self)
   end
 
   test "regular user can't update email for user" do
-    to = UpdateTO.new(@regular_user, @company_admin, emu, false)
+    to = UpdateTO.new(@regular_user, @company_admin, false, params_hash: @emu)
     to.update_fields = @email
     to.test(self)
   end
 
   test "company admin can update email for user in company" do
-    to = UpdateTO.new(@company_admin, @regular_user, emu, true)
+    to = UpdateTO.new(@company_admin, @regular_user, true, params_hash: @emu)
     to.update_fields = @email
     to.test(self)
   end
 
   test "company admin can't update email for user in other company" do
-    to = UpdateTO.new(@company_admin, @other_user, emu, false)
+    to = UpdateTO.new(@company_admin, @other_user, false, params_hash: @emu)
     to.update_fields = @email
     to.test(self)
   end
 
   test "app admin can update email for user in other company" do
-    to = UpdateTO.new(@app_admin, @other_user, emu, true)
+    to = UpdateTO.new(@app_admin, @other_user, true, params_hash: @emu)
     to.update_fields = @email
     to.test(self)
   end
@@ -413,205 +416,198 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   # controller for updating a user's password.
 
   test "logged out user should not be able to update password" do
-    to = UpdateTO.new(nil, @regular_user, @pu, false)
+    to = UpdateTO.new(nil, @regular_user, false, params_hash: @pu)
     to.update_fields = @password
     to.test(self)
   end
 
   test "regular user can't update password for self" do
-    to = UpdateTO.new(@regular_user, @regular_user, @pu, false)
+    to = UpdateTO.new(@regular_user, @regular_user, false, params_hash: @pu)
     to.update_fields = @password
     to.test(self)
   end
 
   test "company admin can't update password for self" do
-    to = UpdateTO.new(@company_admin, @company_admin, @pu, false)
+    to = UpdateTO.new(@company_admin, @company_admin, false, params_hash: @pu)
     to.update_fields = @password
     to.test(self)
   end
 
   test "app admin can't update password for self" do
-    to = UpdateTO.new(@app_admin, @app_admin, @pu, false)
+    to = UpdateTO.new(@app_admin, @app_admin, false, params_hash: @pu)
     to.update_fields = @password
     to.test(self)
   end
 
   test "regular user can't update password for user" do
-    to = UpdateTO.new(@regular_user, @company_admin, @pu, false)
+    to = UpdateTO.new(@regular_user, @company_admin, false, params_hash: @pu)
     to.update_fields = @password
     to.test(self)
   end
 
   test "company admin can't update password for user in same company" do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, false)
+    to = UpdateTO.new(@company_admin, @regular_user, false, params_hash: @pu)
     to.update_fields = @password
     to.test(self)
   end
 
   test "app admin can't update password for user in same company" do
-    to = UpdateTO.new(@app_admin, @regular_user, @pu, false)
+    to = UpdateTO.new(@app_admin, @regular_user, false, params_hash: @pu)
     to.update_fields = @password
     to.test(self)
   end
 
   test "company admin can't update password for user in other company" do
-    to = UpdateTO.new(@company_admin, @other_user, @pu, false)
+    to = UpdateTO.new(@company_admin, @other_user, false, params_hash: @pu)
     to.update_fields = @password
     to.test(self)
   end
 
   test "app admin can't update password for user in other company" do
-    to = UpdateTO.new(@app_admin, @other_user, @pu, false)
+    to = UpdateTO.new(@app_admin, @other_user, false, params_hash: @pu)
     to.update_fields = @password
     to.test(self)
   end
 
   # test who can and can't update username, first_name, and last_name.
 
-  nu = { username: "updated", first_name: "updated", last_name: "updated" }
-
   test "logged out user can't update names" do
-    to = UpdateTO.new(nil, @regular_user, nu, false)
+    to = UpdateTO.new(nil, @regular_user, false, params_hash: @nu)
     to.update_fields = @names
     to.test(self)
   end
 
   test "regular user can't update names for self" do
-    to = UpdateTO.new(@regular_user, @regular_user, nu, false)
+    to = UpdateTO.new(@regular_user, @regular_user, false, params_hash: @nu)
     to.update_fields = @names
     to.test(self)
   end
 
   test "regular user can't update names for user" do
-    to = UpdateTO.new(@regular_user, @company_admin, nu, false)
+    to = UpdateTO.new(@regular_user, @company_admin, false, params_hash: @nu)
     to.update_fields = @names
     to.test(self)
   end
 
   test "company admin can update names for self" do
-    to = UpdateTO.new(@company_admin, @company_admin, nu, true)
+    to = UpdateTO.new(@company_admin, @company_admin, true, params_hash: @nu)
     to.update_fields = @names
     to.test(self)
   end
 
   test "company admin can update names for user in same company" do
-    to = UpdateTO.new(@company_admin, @regular_user, nu, true)
+    to = UpdateTO.new(@company_admin, @regular_user, true, params_hash: @nu)
     to.update_fields = @names
     to.test(self)
   end
 
   test "company admin can't update names for user in other company" do
-    to = UpdateTO.new(@company_admin, @other_user, nu, false)
+    to = UpdateTO.new(@company_admin, @other_user, false, params_hash: @nu)
     to.update_fields = @names
     to.test(self)
   end
 
   test "app admin can update names for self" do
-    to = UpdateTO.new(@app_admin, @app_admin, nu, true)
+    to = UpdateTO.new(@app_admin, @app_admin, true, params_hash: @nu)
     to.update_fields = @names
     to.test(self)
   end
 
   test "app admin can update names for user in same company" do
-    to = UpdateTO.new(@app_admin, @regular_user, nu, true)
+    to = UpdateTO.new(@app_admin, @regular_user, true, params_hash: @nu)
     to.update_fields = @names
     to.test(self)
   end
 
   test "app admin can update names for user in other company" do
-    to = UpdateTO.new(@app_admin, @other_user, nu, true)
+    to = UpdateTO.new(@app_admin, @other_user, true, params_hash: @nu)
     to.update_fields = @names
     to.test(self)
   end
 
   # test who can and can't update enabled and company admin booleans
 
-  disadm1 = { enabled: false, company_admin: true }
-  disadm0 = { enabled: false, company_admin: false }
-
   test "a logged out user can't update enabled/admin" do
-    to = UpdateTO.new(nil, @regular_user, disadm1, false)
+    to = UpdateTO.new(nil, @regular_user, false, params_hash: @disadm1)
     to.update_fields = @enabled_admin
     to.test(self)
   end
 
   test "regular user can't update enabled/admin for self" do
-    to = UpdateTO.new(@regular_user, @regular_user, disadm1, false)
+    to = UpdateTO.new(@regular_user, @regular_user, false, params_hash: @disadm1)
     to.update_fields = @enabled_admin
     to.test(self)
   end
 
   test "regular user can't update enabled/admin for user" do
-    to = UpdateTO.new(@regular_user, @company_admin, disadm0, false)
+    to = UpdateTO.new(@regular_user, @company_admin, false, params_hash: @disadm0)
     to.update_fields = @enabled_admin
     to.test(self)
   end
 
   test "company admin can update enabled/admin for user" do
-    to = UpdateTO.new(@company_admin, @regular_user, disadm1, true)
+    to = UpdateTO.new(@company_admin, @regular_user, true, params_hash: @disadm1)
     to.update_fields = @enabled_admin
     to.test(self)
   end
 
   test "company admin can't update enabled/admin for self" do
-    to = UpdateTO.new(@company_admin, @company_admin, disadm0, false)
+    to = UpdateTO.new(@company_admin, @company_admin, false, params_hash: @disadm0)
     to.update_fields = @enabled_admin
     to.test(self)
   end
 
   test "company admin can't update enabled/admin for other user" do
-    to = UpdateTO.new(@company_admin, @other_user, disadm1, false)
+    to = UpdateTO.new(@company_admin, @other_user, false, params_hash: @disadm1)
     to.update_fields = @enabled_admin
     to.test(self)
   end
 
   test "app admin can update enabled/admin for user" do
-    to = UpdateTO.new(@app_admin, @regular_user, disadm1, true)
+    to = UpdateTO.new(@app_admin, @regular_user, true, params_hash: @disadm1)
     to.update_fields = @enabled_admin
     to.test(self)
   end
 
   test "app admin can't update enabled/admin for self" do
-    to = UpdateTO.new(@app_admin, @app_admin, disadm0, false)
+    to = UpdateTO.new(@app_admin, @app_admin, false, params_hash: @disadm0)
     to.update_fields = @enabled_admin
     to.test(self)
   end
 
   test "app admin can update enabled/admin for other user" do
-    to = UpdateTO.new(@app_admin, @other_user, disadm1, true)
+    to = UpdateTO.new(@app_admin, @other_user, true, params_hash: @disadm1)
     to.update_fields = @enabled_admin
     to.test(self)
   end
 
   test "user is warned about a deleted/not found record for update" do
-    to = UpdateTO.new(@company_admin, @regular_user, disadm1, nil)
+    to = UpdateTO.new(@company_admin, @regular_user, nil, params_hash: @disadm1)
     to.test_nf(self)
   end
 
   # test for app_admin should not be updated through the web.
 
-  appadm = { app_admin: true }
-
   test "logged out user can't update app admin" do
-    to = UpdateTO.new(nil, @regular_user, appadm, false)
+    to = UpdateTO.new(nil, @regular_user, false, params_hash: @appadm)
     to.update_fields = [:app_admin]
     to.test(self)
   end
 
   test "regular user can't update app admin" do
-    to = UpdateTO.new(@regular_user, @regular_user, appadm, false)
+    to = UpdateTO.new(@regular_user, @regular_user, false, params_hash: @appadm)
     to.update_fields = [:app_admin]
     to.test(self)
   end
 
   test "company admin can't update app admin" do
-    to = UpdateTO.new(@company_admin, @company_admin, appadm, false)
+    to = UpdateTO.new(@company_admin, @company_admin, false, params_hash: @appadm)
     to.update_fields = [:app_admin]
     to.test(self)
   end
 
   test "app admin can't update app admin" do
-    to = UpdateTO.new(@app_admin, @company_admin, appadm, false)
+    to = UpdateTO.new(@app_admin, @company_admin, false, params_hash: @appadm)
     to.update_fields = [:app_admin]
     to.test(self)
   end

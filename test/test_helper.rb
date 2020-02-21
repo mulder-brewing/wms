@@ -235,8 +235,10 @@ class ActionDispatch::IntegrationTest
   end
 
   # This function helps verify the response is an error warning message.
-  def verify_alert_message(type, message)
-    assert_match "alert_custom('#{type}', '#{message}')", @response.body
+  def verify_alert_message(type, message, secondary_msg = nil)
+    assert_match /alert_custom/, @response.body
+    assert_match /#{message}/, @response.body
+    assert_match /#{secondary_msg}/, @response.body unless secondary_msg.nil?
   end
 
   # This function helps verify a string or regex exists in the response.

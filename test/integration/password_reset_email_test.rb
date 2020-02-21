@@ -18,7 +18,7 @@ class PasswordResetEmailTest < ActionDispatch::IntegrationTest
   end
 
   test "email sends if email is valid and send email is true" do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, true)
+    to = UpdateTO.new(@company_admin, @regular_user, true, params_hash: @pu)
     to.merge_params_hash({ email: "a@e.c", send_email: true })
     to.path = auth_password_update_path(@regular_user)
     to.params_key = :auth_password_update
@@ -28,7 +28,7 @@ class PasswordResetEmailTest < ActionDispatch::IntegrationTest
   end
 
   test "email doesn't send if send email is false" do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, true)
+    to = UpdateTO.new(@company_admin, @regular_user, true, params_hash: @pu)
     to.merge_params_hash({ email: "a@e.c", send_email: false })
     to.path = auth_password_update_path(@regular_user)
     to.params_key = :auth_password_update
@@ -38,7 +38,7 @@ class PasswordResetEmailTest < ActionDispatch::IntegrationTest
   end
 
   test "email doesn't send if email is blank" do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, false)
+    to = UpdateTO.new(@company_admin, @regular_user, false, params_hash: @pu)
     to.merge_params_hash({ email: "", send_email: true })
     to.path = auth_password_update_path(@regular_user)
     to.params_key = :auth_password_update
@@ -52,7 +52,7 @@ class PasswordResetEmailTest < ActionDispatch::IntegrationTest
   end
 
   test "email doesn't send with invalid email address" do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, false)
+    to = UpdateTO.new(@company_admin, @regular_user, false, params_hash: @pu)
     to.merge_params_hash({ email: "invalid", send_email: true })
     to.path = auth_password_update_path(@regular_user)
     to.params_key = :auth_password_update

@@ -89,40 +89,40 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
   # Tests for creating a record.
 
   test "a logged out user can't create" do
-    CreateTO.new(nil, @new, @ph, false).test(self)
+    CreateTO.new(nil, @new, false, params_hash: @ph).test(self)
   end
 
   test "a regular user can't create" do
-    CreateTO.new(@regular_user, @new, @ph, false).test(self)
+    CreateTO.new(@regular_user, @new, false, params_hash: @ph).test(self)
   end
 
   test "a company admin can create" do
-    CreateTO.new(@company_admin, @new, @ph, true).test(self)
+    CreateTO.new(@company_admin, @new, true, params_hash: @ph).test(self)
   end
 
   test "company admin can only create own company record" do
-    to = CreateTO.new(@company_admin, @new, @ph, true)
+    to = CreateTO.new(@company_admin, @new, true, params_hash: @ph)
     to.merge_params_hash({ company_id: @other_admin.company_id })
     to.attributes = { :company_id => @company_admin.company_id }
     to.test(self)
   end
 
   test "record should be enabled by default when it's created" do
-    to = CreateTO.new(@company_admin, @new, @ph, true)
+    to = CreateTO.new(@company_admin, @new, true, params_hash: @ph)
     to.attributes = { :enabled => true }
     to.test(self)
   end
 
   test "description must be unique within company" do
-    CreateTO.new(@company_admin, @new, @ph, true).test(self)
-    to = CreateTO.new(@company_admin, @new, @ph, false)
+    CreateTO.new(@company_admin, @new, true, params_hash: @ph).test(self)
+    to = CreateTO.new(@company_admin, @new, false, params_hash: @ph)
     to.visibles << FormFieldErrorVisible.new(field: :description, type: :unique)
     to.test(self)
   end
 
   test "description can be the same for other company" do
-    CreateTO.new(@company_admin, @new, @ph, true).test(self)
-    CreateTO.new(@other_admin, @new, @ph, true).test(self)
+    CreateTO.new(@company_admin, @new, true, params_hash: @ph).test(self)
+    CreateTO.new(@other_admin, @new, true, params_hash: @ph).test(self)
   end
 
   # ----------------------------------------------------------------------------
@@ -177,25 +177,25 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
   # Tests for updating a record.
 
   test "company admin can update record" do
-    to = UpdateTO.new(@company_admin, @averagejoe_access_policy, @phu, true)
+    to = UpdateTO.new(@company_admin, @averagejoe_access_policy, true, params_hash: @phu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "a logged out user can't update record" do
-    to = UpdateTO.new(nil, @averagejoe_access_policy, @phu, false)
+    to = UpdateTO.new(nil, @averagejoe_access_policy, false, params_hash: @phu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "regular user can't update record" do
-    to = UpdateTO.new(@regular_user, @averagejoe_access_policy, @phu, false)
+    to = UpdateTO.new(@regular_user, @averagejoe_access_policy, false, params_hash: @phu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "company admin can't update record in other company" do
-    to = UpdateTO.new(@company_admin, @other_access_policy, @phu, false)
+    to = UpdateTO.new(@company_admin, @other_access_policy, false, params_hash: @phu)
     to.update_fields = @update_fields
     to.test(self)
   end

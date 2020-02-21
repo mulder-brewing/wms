@@ -1,14 +1,17 @@
 class CreateUpdateTO < GenericTO
 
-  attr_accessor :params_key, :params_hash, :attributes
+  attr_accessor :params, :params_key, :params_hash, :attributes
 
-  def initialize(user, model, params_hash, validity)
-    super(user, model, validity)
-    @params_hash = params_hash
+  def initialize(*args, **options)
+    super
+    @params = options[:params]
+    @params_key = options[:params_key]
+    @params_hash = options[:params_hash]
     @select_jquery_method = :select_form
   end
 
   def params
+    return @params unless @params.nil?
     key = @params_key || @model.model_name.to_s.underscore.sub("/", "_").to_sym
     { key => @params_hash }
   end
@@ -26,7 +29,11 @@ class CreateUpdateTO < GenericTO
   end
 
   def path
-    @path || PathUtil.record(@model)
+    @path || controller_action_path || PathUtil.record(@model)
+  end
+
+  def controller_action_path
+    super(id: model.id)
   end
 
 end

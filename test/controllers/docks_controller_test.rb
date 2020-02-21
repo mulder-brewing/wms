@@ -155,64 +155,64 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
   # Tests for creating a record.
 
   test "a logged out user can't create" do
-    CreateTO.new(nil, @new, @ph, false).test(self)
+    CreateTO.new(nil, @new, false, params_hash: @ph).test(self)
   end
 
   test "a nothing ap user can't create" do
-    CreateTO.new(@nothing_ap_user, @new, @ph, false).test(self)
+    CreateTO.new(@nothing_ap_user, @new, false, params_hash: @ph).test(self)
   end
 
   test "a everything ap user can create" do
-    CreateTO.new(@everything_ap_user, @new, @ph, true).test(self)
+    CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph).test(self)
   end
 
   test "a everything ap(disabled) user can't create" do
-    to = CreateTO.new(@everything_ap_user, @new, @ph, false)
+    to = CreateTO.new(@everything_ap_user, @new, false, params_hash: @ph)
     to.disable_user_access_policy
     to.test(self)
   end
 
   test "a dock ap user can create" do
-    to = CreateTO.new(@nothing_ap_user, @new, @ph, true)
+    to = CreateTO.new(@nothing_ap_user, @new, true, params_hash: @ph)
     to.enable_model_permission
     to.test(self)
   end
 
   test "a dock ap(disabled) user can't create" do
-    to = CreateTO.new(@nothing_ap_user, @new, @ph, false)
+    to = CreateTO.new(@nothing_ap_user, @new, false, params_hash: @ph)
     to.enable_model_permission
     to.disable_user_access_policy
     to.test(self)
   end
 
   test "Create with other company id will still save with user's company id" do
-    to = CreateTO.new(@everything_ap_user, @new, @ph, true)
+    to = CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph)
     to.merge_params_hash({ company_id: @other_admin.company_id })
     to.attributes = { :company_id => @everything_ap_user.company_id }
     to.test(self)
   end
 
   test "record should be enabled by default when it's created" do
-    to = CreateTO.new(@everything_ap_user, @new, @ph, true)
+    to = CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph)
     to.attributes = { :enabled => true }
     to.test(self)
   end
 
   test "dock number should be unique per dock group" do
-    CreateTO.new(@everything_ap_user, @new, @ph, true).test(self)
-    to = CreateTO.new(@everything_ap_user, @new, @ph, false)
+    CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph).test(self)
+    to = CreateTO.new(@everything_ap_user, @new, false, params_hash: @ph)
     to.visibles << FormFieldErrorVisible.new(field: :number, type: :unique)
     to.test(self)
   end
 
   test "number can be the same if different dock groups" do
-    CreateTO.new(@everything_ap_user, @new, @ph, true).test(self)
+    CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph).test(self)
     @ph[:dock_group_id] = @dock_group_2.id
-    CreateTO.new(@everything_ap_user, @new, @ph, true).test(self)
+    CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph).test(self)
   end
 
   test "can't create dock with dock group from another company" do
-    to = CreateTO.new(@everything_ap_user, @new, @ph, false)
+    to = CreateTO.new(@everything_ap_user, @new, false, params_hash: @ph)
     @ph[:dock_group_id] = @other_dock_group.id
     to.visibles << FormBaseErrorVisible.new(field: :dock_group, type: :does_not_belong)
     to.test(self)
@@ -301,39 +301,39 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
   # Tests for updating a record
 
   test "a logged out user can't update" do
-    to = UpdateTO.new(nil, @record_1, @phu, false)
+    to = UpdateTO.new(nil, @record_1, false, params_hash: @phu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "a nothing ap user can't update" do
-    to = UpdateTO.new(@nothing_ap_user, @record_1, @phu, false)
+    to = UpdateTO.new(@nothing_ap_user, @record_1, false, params_hash: @phu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "a everything ap user can update" do
-    to = UpdateTO.new(@everything_ap_user, @record_1, @phu, true)
+    to = UpdateTO.new(@everything_ap_user, @record_1, true, params_hash: @phu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "a everything ap(disabled) user can't update" do
-    to = UpdateTO.new(@everything_ap_user, @record_1, @phu, false)
+    to = UpdateTO.new(@everything_ap_user, @record_1, false, params_hash: @phu)
     to.update_fields = @update_fields
     to.disable_user_access_policy
     to.test(self)
   end
 
   test "a docks ap user can update" do
-    to = UpdateTO.new(@nothing_ap_user, @record_1, @phu, true)
+    to = UpdateTO.new(@nothing_ap_user, @record_1, true, params_hash: @phu)
     to.update_fields = @update_fields
     to.enable_model_permission
     to.test(self)
   end
 
   test "a docks ap(disabled) user can't update" do
-    to = UpdateTO.new(@nothing_ap_user, @record_1, @phu, false)
+    to = UpdateTO.new(@nothing_ap_user, @record_1, false, params_hash: @phu)
     to.update_fields = @update_fields
     to.enable_model_permission
     to.disable_user_access_policy
@@ -341,13 +341,13 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "a everything ap user can't update other company's record" do
-    to = UpdateTO.new(@everything_ap_user, @other_record_1, @phu, false)
+    to = UpdateTO.new(@everything_ap_user, @other_record_1, false, params_hash: @phu)
     to.update_fields = @update_fields
     to.test(self)
   end
 
   test "user is warned about a deleted/not found record for update" do
-    to = UpdateTO.new(@everything_ap_user, @record_1, @phu, nil)
+    to = UpdateTO.new(@everything_ap_user, @record_1, nil, params_hash: @phu)
     to.test_nf(self)
   end
 

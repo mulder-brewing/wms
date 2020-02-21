@@ -15,9 +15,4 @@ class ModalTO < GenericTO
 
   def modal_path; end
 
-  def visibles
-    @visibles << ModalBodyVisible.new if validity
-    return @visibles
-  end
-
 end

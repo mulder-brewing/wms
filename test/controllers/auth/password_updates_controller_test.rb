@@ -104,7 +104,7 @@ class Auth::PasswordUpdatesControllerTest < ActionDispatch::IntegrationTest
   # Tests for updating password
 
   test "regular user can update password for self without being flagged for password reset" do
-    to = UpdateTO.new(@regular_user, @regular_user, @pu, true)
+    to = UpdateTO.new(@regular_user, @regular_user, true, params_hash: @pu)
     to.path = auth_password_update_path(@regular_user)
     to.params_key = :auth_password_update
     to.update_fields = @password
@@ -113,7 +113,7 @@ class Auth::PasswordUpdatesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "regular user can't update password for user in company" do
-    to = UpdateTO.new(@regular_user, @company_admin, @pu, false)
+    to = UpdateTO.new(@regular_user, @company_admin, false, params_hash: @pu)
     to.path = auth_password_update_path(@company_admin)
     to.params_key = :auth_password_update
     to.update_fields = @password
@@ -122,7 +122,7 @@ class Auth::PasswordUpdatesControllerTest < ActionDispatch::IntegrationTest
 
   test "company admin can update password for user in company, " +
       "and user is flagged for password resest, " do
-    to = UpdateTO.new(@company_admin, @regular_user, @pu, true)
+    to = UpdateTO.new(@company_admin, @regular_user, true, params_hash: @pu)
     to.path = auth_password_update_path(@regular_user)
     to.params_key = :auth_password_update
     to.update_fields = @password
@@ -131,7 +131,7 @@ class Auth::PasswordUpdatesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "company admin can't update password for user in other company" do
-    to = UpdateTO.new(@company_admin, @other_user, @pu, false)
+    to = UpdateTO.new(@company_admin, @other_user, false, params_hash: @pu)
     to.path = auth_password_update_path(@other_user)
     to.params_key = :auth_password_update
     to.update_fields = @password

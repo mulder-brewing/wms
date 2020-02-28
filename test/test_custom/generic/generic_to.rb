@@ -12,7 +12,8 @@ class GenericTO
                 :xhr,
                 :select_jquery_method,
                 :controller,
-                :action
+                :action,
+                :form_class
 
   def initialize(user, model, validity, **options)
     @user = user
@@ -20,9 +21,11 @@ class GenericTO
     @validity = validity
     @visibles = []
     @debug = options[:debug]
+    @path = options[:path]
     @xhr = options[:xhr] || true
     @select_jquery_method = options[:select_jquery_method]
     @controller = options[:controller]
+    @form_class = options[:form_class]
   end
 
   def disable_user_access_policy

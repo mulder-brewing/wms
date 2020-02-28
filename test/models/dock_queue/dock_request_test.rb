@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'pp'
 
-class DockRequestTest < ActiveSupport::TestCase
+class DockQueue::DockRequestTest < ActiveSupport::TestCase
   def setup
     @dock_request_1 = dock_queue_dock_requests(:dock_request_1)
     @average_joe_dock = docks(:average_joe_dock)

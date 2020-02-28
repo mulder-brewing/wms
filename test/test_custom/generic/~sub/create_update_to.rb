@@ -12,7 +12,7 @@ class CreateUpdateTO < GenericTO
 
   def params
     return @params unless @params.nil?
-    key = @params_key || @model.model_name.to_s.underscore.sub("/", "_").to_sym
+    key = @params_key || form_or_model_key
     { key => @params_hash }
   end
 
@@ -34,6 +34,13 @@ class CreateUpdateTO < GenericTO
 
   def controller_action_path
     super(id: model.id)
+  end
+
+  private
+
+  def form_or_model_key
+    x = form_class || model
+    x.model_name.param_key.to_sym
   end
 
 end

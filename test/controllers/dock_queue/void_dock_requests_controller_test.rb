@@ -16,7 +16,7 @@ class DockQueue::VoidDockRequestsControllerTest < ActionDispatch::IntegrationTes
 
     @p = {}
 
-    @update_fields = [:status]
+    @update_fields = [:status, :voided_at]
   end
 
   # ----------------------------------------------------------------------------
@@ -135,7 +135,6 @@ class DockQueue::VoidDockRequestsControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "trying to void(update) a checked out record results in stale data alert" do
-    @record_1.status_checked_out!
     to = UpdateTO.new(@everything_ap_user, @checked_out, false, params: @p, controller: @controller)
     to.update_fields = @update_fields
     to.test(self)
@@ -143,7 +142,6 @@ class DockQueue::VoidDockRequestsControllerTest < ActionDispatch::IntegrationTes
   end
 
   test "trying to void(update) a voided record results in stale data alert" do
-    @record_1.status_voided!
     to = UpdateTO.new(@everything_ap_user, @voided, false, params: @p, controller: @controller)
     to.update_fields = @update_fields
     to.test(self)

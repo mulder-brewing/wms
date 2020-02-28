@@ -156,7 +156,7 @@ class ActionDispatch::IntegrationTest
   # This function uses IndexTo to test index
   def index_to_test(to)
     log_in_if_user(to.user)
-    get to.index_path
+    get to.path
     if to.validity == true
       assert_template to.index_template
       verify_visibles(to) if to.test_visibles?

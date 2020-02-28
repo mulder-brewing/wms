@@ -23,6 +23,7 @@ class DockQueue::DockRequest < ApplicationRecord
             format: { with: VALID_PHONE_REGEX },
             allow_blank: true
   validates :dock_group, company_id: true
+  validates :dock, company_id: true
 
   scope :active, -> {
     where("status != ? AND status != ?", "checked_out", "voided")

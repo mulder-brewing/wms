@@ -96,7 +96,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     to = NewTO.new(@company_admin, @new, true)
     count = AccessPolicy.enabled_where_company(@company_admin.company_id).count
     to.visibles << FormSelectOptionVisible.new(form: @form,
-      field: :access_policy_id, count: count)
+      field: :access_policy_id, count: count, blank_option: true)
     to.test(self)
   end
 
@@ -133,7 +133,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
   test "access policy selector is empty for app admin" do
     to = NewTO.new(@app_admin, @new, true)
     to.visibles << FormSelectOptionVisible.new(form: @form,
-      field: :access_policy_id, count: 0)
+      field: :access_policy_id, count: 0, blank_option: true)
     to.test(self)
   end
 
@@ -205,7 +205,7 @@ class Auth::UsersControllerTest < ActionDispatch::IntegrationTest
     # First, check the count of the options.
     count = AccessPolicy.enabled_where_company(@other_access_policy.company_id).count
     to.visibles << FormSelectOptionVisible.new(form: @form,
-      field: :access_policy_id, count: count)
+      field: :access_policy_id, count: count, blank_option: true)
     # Next, verify the correct option is there.
     text = @other_access_policy.description
     id = @other_access_policy.id

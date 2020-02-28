@@ -23,10 +23,7 @@ class DockTest < ActiveSupport::TestCase
   end
 
   test "average joe dock is valid" do
-    pp @average_joe_dock.valid?
-    pp @average_joe_dock.errors.full_messages
     assert valid?
-
   end
 
   test "average joe dock is invalid when number is blank or nil" do

@@ -24,7 +24,8 @@ Rails.application.routes.draw do
   namespace :dock_queue do
     resources :dock_requests, except: [:destroy]
     resources :history_dock_requests, only: [:index]
-    resources :dock_assignments, only: [:edit, :update, :destroy]
+    resources :dock_assignments, only: [:edit, :update]
+    resources :dock_unassignments, only: [:update]
     resources :void_dock_requests, only: [:edit, :update]
     resources :check_out_dock_requests, only: [:edit, :update]
     resources :dock_request_audit_histories, only: [:index]

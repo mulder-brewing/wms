@@ -1,0 +1,2 @@
+module DockQueue::CheckOutDockRequestsHelper
+end

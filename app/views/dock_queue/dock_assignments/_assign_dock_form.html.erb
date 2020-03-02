@@ -1,0 +1,14 @@
+<%= simple_form_for modal.form, remote:true, :html => { :id => modal.form.html_id } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :dock_id, required: true, :collection => modal.form.docks,
+        :label_method => :number, :value_method => :id %>
+      <% if modal.form.show_phone_number? %>
+        <%= f.input :text_message, sf_switch %>
+        <% pn = modal.form.record.phone_number %>
+        <%= link_to number_to_phone(pn, area_code: true), "tel:#{pn}" %>
+      <% end %>
+    </div>
+<% end %>

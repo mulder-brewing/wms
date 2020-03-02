@@ -1,55 +1,49 @@
 class DocksController < ApplicationController
-  before_action :logged_in_admin
+  include FormHelper, ModalHelper, PageHelper, TableHelper
 
   def new
-    @dock = Dock.new
-    find_enabled_dock_groups
-    dock_groups_length = @dock_groups.length
-    if dock_groups_length == 1
-      @dock.dock_group_id = @dock_groups.first.id
-    end
-    respond_to :js
+    form = new_form_prep_record(DockForm)
+    authorize form.record
+    form.setup_variables
+    modal = Modal::NewModal.new(form)
+    render_modal(modal)
   end
 
   def create
-    @dock = Dock.new(dock_params)
-    @dock.update(:company_id => current_company_id)
-    find_enabled_dock_groups
-    respond_to :js
-  end
-
-  def show
-    find_dock
-    respond_to :js
+    form = new_form_prep_record(DockForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    form.setup_variables
+    modal = Modal::CreateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def edit
-    find_dock
-    find_enabled_dock_groups
-    respond_to :js
+    form = new_form_prep_record(DockForm)
+    authorize form.record
+    form.setup_variables
+    modal = Modal::EditModal.new(form)
+    render_modal(modal)
   end
 
   def update
-    find_dock
-    find_enabled_dock_groups
-    @dock.update(dock_params) if !@dock.nil?
-    respond_to :js
+    form = new_form_prep_record(DockForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    form.setup_variables
+    modal = Modal::UpdateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def index
-    @pagy, @docks = pagy(Dock.where_company_includes_dock_group(current_company_id).order("dock_groups.description asc, docks.number asc"), items:25)
+    page = prep_new_page(Page::IndexListPage)
+    table = new_table_prep_records(Table::DocksIndexTable)
+    authorize_scope_records(table)
+    page.table = table
+    pagy_records(page)
+    render_page(page)
   end
 
-  private
-    def dock_params
-      params.require(:dock).permit(:number, :dock_group_id, :enabled)
-    end
-
-    def find_dock
-      @dock = find_object_redirect_invalid(Dock)
-    end
-
-    def find_enabled_dock_groups
-      @dock_groups = DockGroup.enabled_where_company(current_company_id).order(:description)
-    end
 end

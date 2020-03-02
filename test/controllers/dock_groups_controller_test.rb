@@ -3,274 +3,400 @@ require 'pp'
 
 class DockGroupsControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @cooler_dock_group = dock_groups(:cooler)
-    @other_company_dock_group = dock_groups(:other_company)
-    @delete_me_dock_group = dock_groups(:delete_me_dock_group)
-    @regular_user = users(:regular_user)
-    @company_admin = users(:company_admin_user)
-    @app_admin = users(:app_admin_user)
-    @other_user = users(:other_company_user)
-    @other_admin = users(:other_company_admin)
-    @delete_me_admin = users(:delete_me_admin)
-    @company_admin_company = @company_admin.company
-    @other_company = @other_user.company
+    @record_1 = dock_groups(:cooler)
+    @record_2 = dock_groups(:dry)
+    @other_record_1 = dock_groups(:other_company)
+
+    @other_admin = auth_users(:other_company_admin)
+    @nothing_ap_user = auth_users(:nothing_ap_user)
+    @everything_ap_user = auth_users(:everything_ap_user)
+
+    @new = DockGroup.new
+    @form = DockGroupForm
+
+    @update_fields = [:description, :enabled]
+
+    @ph = { :description => "Default" }
+    @phu = { :description => "Updated for test", :enabled => false }
   end
 
   # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to getting new dock group page/modal.
-  def new_dock_group_modal(user, validity)
-    log_in_if_user(user)
-    get new_dock_group_path, xhr:true
-    assert_equal validity, !redirected?(@response)
+  # Tests link in navbar.
+
+  test "logged out user can't see the link" do
+    to = NavbarTO.new(nil, @new, false)
+    to.query = :enabled
+    to.test(self)
   end
 
-  test "logged out user can't get new dock group modal" do
-    new_dock_group_modal(nil, false)
+  test "nothing ap user can't see the link" do
+    to = NavbarTO.new(@nothing_ap_user, @new, false)
+    to.query = :enabled
+    to.test(self)
   end
 
-  test "a regular user can't get new dock group modal" do
-    new_dock_group_modal(@regular_user, false)
+  test "everything ap user can see the link" do
+    to = NavbarTO.new(@everything_ap_user, @new, true)
+    to.query = :enabled
+    to.test(self)
   end
 
-  test "a company admin can get new dock group modal" do
-    new_dock_group_modal(@company_admin, true)
+  test "everything ap(disabled) user can't see the link" do
+    to = NavbarTO.new(@everything_ap_user, @new, false)
+    to.disable_user_access_policy
+    to.query = :enabled
+    to.test(self)
   end
 
-  test "a app admin can get new dock group modal" do
-    new_dock_group_modal(@app_admin, true)
+  test "dock groups ap user can see the link" do
+    to = NavbarTO.new(@nothing_ap_user, @new, true)
+    to.enable_model_permission
+    to.query = :enabled
+    to.test(self)
   end
 
-  test "the enabled disabled switch shouldn't show up in the new dock group modal" do
-    new_dock_group_modal(@company_admin, true)
-    assert_no_match /dock_group_enabled/, @response.body
-  end
-
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # These functions helps all the following tests to run related to creating a dock group.
-  def set_params(parameters)
-    return { dock_group: parameters }
-  end
-
-  def post_dock_group(params)
-    post dock_groups_path, xhr: true, params: params
-  end
-
-  def create_dock_group_as(user, parameters, validity)
-    log_in_if_user(user)
-    params = set_params(parameters)
-    if validity == false
-      assert_no_difference 'DockGroup.count' do
-        post_dock_group(params)
-      end
-    else
-      assert_difference 'DockGroup.count', 1 do
-        post_dock_group(params)
-      end
-    end
-  end
-
-  def create_and_return_dock_group(user, parameters)
-    log_in_if_user(user)
-    params = set_params(parameters)
-    post_dock_group(params)
-    return DockGroup.last
-  end
-
-  default_description = "Default"
-  dock_group_hash = { description: default_description }
-
-  test "a logged out user should not be able to create a dock group" do
-    create_dock_group_as(nil, dock_group_hash, false)
-  end
-
-  test "a regular user shouldn't be able to create a dock group" do
-    create_dock_group_as(@regular_user, dock_group_hash, false)
-  end
-
-  test "a company admin should be able to create a dock group" do
-    create_dock_group_as(@company_admin, dock_group_hash, true)
-  end
-
-  test "a app admin should be able to create a dock group" do
-    create_dock_group_as(@company_admin, dock_group_hash, true)
-  end
-
-  test "a user should not be able to create a dock group in another company" do
-    hash_other_company = { company_id: @other_company.id }
-    dock_group_hash_other_company = dock_group_hash.merge(hash_other_company)
-    dock_group = create_and_return_dock_group(@company_admin, dock_group_hash_other_company)
-    assert_equal @company_admin_company.id, dock_group.company_id
-  end
-
-  test "a dock group should be enabled by default when it's created" do
-    dock_group = create_and_return_dock_group(@company_admin, dock_group_hash)
-    assert_equal true, dock_group.enabled
-  end
-
-  test "dock group description should be unique per company" do
-    create_dock_group_as(@company_admin, dock_group_hash, true)
-    create_dock_group_as(@company_admin, dock_group_hash, false)
-    assert_match /Description has already been taken/, @response.body
-  end
-
-  test "dock group description can be the same for separate companies" do
-    create_dock_group_as(@company_admin, dock_group_hash, true)
-    create_dock_group_as(@other_admin, dock_group_hash, true)
+  test "dock groups ap(disabled) user can't see the link" do
+    to = NavbarTO.new(@nothing_ap_user, @new, false)
+    to.enable_model_permission
+    to.disable_user_access_policy
+    to.query = :enabled
+    to.test(self)
   end
 
   # ----------------------------------------------------------------------------
+  # Tests for new modal.
+
+  test "logged out user can't get new modal" do
+    to = NewTO.new(nil, @new, false)
+    to.test(self)
+  end
+
+  test "a nothing ap user can't get new modal" do
+    to = NewTO.new(@nothing_ap_user, @new, false)
+    to.test(self)
+  end
+
+  test "new modal title" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << NewModalTitleVisible.new(model_class: DockGroup)
+    to.test(self)
+  end
+
+  test "new modal buttons" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
+    to.test(self)
+  end
+
+  test "new modal timestamps aren't visible" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << ModalTimestampsVisible.new(visible: false)
+    to.test(self)
+  end
+
+  test "a everything ap user can get new modal" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.test(self)
+  end
+
+  test "a everything ap(disabled) user can't get new modal" do
+    to = NewTO.new(@everything_ap_user, @new, false)
+    to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a dock groups ap user can get new modal" do
+    to = NewTO.new(@nothing_ap_user, @new, true)
+    to.enable_model_permission
+    to.test(self)
+  end
+
+  test "a dock groups ap(disabled) user can't get new modal" do
+    to = NewTO.new(@nothing_ap_user, @new, false)
+    to.enable_model_permission
+    to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "the enable/disable switch should not be visible on the new modal" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
+    to.test(self)
+  end
+
   # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to getting the show dock group modal.
-  def show_dock_group_as(user, dock_group, validity)
-    log_in_if_user(user)
-    get dock_group_path(dock_group), xhr:true
-    assert_equal validity, !redirected?(@response)
+  # Tests for creating a record.
+
+  test "a logged out user can't create" do
+    CreateTO.new(nil, @new, false, params_hash: @ph).test(self)
   end
 
-  test "logged out user or regular user should not get show dock group model" do
-    show_dock_group_as(nil, @cooler_dock_group, false)
-    show_dock_group_as(@regular_user, @cooler_dock_group, false)
+  test "a nothing ap user can't create" do
+    CreateTO.new(@nothing_ap_user, @new, false, params_hash: @ph).test(self)
   end
 
-  test "a company admin or app admin should get show dock group modal" do
-    show_dock_group_as(@company_admin, @cooler_dock_group, true)
-    show_dock_group_as(@app_admin, @cooler_dock_group, true)
+  test "a everything ap user can create" do
+    CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph).test(self)
   end
 
-  test "a company_admin shouldn't be able to see a dock group from another company" do
-    show_dock_group_as(@company_admin, @other_company_dock_group, false)
+  test "a everything ap(disabled) user can't create" do
+    to = CreateTO.new(@everything_ap_user, @new, false, params_hash: @ph)
+    to.disable_user_access_policy
+    to.test(self)
   end
 
-  test "a app admin shouldn't be able to see a dock group from another company" do
-    show_dock_group_as(@app_admin, @other_company_dock_group, false)
+  test "a dock groups ap user can create" do
+    to = CreateTO.new(@nothing_ap_user, @new, true, params_hash: @ph)
+    to.enable_model_permission
+    to.test(self)
+  end
+
+  test "a dock groups ap(disabled) user can't create" do
+    to = CreateTO.new(@nothing_ap_user, @new, false, params_hash: @ph)
+    to.enable_model_permission
+    to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "Create with other company id will still save with user's company id" do
+    to = CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph)
+    to.merge_params_hash({ company_id: @other_admin.company_id })
+    to.attributes = { :company_id => @everything_ap_user.company_id }
+    to.test(self)
+  end
+
+  test "record should be enabled by default when it's created" do
+    to = CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph)
+    to.attributes = { :enabled => true }
+    to.test(self)
+  end
+
+  test "description should be unique per company" do
+    CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph).test(self)
+    to = CreateTO.new(@everything_ap_user, @new, false, params_hash: @ph)
+    to.visibles << FormFieldErrorVisible.new(field: :description, type: :unique)
+    to.test(self)
+  end
+
+  test "description can be the same for separate companies" do
+    CreateTO.new(@everything_ap_user, @new, true, params_hash: @ph).test(self)
+    CreateTO.new(@other_admin, @new, true, params_hash: @ph).test(self)
   end
 
   # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to getting the edit dock_group modal.
-  def edit_dock_group_as(user, dock_group, validity)
-    log_in_if_user(user)
-    get edit_dock_group_path(dock_group), xhr:true
-    assert_equal validity, !redirected?(@response)
+  # Tests for edit modal
+
+  test "logged out user can't get edit modal" do
+    EditTO.new(nil, @record_1, false).test(self)
   end
 
-  test "logged out user or regular user should not get edit dock group modal" do
-    edit_dock_group_as(nil, @cooler_dock_group, false)
-    edit_dock_group_as(@regular_user, @cooler_dock_group, false)
+  test "a nothing ap user can't get edit modal" do
+    EditTO.new(@nothing_ap_user, @record_1, false).test(self)
   end
 
-  test "a company admin or app admin should be able to get edit dock group modal" do
-    edit_dock_group_as(@company_admin, @cooler_dock_group, true)
-    edit_dock_group_as(@app_admin, @cooler_dock_group, true)
+  test "edit modal title" do
+    to = EditTO.new(@everything_ap_user, @record_1, true)
+    to.visibles << EditModalTitleVisible.new(model_class: DockGroup)
+    to.test(self)
   end
 
-  test "a company admin or app admin should not be able to get edit dock group modal for another company's dock group" do
-    edit_dock_group_as(@company_admin, @other_company_dock_group, false)
-    edit_dock_group_as(@app_admin, @other_company_dock_group, false)
+  test "edit modal buttons" do
+    to = EditTO.new(@everything_ap_user, @record_1, true)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
+    to.test(self)
+  end
+
+  test "edit modal timestamps are visible" do
+    to = EditTO.new(@everything_ap_user, @record_1, true)
+    to.visibles << ModalTimestampsVisible.new
+    to.test(self)
+  end
+
+  test "a everything ap user can get the edit modal" do
+    EditTO.new(@everything_ap_user, @record_1, true).test(self)
+  end
+
+  test "a everything ap(disabled) user can't get the edit modal" do
+    to = EditTO.new(@everything_ap_user, @record_1, false)
+    to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a dock groups ap user can get the edit modal" do
+    to = EditTO.new(@nothing_ap_user, @record_1, true)
+    to.enable_model_permission
+    to.test(self)
+  end
+
+  test "a dock groups ap(disabled) user can't get the edit modal" do
+    to = EditTO.new(@nothing_ap_user, @record_1, false)
+    to.enable_model_permission
+    to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a everything ap user can't get edit modal for another company" do
+    EditTO.new(@everything_ap_user, @other_record_1, false).test(self)
   end
 
   test "the enable/disable switch should be visible on the edit modal" do
-    edit_dock_group_as(@company_admin, @cooler_dock_group, true)
-    assert_match /dock_group_enabled/, @response.body
+    to = EditTO.new(@everything_ap_user, @record_1, true)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
+    to.test(self)
+  end
+
+  test "user is warned about a deleted/not found record for edit modal" do
+    to = EditTO.new(@everything_ap_user, @record_1, nil)
+    to.test_nf(self)
   end
 
   # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to updating dock groups.
-  def update_dock_group_as(user, dock_group, parameter, validity)
-    params = { dock_group: parameter }
-    log_in_if_user(user)
-    patch dock_group_path(dock_group), xhr: true, params: params
-    dock_group.reload
-    expected_description = parameter[:description]
-    expected_enabled = parameter[:enabled]
-    actual_description = dock_group.description
-    actual_enabled = dock_group.enabled
-    if validity == true
-      assert_equal expected_description, actual_description
-      assert_equal expected_enabled, actual_enabled
-    else
-      assert_not_equal expected_description, actual_description
-      assert_not_equal expected_enabled, actual_enabled
-    end
+  # Tests for updating a record
+
+  test "a logged out user can't update" do
+    to = UpdateTO.new(nil, @record_1, false, params_hash: @phu)
+    to.update_fields = @update_fields
+    to.test(self)
   end
 
-  update_description_hash = { description: "Updated for test", enabled: false}
-
-  test "a logged out user or regular user should not be able to update a dock group" do
-    update_dock_group_as(nil, @cooler_dock_group, update_description_hash, false)
-    update_dock_group_as(@regular_user, @cooler_dock_group, update_description_hash, false)
+  test "a nothing ap user can't update" do
+    to = UpdateTO.new(@nothing_ap_user, @record_1, false, params_hash: @phu)
+    to.update_fields = @update_fields
+    to.test(self)
   end
 
-  test "a company admin should be able to update a dock group" do
-    update_dock_group_as(@company_admin, @cooler_dock_group, update_description_hash, true)
+  test "a everything ap user can update" do
+    to = UpdateTO.new(@everything_ap_user, @record_1, true, params_hash: @phu)
+    to.update_fields = @update_fields
+    to.test(self)
   end
 
-  test "a app admin should be able to update a dock group" do
-    update_dock_group_as(@app_admin, @cooler_dock_group, update_description_hash, true)
+  test "a everything ap(disabled) user can't update" do
+    to = UpdateTO.new(@everything_ap_user, @record_1, false, params_hash: @phu)
+    to.update_fields = @update_fields
+    to.disable_user_access_policy
+    to.test(self)
   end
 
-  # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # This function helps all the following tests to run related to index of dock groups.
-  def index_dock_groups(user, validity)
-    log_in_if_user(user)
-    get dock_groups_path
-    if validity == true
-      assert_template 'dock_groups/index'
-    else
-      assert_redirected_to root_url
-    end
+  test "a dock groups ap user can update" do
+    to = UpdateTO.new(@nothing_ap_user, @record_1, true, params_hash: @phu)
+    to.update_fields = @update_fields
+    to.enable_model_permission
+    to.test(self)
   end
 
-  test "a logged out user or regular user should not get the dock groups index page" do
-    index_dock_groups(nil, false)
-    index_dock_groups(@regular_user, false)
+  test "a dock groups ap(disabled) user can't update" do
+    to = UpdateTO.new(@nothing_ap_user, @record_1, false, params_hash: @phu)
+    to.update_fields = @update_fields
+    to.enable_model_permission
+    to.disable_user_access_policy
+    to.test(self)
   end
 
-  test "a company admin should get the dock groups index page and should only dock groups from own company." do
-    index_dock_groups(@company_admin, true)
-    # should see this dock group from own company
-    assert_select "tr#dock_group_#{@cooler_dock_group.id}"
-    # shouldn't see this dock group from another company.
-    assert_select "tr#dock_group_#{@other_company_dock_group.id}", false
+  test "a everything ap user can't update other company's record" do
+    to = UpdateTO.new(@everything_ap_user, @other_record_1, false, params_hash: @phu)
+    to.update_fields = @update_fields
+    to.test(self)
   end
 
-  test "a app admin should be able to get the dock groups index page." do
-    index_dock_groups(@app_admin, true)
+  test "user is warned about a deleted/not found record for update" do
+    to = UpdateTO.new(@everything_ap_user, @record_1, nil, params_hash: @phu)
+    to.test_nf(self)
   end
 
   # ----------------------------------------------------------------------------
-  # ----------------------------------------------------------------------------
-  # tests for deleted dock group alerts on show, edit, update.
+  # Tests for index records
 
-  def check_if_dock_group_deleted(user, dock_group_to_test, try, validity)
-    log_in_if_user(user)
-    case try
-      when "show"
-        get dock_group_path(dock_group_to_test), xhr:true
-      when "update"
-        patch dock_group_path(dock_group_to_test), xhr: true, params: { dock_group: { description: "updated dock group" } }
-      when "edit"
-        get edit_dock_group_path(dock_group_to_test), xhr:true
-    end
-    if validity == true
-      assert_match /Dock group no longer exists/, @response.body
-    else
-      assert_no_match /Dock group no longer exists/, @response.body
-    end
+  test "a logged out user can't index" do
+    IndexTo.new(nil, @new, false).test(self)
   end
 
-  test "if a dock group is deleted and a user trys to show, edit, or update it, they are warned the dock group no longer exists." do
-    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "show", false)
-    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "update", false)
-    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "edit", false)
-    @delete_me_dock_group.destroy
-    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "show", true)
-    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "update", true)
-    check_if_dock_group_deleted(@delete_me_admin, @delete_me_dock_group, "edit", true)
+  test "a nothing ap user can't index" do
+    IndexTo.new(@nothing_ap_user, @new, false).test(self)
+  end
+
+  test "page title should be there" do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.visibles << IndexRecordsTitleVisible.new(model_class: DockGroup)
+    to.test(self)
+  end
+
+  test "page should have new record button" do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.visibles << HeaderVisible.new(class: Button::NewButton.class_name)
+    to.test(self)
+  end
+
+  test "a everything ap user can index and only see own records" do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.visibles << IndexTRecordVisible.new(record: @record_1)
+    to.visibles << IndexTRecordVisible.new(record: @other_record_1, visible: false)
+    to.test(self)
+  end
+
+  test "a everything ap(disabled) user can't index" do
+    to = IndexTo.new(@everything_ap_user, @new, false)
+    to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a dock groups ap user can index" do
+    to = IndexTo.new(@nothing_ap_user, @new, true)
+    to.enable_model_permission
+    to.test(self)
+  end
+
+  test "a dock groups ap(disabled) user can't index" do
+    to = IndexTo.new(@nothing_ap_user, @new, false)
+    to.enable_model_permission
+    to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "should see the edit buttons" do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.visibles << IndexTBodyVisible.new(class: Button::IndexEditButton.class_name)
+    to.test(self)
+  end
+
+  test "page should have enabled filter" do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.visibles << EnabledFilterVisible.new
+    to.test(self)
+  end
+
+  test "should see both enabled and disabled with all filter." do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    @record_2.update_column(:enabled, false)
+    to.visibles << IndexTRecordVisible.new(record: @record_1)
+    to.visibles << IndexTRecordVisible.new(record: @record_2)
+    to.test(self)
+  end
+
+  test "should only see enabled with enabled filter." do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.query = :enabled
+    to.visibles << IndexTRecordVisible.new(record: @record_1)
+    @record_2.update_column(:enabled, false)
+    to.visibles << IndexTRecordVisible.new(record: @record_2, visible: false)
+    to.test(self)
+  end
+
+  test "should only see disabled with disabled filter." do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.query = :disabled
+    to.visibles << IndexTRecordVisible.new(record: @record_1, visible: false)
+    @record_2.update_column(:enabled, false)
+    to.visibles << IndexTRecordVisible.new(record: @record_2)
+    to.test(self)
+  end
+
+  test "pagination is there" do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.visibles << PaginationVisible.new
+    to.test(self)
   end
 
 end

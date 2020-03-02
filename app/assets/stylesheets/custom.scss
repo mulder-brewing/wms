@@ -1,16 +1,7 @@
 /* Universal */
 body {
   background: #f4f4f4;
-}
-
-.navbar-nav > a, .navbar-nav > div > a, .navbar-brand {
-  padding-top: 6px !important;
-  padding-bottom: 0 !important;
-  height: 33px;
-}
-
-.navbar-brand {
-  padding-top: 2px !important;
+  padding-top: 55px;
 }
 
 /* Page header/title styling */
@@ -34,6 +25,11 @@ footer {
 /* JS Alert styling */
 .fixed-alert {
   width: 50%;
+}
+
+// use this to make sure alert gets above modal fading screen.
+.high-z {
+  z-index: 999999;
 }
 
 @media (max-width : 800px) {

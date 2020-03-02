@@ -1,44 +1,45 @@
 class DockGroupsController < ApplicationController
-  before_action :logged_in_admin
+  include FormHelper, ModalHelper, PageHelper, TableHelper
 
   def new
-    @dock_group = DockGroup.new
-    respond_to :js
+    form = new_form_prep_record(DockGroupForm)
+    authorize form.record
+    modal = Modal::NewModal.new(form)
+    render_modal(modal)
   end
 
   def create
-    @dock_group = DockGroup.new(dock_group_params)
-    @dock_group.update(:company_id => current_company_id)
-    respond_to :js
-  end
-
-  def show
-    find_dock_group
-    respond_to :js
+    form = new_form_prep_record(DockGroupForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::CreateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def edit
-    find_dock_group
-    respond_to :js
+    form = new_form_prep_record(DockGroupForm)
+    authorize form.record
+    modal = Modal::EditModal.new(form)
+    render_modal(modal)
   end
 
   def update
-    find_dock_group
-    @dock_group.update(dock_group_params) if !@dock_group.nil?
-    respond_to :js
+    form = new_form_prep_record(DockGroupForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::UpdateModal.new(form, table: form.table)
+    render_modal(modal)
   end
 
   def index
-    @pagy, @dock_groups = pagy(DockGroup.where_company(current_company_id).order(:description), items:25)
+    page = prep_new_page(Page::IndexListPage)
+    table = new_table_prep_records(Table::DockGroupsIndexTable)
+    authorize_scope_records(table)
+    page.table = table
+    pagy_records(page)
+    render_page(page)
   end
-
-  private
-    def dock_group_params
-      params.require(:dock_group).permit(:description, :enabled)
-    end
-
-    def find_dock_group
-      @dock_group = find_object_redirect_invalid(DockGroup)
-    end
 
 end

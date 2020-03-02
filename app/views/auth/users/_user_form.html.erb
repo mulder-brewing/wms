@@ -1,0 +1,38 @@
+<%= simple_form_for modal.form, remote:true,
+  :html => { :id => modal.form.html_id } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :company_id, label: model_sing(Company),
+          :collection => modal.form.companies, :label_method => :name,
+          :value_method => :id, required: true, prompt: true,
+          input_html: { id: "auth_user_company_id"} if app_admin? %>
+      <%= f.input :first_name, required: true, as: :string if admin? %>
+      <%= f.input :last_name, required: true, as: :string if admin? %>
+      <%= f.input :email, as: :string %>
+      <%= f.input :send_email, as: :boolean if admin? && modal.role?(:new_create) %>
+      <%= f.input :username, required: true, as: :string if admin? %>
+      <% if modal.role?(:new_create) %>
+        <%= f.input :password, required: true %>
+        <%= f.input :password_confirmation, required: true %>
+      <% end %>
+      <%= f.input :access_policy_id, :collection => modal.form.access_policies,
+          :label_method => :description, :value_method => :id, required: true,
+          input_html: { id: "auth_user_access_policy_id" }, prompt: true,
+          label: model_sing(AccessPolicy) if admin? %>
+      <%= f.input :company_admin, as: :boolean if admin? && not_self?(modal.form.record) %>
+    </div>
+    <% if modal.role?(:edit_update) && admin? && not_self?(modal.form.record) %>
+      <div class="mb-2">
+        <%= f.input :enabled, sf_switch %>
+      </div>
+    <% end %>
+    <% if modal.role?(:edit_update) %>
+      <%= btn(Button::ResetPasswordButton.new(record: modal.form.record, text_key: password_update_title(modal.form.record))) %>
+    <% end %>
+<% end %>
+
+<script type="text/javascript">
+  populateAccessPoliciesSelect();
+</script>

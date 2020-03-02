@@ -1,0 +1,17 @@
+<%= provide(:title, (t_nf page.title)) %>
+<%= provide(:new_link, new_polymorphic_path(page.new_record)) if page.show_new_link? %>
+<% provide(:icon_class, page.icon_class) if page.icon_class? %>
+
+<div class="container-fluid <%= page.action_bar_class %>">
+  <div class="row">
+    <div class="col">
+      <% if page.show_enabled_filter? %>
+        <%= render page.enabled_filter_html_path, page: page %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%= render page.table.html_path, table: page.table %>
+
+<%= render page.pagination_html_path, pagy: page.pagy %>

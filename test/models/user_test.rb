@@ -4,11 +4,9 @@ require 'pp'
 class UserTest < ActiveSupport::TestCase
 
   def setup
-    @regular_user = users(:regular_user)
-    @regular_user.current_user = @regular_user
-    @company_admin = users(:company_admin_user)
-    @company_admin.current_user = @company_admin
-    @other_company_user = users(:other_company_user)
+    @regular_user = auth_users(:regular_user)
+    @company_admin = auth_users(:company_admin_user)
+    @other_company_user = auth_users(:other_company_user)
   end
 
   test "whitespace should be stripped from beginning and end" do
@@ -53,7 +51,7 @@ class UserTest < ActiveSupport::TestCase
     assert @regular_user.valid?
   end
 
-  test "fist name must exist and be 50 characters or less" do
+  test "first name must exist and be 50 characters or less" do
     @regular_user.first_name = ""
     assert_not @regular_user.valid?
     @regular_user.first_name = nil
@@ -101,26 +99,16 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
-  test "a user should not be to disable self" do
-    @company_admin.enabled = false
-    assert_not @company_admin.valid?(:self)
-  end
-
-  test "a user should not be able to unadmin self" do
-    @company_admin.company_admin = false
-    assert_not @company_admin.valid?(:self)
-  end
-
   test "full_name" do
     assert_match @regular_user.full_name, "Average Joe"
   end
 
   test "all except user scope" do
-    assert User.all_except(@regular_user).find_by(id: @regular_user.id).nil?
+    assert Auth::User.all_except(@regular_user).find_by(id: @regular_user.id).nil?
   end
 
   test "where company users except user scope" do
-    users =  User.where_company_users_except(@regular_user)
+    users =  Auth::User.where_company_users_except(@regular_user)
     assert users.find_by(id: @regular_user.id).nil?
     assert users.find_by(id: @other_company_user.id).nil?
     assert_not users.find_by(id: @company_admin.id).nil?

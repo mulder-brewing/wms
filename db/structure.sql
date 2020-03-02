@@ -39,6 +39,43 @@ CREATE TYPE public.dock_request_status AS ENUM (
 SET default_tablespace = '';
 
 --
+-- Name: access_policies; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.access_policies (
+    id bigint NOT NULL,
+    company_id bigint NOT NULL,
+    description text,
+    dock_groups boolean,
+    docks boolean,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    enabled boolean DEFAULT true,
+    everything boolean,
+    dock_queue boolean
+);
+
+
+--
+-- Name: access_policies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.access_policies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: access_policies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.access_policies_id_seq OWNED BY public.access_policies.id;
+
+
+--
 -- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -252,7 +289,8 @@ CREATE TABLE public.users (
     password_digest character varying,
     company_admin boolean DEFAULT false,
     app_admin boolean DEFAULT false,
-    password_reset boolean DEFAULT true
+    password_reset boolean DEFAULT true,
+    access_policy_id bigint
 );
 
 
@@ -273,6 +311,13 @@ CREATE SEQUENCE public.users_id_seq
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: access_policies id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.access_policies ALTER COLUMN id SET DEFAULT nextval('public.access_policies_id_seq'::regclass);
 
 
 --
@@ -315,6 +360,14 @@ ALTER TABLE ONLY public.docks ALTER COLUMN id SET DEFAULT nextval('public.docks_
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Name: access_policies access_policies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.access_policies
+    ADD CONSTRAINT access_policies_pkey PRIMARY KEY (id);
 
 
 --
@@ -379,6 +432,13 @@ ALTER TABLE ONLY public.schema_migrations
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_access_policies_on_company_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_access_policies_on_company_id ON public.access_policies USING btree (company_id);
 
 
 --
@@ -480,6 +540,13 @@ CREATE INDEX index_docks_on_dock_group_id ON public.docks USING btree (dock_grou
 
 
 --
+-- Name: index_users_on_access_policy_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_access_policy_id ON public.users USING btree (access_policy_id);
+
+
+--
 -- Name: index_users_on_company_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -523,6 +590,14 @@ ALTER TABLE ONLY public.dock_groups
 
 ALTER TABLE ONLY public.docks
     ADD CONSTRAINT fk_rails_2077bae5be FOREIGN KEY (company_id) REFERENCES public.companies(id);
+
+
+--
+-- Name: users fk_rails_2cc9dc4915; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_rails_2cc9dc4915 FOREIGN KEY (access_policy_id) REFERENCES public.access_policies(id);
 
 
 --
@@ -571,6 +646,14 @@ ALTER TABLE ONLY public.dock_requests
 
 ALTER TABLE ONLY public.dock_requests
     ADD CONSTRAINT fk_rails_d6983c8259 FOREIGN KEY (company_id) REFERENCES public.companies(id);
+
+
+--
+-- Name: access_policies fk_rails_d6f69b536c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.access_policies
+    ADD CONSTRAINT fk_rails_d6f69b536c FOREIGN KEY (company_id) REFERENCES public.companies(id);
 
 
 --
@@ -624,6 +707,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190716124913'),
 ('20190716131530'),
 ('20190717155721'),
-('20191119182114');
+('20191119182114'),
+('20191129163607'),
+('20191129185733'),
+('20191207203219'),
+('20191214150324'),
+('20200208210456');
 
 

@@ -3,179 +3,291 @@ require 'test_helper'
 class CompaniesControllerTest < ActionDispatch::IntegrationTest
 
   def setup
-    @regular_user = users(:regular_user)
-    @company_admin = users(:company_admin_user)
-    @app_admin = users(:app_admin_user)
-    @regular_user_company = @regular_user.company
-    @company_admin_company = @company_admin.company
+    @regular_user = auth_users(:regular_user)
+    @company_admin = auth_users(:company_admin_user)
+    @app_admin = auth_users(:app_admin_user)
+
+    @averagejoes = companies(:averagejoes)
+
+    @new = Company.new
+    @form = CompanyForm
+
+    @ph = { name: "Test Company A" }
+    @pu = { name: "Updated", enabled: false }
+
+    @update_fields = [:name, :enabled]
   end
 
-  test 'only app admin can get new company modal' do
-    # try not logged in
-    get new_company_path, xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a regular user
-    log_in_as(@regular_user)
-    get new_company_path, xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a company admin user
-    log_in_as(@company_admin)
-    get new_company_path, xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a app admin (should work and get modal)
-    log_in_as(@app_admin)
-    get new_company_path, xhr:true
-    assert_not_equal xhr_redirect, @response.body
-    assert_match /create-modal/, @response.body
-    assert_match /New Company/, @response.body
+  # ----------------------------------------------------------------------------
+  # Tests link in navbar.
+
+  test "app admin can see the link" do
+    to = NavbarTO.new(@app_admin, @new, true)
+    to.query = :enabled
+    to.test(self)
   end
 
-  test 'only app admin can create a company' do
-    # try not logged in
-    assert_no_difference 'Company.count' do
-      post companies_path, xhr: true, params: { company: { name: "Test Company A" } }
-    end
-    # try logged in as a regular user
-    log_in_as(@regular_user)
-    assert_no_difference 'Company.count' do
-      post companies_path, xhr: true, params: { company: { name: "Test Company B" } }
-    end
-    # try logged in as a company admin user
-    log_in_as(@company_admin)
-    assert_no_difference 'Company.count' do
-      post companies_path, xhr: true, params: { company: { name: "Test Company C" } }
-    end
-    # try logged in as a app admin (should work and create a company)
-    log_in_as(@app_admin)
-    assert_difference 'Company.count', 1 do
-      post companies_path, xhr: true, params: { company: { name: "Test Company D" } }
-    end
+  test "logged out user can't see the link" do
+    to = NavbarTO.new(nil, @new, false)
+    to.query = :enabled
+    to.test(self)
   end
 
-  test 'only app admin can get show company modal' do
-    # try not logged in
-    get company_path(@regular_user_company), xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a regular user
-    log_in_as(@regular_user)
-    get company_path(@regular_user_company), xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a company admin user
-    log_in_as(@company_admin)
-    get company_path(@company_admin_company), xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a app admin (should work and get modal)
-    log_in_as(@app_admin)
-    get company_path(@regular_user_company), xhr:true
-    assert_not_equal xhr_redirect, @response.body
-    assert_match /show-modal/, @response.body
-    assert_match /Company/, @response.body
+  test "regular user can't see the link" do
+    to = NavbarTO.new(@regular_user, @new, false)
+    to.query = :enabled
+    to.test(self)
   end
 
-  test 'only app admin can get edit a company modal' do
-    # try not logged in
-    get edit_company_path(@regular_user_company), xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a regular user
-    log_in_as(@regular_user)
-    get edit_company_path(@regular_user_company), xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a company admin user
-    log_in_as(@company_admin)
-    get edit_company_path(@company_admin_company), xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a app admin (should work and get edit coompany modal)
-    log_in_as(@app_admin)
-    get edit_company_path(@regular_user_company), xhr:true
-    assert_not_equal xhr_redirect, @response.body
-    assert_match /update-modal/, @response.body
-    assert_match /Edit Company/, @response.body
+  test "company admin can't see the link" do
+    to = NavbarTO.new(@company_admin, @new, false)
+    to.query = :enabled
+    to.test(self)
   end
 
-  test 'only app admin can update a company' do
-    updated_company_name = "Updated Name"
-    # try not logged in
-    patch company_path(@regular_user_company), xhr: true, params: { company: { name: updated_company_name } }
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a regular user
-    log_in_as(@regular_user)
-    patch company_path(@regular_user_company), xhr: true, params: { company: { name: updated_company_name } }
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a company admin user
-    log_in_as(@company_admin)
-    patch company_path(@company_admin_company), xhr: true, params: { company: { name: updated_company_name } }
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a app admin (should work and create a company)
-    log_in_as(@app_admin)
-    patch company_path(@regular_user_company), xhr: true, params: { company: { name: updated_company_name } }
-    assert_not_equal xhr_redirect, @response.body
-    @regular_user_company.reload
-    assert_equal updated_company_name, @regular_user_company.name
+  # ----------------------------------------------------------------------------
+  # Tests for new modal.
+
+  test "app admin can get new company modal" do
+    NewTO.new(@app_admin, @new, true).test(self)
   end
 
-  test 'only app admin can get delete a company modal' do
-    # try not logged in
-    get destroy_modal_company_path(@regular_user_company), xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a regular user
-    log_in_as(@regular_user)
-    get destroy_modal_company_path(@regular_user_company), xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a company admin user
-    log_in_as(@company_admin)
-    get destroy_modal_company_path(@company_admin_company), xhr:true
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a app admin (should work and get edit coompany modal)
-    log_in_as(@app_admin)
-    get destroy_modal_company_path(@regular_user_company), xhr:true
-    assert_not_equal xhr_redirect, @response.body
-    assert_match /destroy-modal/, @response.body
-    assert_match /Delete Company/, @response.body
+  test "app admin field visibility new modal" do
+    to = NewTO.new(@app_admin, @new, true)
+    to.visibles << FormFieldVisible.new(form: @form, field: :name)
+    to.test(self)
   end
 
-  test 'only app admin can delete a company' do
-    # try not logged in
-    assert_no_difference 'Company.count' do
-      delete company_path(@regular_user_company), xhr: true
-    end
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a regular user
-    log_in_as(@regular_user)
-    assert_no_difference 'Company.count' do
-      delete company_path(@regular_user_company), xhr: true
-    end
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a company admin user
-    log_in_as(@company_admin)
-    assert_no_difference 'Company.count' do
-      delete company_path(@company_admin_company), xhr: true
-    end
-    assert_equal xhr_redirect, @response.body
-    # try logged in as a app admin (should work and create a company)
-    log_in_as(@app_admin)
-    assert_difference 'Company.count', -1 do
-      delete company_path(@regular_user_company), xhr: true
-    end
-    assert_match /destroy-modal/, @response.body
-    assert_match /Company deleted successfully/, @response.body
+  test "new modal title" do
+    to = NewTO.new(@app_admin, @new, true)
+    to.visibles << NewModalTitleVisible.new(model_class: Company)
+    to.test(self)
   end
 
-  test 'only app admin can reach company index page' do
-    # try not logged in
-    get companies_path
-    assert_redirected_to root_url
-    # try logged in as a regular user
-    log_in_as(@regular_user)
-    get companies_path
-    assert_redirected_to root_url
-    # try logged in as a company admin user
-    log_in_as(@company_admin)
-    get companies_path
-    assert_redirected_to root_url
-    # try logged in as a app admin (should work and get index page)
-    log_in_as(@app_admin)
-    get companies_path
-    assert_template 'companies/index'
+  test "logged out can't get new modal" do
+    NewTO.new(nil, @new, false).test(self)
+  end
+
+  test "regular user can't get new modal" do
+    NewTO.new(@regular_user, @new, false).test(self)
+  end
+
+  test "company admin can't get new modal" do
+    NewTO.new(@company_admin, @new, false).test(self)
+  end
+
+  # ----------------------------------------------------------------------------
+  # Tests for creating a record.
+
+  test "app admin can create" do
+    to = CreateTO.new(@app_admin, @new, true, params_hash: @ph)
+    to.test(self)
+  end
+
+  test "record should be enabled by default when it's created" do
+    to = CreateTO.new(@app_admin, @new, true, params_hash: @ph)
+    to.attributes = { :enabled => true }
+    to.test(self)
+  end
+
+  test "logged out can't create" do
+    to = CreateTO.new(nil, @new, false, params_hash: @ph)
+    to.test(self)
+  end
+
+  test "regular user can't create" do
+    to = CreateTO.new(@regular_user, @new, false, params_hash: @ph)
+    to.test(self)
+  end
+
+  test "company admin can't create" do
+    to = CreateTO.new(@company_admin, @new, false, params_hash: @ph)
+    to.test(self)
+  end
+
+  # ----------------------------------------------------------------------------
+  # Tests for edit modal
+
+  test "app admin can get edit modal" do
+    EditTO.new(@app_admin, @averagejoes, true).test(self)
+  end
+
+  test "app admin field visibility" do
+    to = EditTO.new(@app_admin, @averagejoes, true)
+    to.visibles << FormFieldVisible.new(form: @form, field: :name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
+    to.test(self)
+  end
+
+  test "edit modal title" do
+    to = EditTO.new(@app_admin, @averagejoes, true)
+    to.visibles << EditModalTitleVisible.new(model_class: Company)
+    to.test(self)
+  end
+
+  test "logged out user can't get edit modal" do
+    EditTO.new(nil, @averagejoes, false).test(self)
+  end
+
+  test "regular user can't get edit modal" do
+    EditTO.new(@regular_user, @averagejoes, false).test(self)
+  end
+
+  test "company admin can't get edit modal" do
+    EditTO.new(@company_admin, @averagejoes, false).test(self)
+  end
+
+  # ----------------------------------------------------------------------------
+  # Tests for updating a record
+
+  test "app admin can update record" do
+    to = UpdateTO.new(@app_admin, @averagejoes, true, params_hash: @pu)
+    to.update_fields = @update_fields
+    to.test(self)
+  end
+
+  test "logged out can't update record" do
+    to = UpdateTO.new(nil, @averagejoes, false, params_hash: @pu)
+    to.update_fields = @update_fields
+    to.test(self)
+  end
+
+  test "regular user can't update record" do
+    to = UpdateTO.new(@regular_user, @averagejoes, false, params_hash: @pu)
+    to.update_fields = @update_fields
+    to.test(self)
+  end
+
+  test "company admin can't update record" do
+    to = UpdateTO.new(@company_admin, @averagejoes, false, params_hash: @pu)
+    to.update_fields = @update_fields
+    to.test(self)
+  end
+
+  # ----------------------------------------------------------------------------
+  # Tests for index records
+
+  test "app admin can index" do
+    IndexTo.new(@app_admin, @new, true).test(self)
+  end
+
+  test "should see the new button" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << HeaderVisible.new(class: Button::NewButton.class_name)
+    to.test(self)
+  end
+
+  test "should see title" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << IndexRecordsTitleVisible.new(model_class: Company)
+    to.test(self)
+  end
+
+  test "should see the edit and delete buttons" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << IndexTBodyVisible.new(class: Button::IndexEditButton.class_name)
+    to.visibles << IndexTBodyVisible.new(class: Button::IndexDeleteButton.class_name)
+    to.test(self)
+  end
+
+  test "pagination is there" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << PaginationVisible.new
+    to.test(self)
+  end
+
+  test "enabled filter is visible" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.visibles << EnabledFilterVisible.new
+    to.test(self)
+  end
+
+  test "enabled filter has the right links" do
+    to = IndexTo.new(@app_admin, @new, true)
+    to.test(self)
+    verify_enabled_filter_links(to)
+  end
+
+  test "a logged out user can't index" do
+    IndexTo.new(nil, @new, false).test(self)
+  end
+
+  test "regular user can't index" do
+    IndexTo.new(@regular_user, @new, false).test(self)
+  end
+
+  test "company admin can't index" do
+    IndexTo.new(@company_admin, @new, false).test(self)
+  end
+
+
+
+  # ----------------------------------------------------------------------------
+  # Tests for delete modal
+
+  test "app admin can get destroy modal" do
+    to = ModalTO.new(@app_admin, @averagejoes, true)
+    to.path = destroy_modal_company_path(@averagejoes)
+    to.test(self)
+  end
+
+  test "destroy chicken message is there" do
+    to = ModalTO.new(@app_admin, @averagejoes, true)
+    to.path = destroy_modal_company_path(@averagejoes)
+    to.visibles << DestroyMessageVisible.new(to_delete: @averagejoes.name)
+    to.test(self)
+  end
+
+  test "destroy modal title" do
+    to = ModalTO.new(@app_admin, @averagejoes, true)
+    to.path = destroy_modal_company_path(@averagejoes)
+    to.visibles << DestroyModalTitleVisible.new(model_class: Company)
+    to.test(self)
+  end
+
+  test "should see the delete and close buttons" do
+    to = ModalTO.new(@app_admin, @averagejoes, true)
+    to.path = destroy_modal_company_path(@averagejoes)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalDeleteButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
+    to.test(self)
+  end
+
+  test "logged out can't get destroy modal" do
+    to = ModalTO.new(nil, @averagejoes, false)
+    to.path = destroy_modal_company_path(@averagejoes)
+    to.test(self)
+  end
+
+  test "regular user can't get destroy modal" do
+    to = ModalTO.new(@regular_user, @averagejoes, false)
+    to.path = destroy_modal_company_path(@averagejoes)
+    to.test(self)
+  end
+
+  test "company admin can't get destroy modal" do
+    to = ModalTO.new(@company_admin, @averagejoes, false)
+    to.path = destroy_modal_company_path(@averagejoes)
+    to.test(self)
+  end
+
+  # ----------------------------------------------------------------------------
+  # Tests for deleting record
+
+  test "app admin can delete a company" do
+    DestroyTO.new(@app_admin, @averagejoes, true).test(self)
+  end
+
+  test "logged out user can't delete a company" do
+    DestroyTO.new(nil, @averagejoes, false).test(self)
+  end
+
+  test "regular user can't delete a company" do
+    DestroyTO.new(@regular_user, @averagejoes, false).test(self)
+  end
+
+  test "company admin can't delete a company" do
+    DestroyTO.new(@company_admin, @averagejoes, false).test(self)
   end
 
 end

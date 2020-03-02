@@ -1,0 +1,8 @@
+<% unless modal.error? %>
+  $("#<%= modal.id %>").removeClass("fade");
+  $("#<%= modal.id %>").modal("hide");
+  $("#<%= modal.wrapper %>").html("<%= j render modal.html_path, modal: modal %>");
+  $("#<%= modal.id %>").modal("show");
+<% else %>
+  <%= render modal.error_path, modal: modal %>
+<% end %>

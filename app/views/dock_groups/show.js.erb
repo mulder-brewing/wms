@@ -1,6 +1,0 @@
-<% if @dock_group.nil? %>
-  alert_custom("warning","Dock group no longer exists");
-<% elsif @dock_group.valid? %>
-  $("#modal-wrapper").html("<%= j render 'shared/generic_modal', { :form_type => 'show', :title => 'Dock Group' } %>");
-  $("#show-modal").modal('show');
-<% end %>

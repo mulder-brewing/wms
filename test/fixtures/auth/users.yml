@@ -1,0 +1,146 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+<% default_password_digest = Auth::User.digest(ActiveSupport::TestCase::DEFAULT_PASSWORD) %>
+
+regular_user:
+  username: averagejoe
+  first_name: Average
+  last_name: Joe
+  email: joe@average.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: averagejoes
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: average_joe_access_policy_everything
+
+company_admin_user:
+  username: avaeragejoe_admin
+  first_name: Average
+  last_name: Joe
+  email: joe@average.com
+  enabled: true
+  company_admin: true
+  app_admin: false
+  company: averagejoes
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: average_joe_access_policy_everything
+
+app_admin_user:
+  username: avaeragejoe_app_admin
+  first_name: Average
+  last_name: Joe
+  email: joe@average.com
+  enabled: true
+  company_admin: true
+  app_admin: true
+  company: averagejoes
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: average_joe_access_policy_everything
+
+nothing_ap_user:
+  username: nothing_ap
+  first_name: Nothing
+  last_name: Access Policy
+  email: joe@average.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: averagejoes
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: average_joe_access_policy_nothing
+
+everything_ap_user:
+  username: everything_ap
+  first_name: Everything
+  last_name: Access Policy
+  email: joe@average.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: averagejoes
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: average_joe_access_policy_everything
+
+delete_me_user:
+  username: delete_me_user
+  first_name: Delete
+  last_name: Me
+  email: delete@me.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: company_to_delete
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: delete_me_access_policy
+
+delete_me_admin:
+  username: delete_me_admin
+  first_name: Delete
+  last_name: Me
+  email: delete@me.com
+  enabled: true
+  company_admin: true
+  app_admin: false
+  company: company_to_delete
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: delete_me_access_policy
+
+other_company_user:
+  username: other_company_user
+  first_name: Other
+  last_name: User
+  email: other@othercompany.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: other_company
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: other_access_policy_everything
+
+other_company_admin:
+  username: other_company_admin
+  first_name: Other
+  last_name: User
+  email: other@othercompany.com
+  enabled: true
+  company_admin: true
+  app_admin: false
+  company: other_company
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: other_access_policy_everything
+
+nothing_setup_company_user:
+  username: nothing_setup_company_user
+  first_name: Nothing
+  last_name: Setup
+  email: nothingsetup@nothingsetup.com
+  enabled: true
+  company_admin: false
+  app_admin: false
+  company: nothing_setup_company
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: nothing_setup_access_policy_everything
+
+nothing_setup_company_admin:
+  username: nothing_setup_company_admin
+  first_name: Nothing
+  last_name: Setup Admin
+  email: nothingsetupadmin@nothingsetup.com
+  enabled: true
+  company_admin: true
+  app_admin: false
+  company: nothing_setup_company
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: nothing_setup_access_policy_everything

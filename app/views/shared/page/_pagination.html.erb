@@ -1,0 +1,8 @@
+<div class="pagination-wrapper">
+  <div class="ml-3 <%= 'd-none' if pagy.pages == 1 %>">
+    <%== pagy_bootstrap_nav_js(pagy) %>
+  </div>
+  <div class="pagination-count ml-3 mb-2">
+    <%== pagy_info(pagy) %>
+  </div>
+</div>

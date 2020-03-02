@@ -1,20 +1,26 @@
 <div class="jumbotron text-center mb-0">
   <div class="container-fluid">
-    <h1 class="display-4">Welcome to Mulder WMS!</h1>
-    <p class="lead">A easy to use, responsive, fully cloud SaaS for all your warehouse management needs.</p>
+    <h1 class="display-4"><%= t "home.jumbo.welcome" %></h1>
+    <p class="lead"><%= t "home.jumbo.lead" %></p>
     <hr class="my-4">
     <p class="lead">
-      <%= link_to "Log In", login_path , class: "btn btn-primary btn-lg", role: "button" if !logged_in? %>
-      <%= current_user.company.name if logged_in? %>
+      <% unless logged_in? %>
+        <%= link_to t("actions.log_in"),
+                    login_path,
+                    class: "btn btn-primary btn-lg"
+        %>
+      <% else %>
+        <%= current_user.company.name %>
+      <% end %>
     </p>
   </div>
 </div>
 <div class="album py-5 bg-light">
   <div class="container">
     <div class="row">
-      <%= render 'card', { :image=> 'easy.jpg', :title=> 'EASY', :text=> 'Skip hours of setup.  Add users and get going.  We believe that it should just work.  Customization and complex setup should be optional and only when necessary.' } %>
-      <%= render 'card', { :image=> 'responsive.jpg', :title=> 'RESPONSIVE', :text=> 'Get your work done on whatever device you choose.  The world is on the move and we believe you should be able to manage your warehouse from any device.' } %>
-      <%= render 'card', { :image=> 'saas.jpg', :title=> 'FULLY CLOUD SaaS', :text=> 'Available wherever you have an internet connection.  Nothing to install, nothing to maintain.  We support the most popular current web browsers.' } %>
+      <% cards.each do |card| %>
+        <%= render partial: "card", locals: { card: card } %>
+      <% end %>
     </div>
   </div>
 </div>

@@ -1,40 +1,44 @@
 Rails.application.routes.draw do
   # Resources
-  resources :companies do
+  resources :companies, except: :show do
     member do
       get :destroy_modal
     end
   end
 
-  resources :users do
-    member do
-      get :update_password
-      patch :update_password_commit
+  namespace :auth do
+    resources :users, except: [:show, :destroy]
+    resources :password_resets, only: [:edit, :update]
+    resources :password_updates, only: [:edit, :update]
+  end
+
+  resources :access_policies, except: [:show, :destroy] do
+    collection do
+      get :company
     end
   end
 
-  resources :dock_requests do
-    member do
-      get :dock_assignment_edit
-      patch :dock_assignment_update
-      patch :unassign_dock
-      patch :check_out
-      patch :void
-    end
-  end
-  get '/dock_requests_history', to: 'dock_requests#history'
+  resources :dock_groups, except: [:show, :destroy]
+  resources :docks, except: [:show, :destroy]
 
-  resources :dock_groups
-  resources :docks
+  namespace :dock_queue do
+    resources :dock_requests, except: [:destroy]
+    resources :history_dock_requests, only: [:index]
+    resources :dock_assignments, only: [:edit, :update]
+    resources :dock_unassignments, only: [:update]
+    resources :void_dock_requests, only: [:edit, :update]
+    resources :check_out_dock_requests, only: [:edit, :update]
+    resources :dock_request_audit_histories, only: [:index]
+  end
 
   # Other routes
   root 'static_pages#home'
   get 'static_pages/home'
   get 'dock_request_audit_histories/index'
-  get '/login', to: 'sessions#new'
-  post '/login', to: 'sessions#create'
-  delete '/logout', to: 'sessions#destroy'
-  get '/become_user', to: 'sessions#become_user'
+  get '/login', to: 'auth/sessions#new'
+  post '/login', to: 'auth/sessions#create'
+  delete '/logout', to: 'auth/sessions#destroy'
+  get '/become_user', to: 'auth/sessions#become_user'
 
 
 end

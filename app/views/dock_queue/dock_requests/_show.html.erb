@@ -1,0 +1,4 @@
+<%= render 'shared/show/show', show: modal.show %>
+<%= btn(Button::DockQueue::ShowHistoryButton.new, record: modal.form.record) %>
+<div id="<%= Table::DockQueue::DockRequestAuditHistoriesTable::WRAPPER_ID %>">
+</div>

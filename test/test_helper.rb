@@ -4,10 +4,13 @@ require 'rails/test_help'
 require "minitest/reporters"
 Minitest::Reporters.use!
 require 'pp'
+require_all 'test/test_custom/**/*.rb'
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
+
+  DEFAULT_PASSWORD = "Password1$"
 
   # Shared return page title
   def wms_title (page_title)
@@ -34,8 +37,26 @@ class ActionDispatch::IntegrationTest
     "<html><body>You are being <a href=\"http://www.example.com/\">redirected</a>.</body></html>"
   end
 
+  def xhr_not_found
+    "hideModal('generic-modal');\n" +
+    "alert_custom('warning','#{I18n.t("alert.record.not_found")}');\n"
+  end
+
+  def not_found?(response)
+    case response.body
+    when xhr_not_found
+      return true
+    when html_redirect
+      follow_redirect!
+      assert_select "div.alert-warning", I18n.t("alert.record.not_found")
+      return true
+    else
+      return false
+    end
+  end
+
   # Log in as a particular user.
-  def log_in_as(user, password = "Password1$", swapcase = false)
+  def log_in_as(user, password = DEFAULT_PASSWORD, swapcase = false)
     username = user.username
     username.swapcase! if swapcase
     post login_path, params: { session: { username: username, password: password, } }
@@ -53,104 +74,171 @@ class ActionDispatch::IntegrationTest
     log_in_as(user) if !user.nil?
   end
 
-  # This function helps tests to run related to getting new object page/moda with ajax.
-  def new_object_modal_as(user, path, validity)
-    log_in_if_user(user)
-    get path, xhr:true
-    assert_equal validity, !redirected?(@response)
-    assert_select "form", validity
+  # This function is for testing the modal for get requests
+  def basic_modal_to_test(to)
+    log_in_if_user(to.user)
+    get to.path, to.xhr_switch_params
+    assert_equal to.validity, !redirected?(@response)
+    verify_visibles(to) if to.test_visibles?
   end
 
-  # This function helps tests to run related to creating a new object with ajax.
-  def create_object_as(user, model, path, params, validity)
-    log_in_if_user(user)
-    if validity == true
-      assert_difference 'model.count', 1 do
-        post path, xhr: true, params: params
+  # This function uses the CreateTO to test creating a record.
+  def create_to_test(to)
+    log_in_if_user(to.user)
+    c = -> { post to.path, to.xhr_switch_params }
+    if to.validity == true
+      if to.check_count?
+        assert_difference 'to.model_count', 1 do
+          c.()
+        end
+      else
+        c.()
       end
+      verify_attributes(to) if to.test_attributes?
     else
-      assert_no_difference 'model.count' do
-        post path, xhr: true, params: params
+      if to.check_count?
+        assert_no_difference 'to.model_count' do
+          c.()
+        end
+      else
+        c.()
       end
+      verify_visibles(to) if to.test_visibles?
     end
   end
 
-  # This function helps tests to run related to getting the show object modal.
-  def show_object_as(user, path, validity)
-    log_in_if_user(user)
-    get path, xhr:true
-    assert_equal validity, !redirected?(@response)
-  end
-
-  # This function helps tests to run related to getting the edit object modal.
-  def edit_object_as(user, path, redirected, form)
-    log_in_if_user(user)
-    get path, xhr:true
-    if redirected
-      assert redirected?(@response)
-    end
-    # assert_select "form", form
-  end
-
-  # This function helps tests to run related to updating objects.
-  def update_object_as(user, object, path, params, attributes_to_compare, validity)
-    log_in_if_user(user)
-    patch path, xhr: true, params: params
+  # This function uses UpdateTO to test updating a record.
+  def update_to_test(to)
+    log_in_if_user(to.user)
+    patch to.path, to.xhr_switch_params
+    object = to.model
     old_object = object.dup
     object.reload
-    if validity == true
-      attributes_to_compare.each do |attribute|
+    if to.validity == true
+      to.update_fields.each do |attribute|
         assert_not_equal old_object.send(attribute), object.send(attribute)
       end
+      verify_attributes(to) if to.test_attributes?
     else
-      attributes_to_compare.each do |attribute|
+      to.update_fields.each do |attribute|
         if old_object.send(attribute) == nil
           assert_nil object.send(attribute)
         else
           assert_equal old_object.send(attribute), object.send(attribute)
         end
       end
+      verify_visibles(to) if to.test_visibles?
     end
   end
 
-  # This function helps tests to run related to index of objects.
-  def index_objects(user, path, template, validity, options = {})
-    log_in_if_user(user)
-    if options[:xhr]
-      get path, xhr:true
-    else
-      get path
+  def not_found_to_test(to)
+    log_in_if_user(to.user)
+    nf = Proc.new {|x| assert_equal x, not_found?(@response) }
+    if to.instance_of? UpdateTO
+      path = to.path
+      patch = Proc.new { patch path, xhr: true, params: to.params }
+      patch.call
+      nf.call(false)
+      to.model.destroy
+      patch.call
+      nf.call(true)
+    elsif to.instance_of? EditTO
+      path = to.path
+      get = Proc.new { get path, xhr:true }
+      get.call
+      nf.call(false)
+      to.model.destroy
+      get.call
+      nf.call(true)
     end
-    if validity == true
-      assert_template template
+  end
+
+  # This function uses IndexTo to test index
+  def index_to_test(to)
+    log_in_if_user(to.user)
+    get to.path
+    if to.validity == true
+      assert_template to.index_template
+      verify_visibles(to) if to.test_visibles?
     else
       assert redirected?(@response)
     end
   end
 
-  # This function helps tests to run related to notification of when a stale object has been deleted.
-  def check_if_object_deleted(user, controller_methods, hash, text, validity)
-    log_in_if_user(user)
-    controller_methods.each do |key, value|
-      value.each do |key, value|
-        case key
-          when :get
-            get value, xhr:true
-          when :patch
-            patch value, xhr: true, params: hash
-        end
-        if validity == true
-          assert_match /#{text}/, @response.body
-        else
-          assert_no_match /#{text}/, @response.body
-        end
-      end
+  # This function uses the DestroyTO to test deleting records.
+  def destroy_to_test(to)
+    log_in_if_user(to.user)
+    difference = to.validity ? -1 : 0
+    assert_difference 'to.model_count', difference do
+      delete to.path, to.xhr_switch_params
+    end
+  end
+
+  # This function uses NavbarTO to test navbar links.
+  def navbar_to_test(to)
+    al = Proc.new {|x| assert_select "a[href=?]", to.index_path, x }
+    log_in_if_user(to.user)
+    get root_path
+    to.validity ? al.call(true) : al.call(false)
+  end
+
+  # This function helps verify things are/aren't visible in page, modal, form.
+  def verify_visibles(to)
+    vis = Proc.new { |to| to.visibles.each { |v| assert_select v.select, v.select_options } }
+    if to.xhr && to.select_jquery_method.present?
+      self.send(to.select_jquery_method) {
+        vis.call(to)
+      }
+    else
+      vis.call(to)
+    end
+  end
+
+  # This function selects the modal and allows further selects to be yielded.
+  def select_modal
+    assert_select_jquery :html, "##{Modal::BaseModal::WRAPPER}" do
+      assert_select "div##{Modal::BaseModal::ID}"
+      yield
+    end
+  end
+
+  # This function selects the form after a failed create or update.
+  def select_form
+    assert_select_jquery :replaceWith, "##{RecordForm.html_id}" do
+      yield
+    end
+  end
+
+  # This function helps verify model attributes after a successful create or update.
+  def verify_attributes(to)
+    case to
+    when CreateTO
+      model = to.model_last
+    when UpdateTO
+      model = to.model
+      model.reload
+    end
+    to.attributes.each do |k, v|
+      assert_equal v, model.send(k)
+    end
+  end
+
+  def verify_enabled_filter_links(to)
+    assert_select "main div.#{Page::IndexListPage::ACTION_BAR_CLASS} div.enabled-filter" do
+        to.query = nil
+        assert_select "a[href=?]", to.index_path
+        to.query = :enabled
+        assert_select "a[href=?]", to.index_path
+        to.query = :disabled
+        assert_select "a[href=?]", to.index_path
     end
   end
 
   # This function helps verify the response is an error warning message.
-  def verify_alert_message(type, message)
-    assert_match "alert_custom('#{type}', '#{message}')", @response.body
+  def verify_alert_message(type, message, secondary_msg = nil)
+    assert_match /alert_custom/, @response.body
+    assert_match /#{message}/, @response.body
+    assert_match /#{secondary_msg}/, @response.body unless secondary_msg.nil?
   end
 
   # This function helps verify a string or regex exists in the response.

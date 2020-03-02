@@ -10,10 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_11_19_182114) do
+ActiveRecord::Schema.define(version: 2020_02_08_210456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "access_policies", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.text "description"
+    t.boolean "dock_groups"
+    t.boolean "docks"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.boolean "enabled", default: true
+    t.boolean "everything"
+    t.boolean "dock_queue"
+    t.index ["company_id"], name: "index_access_policies_on_company_id"
+  end
 
   create_table "companies", force: :cascade do |t|
     t.text "name"
@@ -63,10 +76,13 @@ ActiveRecord::Schema.define(version: 2019_11_19_182114) do
     t.boolean "company_admin", default: false
     t.boolean "app_admin", default: false
     t.boolean "password_reset", default: true
+    t.bigint "access_policy_id"
+    t.index ["access_policy_id"], name: "index_users_on_access_policy_id"
     t.index ["company_id"], name: "index_users_on_company_id"
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "access_policies", "companies"
   add_foreign_key "dock_groups", "companies"
   add_foreign_key "dock_request_audit_histories", "companies"
   add_foreign_key "dock_request_audit_histories", "dock_requests"
@@ -77,5 +93,6 @@ ActiveRecord::Schema.define(version: 2019_11_19_182114) do
   add_foreign_key "dock_requests", "docks"
   add_foreign_key "docks", "companies"
   add_foreign_key "docks", "dock_groups"
+  add_foreign_key "users", "access_policies"
   add_foreign_key "users", "companies"
 end

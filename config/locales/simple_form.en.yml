@@ -5,27 +5,18 @@ en:
     required:
       text: 'required'
       mark: '*'
-      # You can uncomment the line below if you need to overwrite the whole required html.
-      # When using html, text and mark won't be used.
-      # html: '<abbr title="required">*</abbr>'
-    error_notification:
-      default_message: "Please review the problems below:"
-    # Examples
-    # labels:
-    #   defaults:
-    #     password: 'Password'
-    #   user:
-    #     new:
-    #       email: 'E-mail to sign in.'
-    #     edit:
-    #       email: 'E-mail.'
-    # hints:
-    #   defaults:
-    #     username: 'User name to sign in.'
-    #     password: 'No special characters, please.'
-    # include_blanks:
-    #   defaults:
-    #     age: 'Rather not say'
-    # prompts:
-    #   defaults:
-    #     age: 'Select your age'
+    labels:
+      auth_user:
+        send_email: Send email with login instructions
+      auth_password_update:
+        send_email: Send email with new password
+      dock_queue_dock_request:
+        text_message: Send text message when dock is assigned
+      dock_queue_dock_assignment:
+        text_message: Send text message with dock assignment
+    hints:
+      auth_user: &auth_user
+        username: lowercase, numbers, and underscore only with no spaces
+        password: '8-64 characters, no spaces, with at least one of each: uppercase, lowercase, number, special'
+      auth_password_update: *auth_user
+      auth_password_reset: *auth_user

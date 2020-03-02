@@ -1,0 +1,14 @@
+<%= simple_form_for modal.form, remote: true,
+:html => { :id => modal.form.html_id } do |f| %>
+  <div id="feedback">
+    <%= errors_for(f.object) %>
+  </div>
+  <div class="mb-3">
+    <%= f.input :name, required: true %>
+  </div>
+  <% if modal.role?(:edit_update) %>
+    <div class="mb-2">
+      <%= f.input :enabled, sf_switch %>
+    </div>
+  <% end %>
+<% end %>

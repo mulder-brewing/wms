@@ -1,0 +1,28 @@
+average_joe_access_policy_everything:
+  description: Everything
+  enabled: true
+  everything: true
+  company: averagejoes
+
+average_joe_access_policy_nothing:
+  description: Nothing
+  enabled: true
+  company: averagejoes
+
+other_access_policy_everything:
+  description: Everything
+  enabled: true
+  everything: true
+  company: other_company
+
+delete_me_access_policy:
+  description: Everything
+  enabled: true
+  everything: true
+  company: company_to_delete
+
+nothing_setup_access_policy_everything:
+  description: Everything
+  enabled: true
+  everything: true
+  company: nothing_setup_company

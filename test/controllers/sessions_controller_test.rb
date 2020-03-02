@@ -4,9 +4,9 @@ require 'pp'
 class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   def setup
-    @regular_user = users(:regular_user)
-    @company_admin = users(:company_admin_user)
-    @app_admin = users(:app_admin_user)
+    @regular_user = auth_users(:regular_user)
+    @company_admin = auth_users(:company_admin_user)
+    @app_admin = auth_users(:app_admin_user)
   end
 
   test "should get login page with correct title, login form, inputs" do
@@ -16,7 +16,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form"
     assert_select "form input[id=session_username]"
     assert_select "form input[id=session_password]"
-    assert_select 'form input[type=submit][value="Log in"]'
+    assert_select "form input[type=submit][value='#{ I18n.t("actions.log_in") }']"
   end
 
   test 'login as regular user, check available links, logout' do
@@ -42,33 +42,11 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", "/login", false
     # Name of the user's company should be in the .lead jumbotron.
     assert_select '.lead', 'Average Joes'
-    #Check the available links are right for a regular user.
-    assert_select "a#navbarAdministrationDropdown", false
-    assert_select "a[href=?]", "/companies", false
-    assert_select "a[href=?]", "/users", false
     # These links should exist for a user of any type.
-    assert_select "a[href=?]", "/users/#{@regular_user.id}/edit", true
+    assert_select "a[href=?]", "/auth/users/#{@regular_user.id}/edit", true
     assert_select "a[href=?]", "/logout", true
     log_out
     assert_redirected_to root_url
-  end
-
-  test 'login as company admin user, check the links' do
-    log_in_as(@company_admin)
-    follow_redirect!
-    #Check the available links are right for a admin user.
-    assert_select "a#navbarAdministrationDropdown", true
-    assert_select "a[href=?]", "/companies", false
-    assert_select "a[href=?]", "/users", true
-  end
-
-  test 'login as app admin user, check the links' do
-    log_in_as(@app_admin)
-    follow_redirect!
-    #Check the available links are right for a admin user.
-    assert_select "a#navbarAdministrationDropdown", true
-    assert_select "a[href=?]", "/companies", true
-    assert_select "a[href=?]", "/users", true
   end
 
   test 'logged in user visiting login page should be redirected to home' do

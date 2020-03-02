@@ -1,0 +1,30 @@
+<% record = modal.form.record %>
+<div class="mr-auto <%= modal.footer.timestamps_class %>">
+  <a data-toggle="collapse" href="#collapseTimestamps"
+          class="badge badge-info" aria-expanded="false"
+          aria-controls="collapseExample">
+    <%= t_nf "timestamps.title" %>
+  </a>
+  <div class="collapse" id="collapseTimestamps">
+    <div class="card card-body">
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <strong><%= record.human_attribute_name("created_at") %>:</strong>
+          </div>
+          <div class="col">
+            <%= local_time(record.created_at) %>
+          </div>
+          <div class="w-100"></div>
+          <div class="col">
+            <strong><%= record.human_attribute_name("updated_at") %>:</strong>
+          </div>
+          <div class="col">
+            <%= local_time(record.updated_at) %>
+          </div>
+          <div class="w-100"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

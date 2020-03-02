@@ -1,33 +1,202 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# The following keys must be escaped otherwise they will not be retrieved by
-# the default I18n backend:
-#
-# true, false, on, off, yes, no
-#
-# Instead, surround them with single quotes.
-#
-# en:
-#   'true': 'foo'
-#
-# To learn more, please read the Rails Internationalization guide
-# available at https://guides.rubyonrails.org/i18n.html.
-
 en:
-  hello: "Hello world"
+
+  actions:
+    close: Close
+    delete: Delete
+    edit: Edit
+    log_in: Log In
+    log_out: Log Out
+    new: New
+    save: Save
+    show: Details
+    void: Void
+
+  attributes:
+    created_at: Created
+    description: Description
+    enabled: Enabled
+    name: Name
+    number: Number
+    status: Status
+    updated: &updated Updated
+    updated_at: *updated
+
+  activerecordmodel:
+    dock_request_status: &dock_request_status
+      checked_in: Checked In
+      checked_out: Checked Out
+      voided: Voided
+    attributes: &armattributes
+      access_policy:
+        everything: Everything
+      auth/user: &auth_user_attributes
+        username: Username
+        first_name: First Name
+        last_name: Last Name
+        email: Email
+        password: Password
+        password_confirmation: Password Confirmation
+        company_admin: Admin
+      dock_queue/dock_request:
+        note: Note
+        primary_reference: Primary Reference
+        phone_number: Phone Number
+        text_message: Send Text
+        total_time: Total Time
+      dock_queue/dock_request/status:
+        <<: *dock_request_status
+        dock_assigned: Dock Assigned
+      dock_queue/dock_request_audit_history:
+        event: Event
+      dock_queue/dock_request_audit_history/event:
+        <<: *dock_request_status
+        dock_assigned: Dock %{number} Assigned
+        text_message_sent: Text message sent to %{number}
+        dock_unassigned: Dock Unassigned
+
+  activerecord:
+    attributes:
+      <<: *armattributes
+    errors:
+      messages:
+        does_not_belong: does not belong to your company
+      models:
+        auth/user:
+          confirmation: "doesn't match Password"
+    models:
+      access_policy:
+        one: Access Policy
+        other: Access Policies
+      auth/user:
+        one: User
+        other: Users
+      company:
+        one: Company
+        other: Companies
+      dock_group:
+        one: Dock Group
+        other: Dock Groups
+      dock:
+        one: Dock
+        other: Docks
+      dock_queue/dock_request:
+        one: Dock Request
+        other: Dock Queue
+
+  activemodel:
+    attributes:
+      <<: *armattributes
+      auth/password_update: *auth_user_attributes
+      auth/password_reset: *auth_user_attributes
+    errors:
+      messages:
+        disabled: is disabled
+      models:
+        auth/user:
+          disabled_self: cannot be disabled for yourself
+        auth/password_reset:
+          same: cannot be the same as it is right now
+        auth/password_update:
+          attributes:
+            send_email:
+              self: cannot send email when resetting your own password
+        dock_queue/dock_request:
+          attributes:
+            phone_number:
+              blank_send_sms: cannot be blank if you want to send a text message
+
+  errors:
+    attributes:
+      email:
+        blank_send: cannot be blank if you want to send email
+      send_email:
+        blank_email: cannot send email without email address
+    messages:
+      invalid: is invalid
+      taken: has already been taken
+      exist: must exist
+      blank: can't be blank
+    unknown: Unknown Error
+    stale:
+      data: Stale data detected, please refresh
+      status: Status of %{record} is now %{status}
+
+  alert:
+    save:
+      success: Saved successfully!
+      password_success: 'Password successfully updated!'
+    delete:
+      success: Deleted successfully!
+      failure: Failed to delete
+    void:
+      success: Voided successfully!
+      failure: Failed to void
+    record:
+      not_found: Record not found
+    not_authorized: Not Authorized
+
+  auth/users:
+    become: Become
+
+  auth/password_update:
+    title:
+      self: Update Password
+      other: Reset Password
+    reset_msg: You are resetting password for %{user}
+
+  auth/password_reset:
+    msg: You must update your password before you can use Mulder WMS.
+
+  dock_queue/check_out_dock_requests:
+    title:
+      check_out: Check Out
+    check_out_msg: You are checking out %{target}.  This action is irreversible.  Total time from check in to now is %{time}.
+
+  dock_queue/dock_assignments:
+    assign_dock: Assign Dock
+    unassign_dock: Unassign Dock
+    text_message: Dock %{number} is ready for you.  Please back in ASAP.
+
+  dock_queue/dock_requests:
+    no_dg_msg: You need at least one enabled dock group before you can use the dock queue
+    dock_number: Dock %{number}
+
+  dock_queue/history_dock_requests:
+    title: Dock Queue History
+
+  global:
+    actions: Actions
+    administration: Administration
+    admin_only: Admin Only
+    all: All
+    app_name: Mulder WMS
+    date_time: Date/Time
+    disabled: Disabled
+    history: History
+
+  home:
+    jumbo:
+      welcome: Welcome to Mulder WMS!
+      lead: A easy to use, responsive, fully cloud SaaS for all your warehouse management needs.
+    card:
+      easy:
+        title: EASY
+        text: Skip hours of setup.  Add users and get going.  We believe that it should just work.  Customization and complex setup should be optional and only when necessary.
+      responsive:
+        title: RESPONSIVE
+        text: Get your work done on whatever device you choose.  The world is on the move and we believe you should be able to manage your warehouse from any device.
+      saas:
+        title: FULLY CLOUD SaaS
+        text: Available wherever you have an internet connection.  Nothing to install, nothing to maintain.  We support the most popular current web browsers.
+
+  modal:
+    title:
+      new_create: New %{record}
+      edit_update: Edit %{record}
+      show: '%{record}'
+      destroy: Delete %{record}
+      void: Void %{record}
+    chicken_message: 'Are you sure you want to %{action} %{target}?  This action is irreversible.'
+
+  timestamps:
+    title: Timestamps

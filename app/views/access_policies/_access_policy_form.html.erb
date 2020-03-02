@@ -1,0 +1,28 @@
+<%= simple_form_for modal.form, remote:true, :html => { :id => modal.form.html_id } do |f| %>
+    <div id="feedback">
+      <%= errors_for(f.object) %>
+    </div>
+    <div class="mb-3">
+      <%= f.input :description, as: :string, required: true %>
+      <% if modal.role?(:edit_update) %>
+        <div class="mb-2">
+          <%= f.input :enabled, sf_switch %>
+        </div>
+      <% end %>
+      <%= f.input :everything, sf_switch %>
+      <div class="individual_permissions ml-4">
+        <%= f.input :dock_queue, sf_switch(label: model_plur(DockQueue::DockRequest)) %>
+        <div class="dock_queue_sub_permissions ml-4">
+          <%= f.input :dock_groups, sf_switch(label: model_plur(DockGroup)) %>
+          <%= f.input :docks, sf_switch(label: model_plur(Dock)) %>
+        </div>
+      </div>
+    </div>
+<% end %>
+
+<script type="text/javascript">
+  hideShowEverythingPermissions();
+  hideShowDockQueuePermissions();
+  $('#access_policy_everything').change(hideShowEverythingPermissions);
+  $('#access_policy_dock_queue').change(hideShowDockQueuePermissions);
+</script>

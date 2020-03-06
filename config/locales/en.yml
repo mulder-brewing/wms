@@ -18,6 +18,7 @@ en:
     name: Name
     number: Number
     status: Status
+    type: &type Type
     updated: &updated Updated
     updated_at: *updated
 
@@ -37,6 +38,8 @@ en:
         password: Password
         password_confirmation: Password Confirmation
         company_admin: Admin
+      company:
+        company_type: *type
       dock_queue/dock_request:
         note: Note
         primary_reference: Primary Reference
@@ -57,6 +60,10 @@ en:
   activerecord:
     attributes:
       <<: *armattributes
+      company/company_type:
+        warehouse: Warehouse
+        shipper: Shipper
+        admin: Admin
     errors:
       messages:
         does_not_belong: does not belong to your company

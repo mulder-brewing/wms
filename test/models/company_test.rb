@@ -3,14 +3,21 @@ require 'test_helper'
 class CompanyTest < ActiveSupport::TestCase
 
   def setup
-    @company = Company.new(name: "Example Company")
-    @other_company = Company.new(name: "Other Example Company")
+    types = Company.company_types
+
+    @company = Company.new(name: "Example Company", company_type: types[:warehouse])
+    @other_company = Company.new(name: "Other Example Company", company_type: types[:warehouse])
     @delete_company = companies(:company_to_delete)
     @delete_user = auth_users(:delete_me_user)
   end
 
   test "should be valid" do
     assert @company.valid?
+  end
+
+  test "Company without type is invalid" do
+    @company.company_type = nil
+    assert_not @company.valid?
   end
 
   test "Company with blank or nil name should be invalid" do

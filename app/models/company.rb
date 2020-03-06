@@ -1,4 +1,10 @@
 class Company < ApplicationRecord
+  enum company_type: {
+    admin: "admin",
+    warehouse: "warehouse",
+    shipper: "shipper",
+  }, _prefix: :type
+
   has_many :users, class_name: "Auth::User", dependent: :destroy
   has_many :dock_groups, dependent: :destroy
   has_many :docks, dependent: :destroy
@@ -7,6 +13,7 @@ class Company < ApplicationRecord
   has_many :access_policies, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 50 }, uniqueness: { case_sensitive: false }
+  validates :company_type, presence: true
 
   before_validation :strip_whitespace
 

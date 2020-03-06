@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_08_210456) do
+ActiveRecord::Schema.define(version: 2020_03_05_225213) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -28,13 +28,8 @@ ActiveRecord::Schema.define(version: 2020_02_08_210456) do
     t.index ["company_id"], name: "index_access_policies_on_company_id"
   end
 
-  create_table "companies", force: :cascade do |t|
-    t.text "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.boolean "enabled", default: true
-    t.index ["name"], name: "index_companies_on_name", unique: true
-  end
+# Could not dump table "companies" because of following StandardError
+#   Unknown type 'company_type' for column 'company_type'
 
   create_table "dock_groups", force: :cascade do |t|
     t.text "description"

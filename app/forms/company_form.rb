@@ -1,6 +1,7 @@
 class CompanyForm < BasicRecordForm
 
   delegate  :name, :name=,
+            :company_type, :company_type=,
             :enabled, :enabled=,
             to: :@record
 
@@ -15,7 +16,7 @@ class CompanyForm < BasicRecordForm
   end
 
   def permitted_params
-    [:name, :enabled]
+    [:name, :company_type, :enabled]
   end
 
 end

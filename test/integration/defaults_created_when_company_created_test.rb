@@ -24,7 +24,7 @@ class DefaultsCreatedWhenCompanyCreatedTest < ActionDispatch::IntegrationTest
     end
   end
 
-  company_hash = { name: "Test Company Defaults Created" }
+  company_hash = { name: "Test Company Defaults Created", company_type: "warehouse" }
 
   test "when a new company is created, default things are created as well" do
     company = create_company_as(@app_admin, company_hash, true)

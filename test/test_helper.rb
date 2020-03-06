@@ -176,7 +176,7 @@ class ActionDispatch::IntegrationTest
 
   # This function uses NavbarTO to test navbar links.
   def navbar_to_test(to)
-    al = Proc.new {|x| assert_select "a[href=?]", to.index_path, x }
+    al = Proc.new {|x| assert_select "a[href=?]", to.path, x }
     log_in_if_user(to.user)
     get root_path
     to.validity ? al.call(true) : al.call(false)
@@ -226,11 +226,11 @@ class ActionDispatch::IntegrationTest
   def verify_enabled_filter_links(to)
     assert_select "main div.#{Page::IndexListPage::ACTION_BAR_CLASS} div.enabled-filter" do
         to.query = nil
-        assert_select "a[href=?]", to.index_path
+        assert_select "a[href=?]", to.path
         to.query = :enabled
-        assert_select "a[href=?]", to.index_path
+        assert_select "a[href=?]", to.path
         to.query = :disabled
-        assert_select "a[href=?]", to.index_path
+        assert_select "a[href=?]", to.path
     end
   end
 

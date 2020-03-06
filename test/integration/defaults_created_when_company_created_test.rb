@@ -6,6 +6,11 @@ class DefaultsCreatedWhenCompanyCreatedTest < ActionDispatch::IntegrationTest
   def setup
     @app_admin = auth_users(:app_admin_user)
     @company_admin = auth_users(:company_admin_user)
+
+    @company_hash = {
+      name: "Test Company Defaults Created",
+      company_type: "warehouse"
+    }
   end
 
   def create_company_as(user, parameter, validity)
@@ -24,13 +29,29 @@ class DefaultsCreatedWhenCompanyCreatedTest < ActionDispatch::IntegrationTest
     end
   end
 
-  company_hash = { name: "Test Company Defaults Created", company_type: "warehouse" }
-
-  test "when a new company is created, default things are created as well" do
-    company = create_company_as(@app_admin, company_hash, true)
+  test "when a new warehouse company is created, defaults are correct" do
+    company = create_company_as(@app_admin, @company_hash, true)
     assert !company.nil?
-    # Check that the default dock group is created.
+    # Check that the defaults are correct
     assert !DockGroup.find_by(company_id: company.id).nil?
+    assert !AccessPolicy.find_by(company_id: company.id).nil?
+  end
+
+  test "when a new shipper company is created, defaults are correct" do
+    @company_hash[:company_type] = "shipper"
+    company = create_company_as(@app_admin, @company_hash, true)
+    assert !company.nil?
+    # Check that the defaults are correct
+    assert DockGroup.find_by(company_id: company.id).nil?
+    assert !AccessPolicy.find_by(company_id: company.id).nil?
+  end
+
+  test "when a new admin company is created, defaults are correct" do
+    @company_hash[:company_type] = "admin"
+    company = create_company_as(@app_admin, @company_hash, true)
+    assert !company.nil?
+    # Check that the defaults are correct
+    assert DockGroup.find_by(company_id: company.id).nil?
     assert !AccessPolicy.find_by(company_id: company.id).nil?
   end
 

@@ -16,6 +16,8 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     @other_admin = auth_users(:other_company_admin)
     @nothing_ap_user = auth_users(:nothing_ap_user)
     @everything_ap_user = auth_users(:everything_ap_user)
+    @everything_ap_shipper_admin = auth_users(:everything_ap_shipper_company_admin)
+    @nothing_ap_shipper_admin = auth_users(:nothing_ap_shipper_company_admin)
 
     @new = DockQueue::DockRequest.new
     @form = DockQueue::DockRequestForm
@@ -76,6 +78,17 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     to.test(self)
   end
 
+  test "everything ap shipper user can't see the link" do
+    to = NavbarTO.new(@everything_ap_shipper_admin, @new, false)
+    to.test(self)
+  end
+
+  test "dock queue ap shipper user can't see the link" do
+    to = NavbarTO.new(@nothing_ap_shipper_admin, @new, false)
+    to.enable_model_permission("dock_queue")
+    to.test(self)
+  end
+
   # ----------------------------------------------------------------------------
   # Tests for new modal.
 
@@ -86,25 +99,6 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
 
   test "a nothing ap user can't get new modal" do
     to = NewTO.new(@nothing_ap_user, @new, false)
-    to.test(self)
-  end
-
-  test "new modal title" do
-    to = NewTO.new(@everything_ap_user, @new, true)
-    to.visibles << NewModalTitleVisible.new(model_class: @new.class)
-    to.test(self)
-  end
-
-  test "new modal buttons" do
-    to = NewTO.new(@everything_ap_user, @new, true)
-    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
-    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
-    to.test(self)
-  end
-
-  test "new modal timestamps aren't visible" do
-    to = NewTO.new(@everything_ap_user, @new, true)
-    to.visibles << ModalTimestampsVisible.new(visible: false)
     to.test(self)
   end
 
@@ -129,6 +123,36 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     to = NewTO.new(@nothing_ap_user, @new, false)
     to.enable_model_permission("dock_queue")
     to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a everything ap shipper user can't get new modal" do
+    to = NewTO.new(@everything_ap_shipper_admin, @new, false)
+    to.test(self)
+  end
+
+  test "a dock queue ap shipper user can't get new modal" do
+    to = NewTO.new(@nothing_ap_shipper_admin, @new, false)
+    to.enable_model_permission("dock_queue")
+    to.test(self)
+  end
+
+  test "new modal title" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << NewModalTitleVisible.new(model_class: @new.class)
+    to.test(self)
+  end
+
+  test "new modal buttons" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
+    to.test(self)
+  end
+
+  test "new modal timestamps aren't visible" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << ModalTimestampsVisible.new(visible: false)
     to.test(self)
   end
 
@@ -402,6 +426,16 @@ class DockRequestsControllerTest < ActionDispatch::IntegrationTest
     to = IndexTo.new(@nothing_ap_user, @new, false)
     to.enable_model_permission("dock_queue")
     to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a everything ap shipper user can't index" do
+    IndexTo.new(@everything_ap_shipper_admin, @new, false).test(self)
+  end
+
+  test "a dock queue ap shipper user can't index" do
+    to = IndexTo.new(@nothing_ap_shipper_admin, @new, false)
+    to.enable_model_permission("dock_queue")
     to.test(self)
   end
 

@@ -19,3 +19,13 @@ nothing_setup_company:
   name: Nothing Setup Company
   enabled: true
   company_type: warehouse
+
+shipper_company:
+  name: Shipper Company
+  enabled: true
+  company_type: shipper
+
+admin_company:
+  name: Admin Company
+  enabled: true
+  company_type: admin

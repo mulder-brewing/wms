@@ -56,6 +56,8 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   test "app admin field visibility new modal" do
     to = NewTO.new(@app_admin, @new, true)
     to.visibles << FormFieldVisible.new(form: @form, field: :name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_type)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
     to.test(self)
   end
 
@@ -116,6 +118,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   test "app admin field visibility" do
     to = EditTO.new(@app_admin, @averagejoes, true)
     to.visibles << FormFieldVisible.new(form: @form, field: :name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_type)
     to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
     to.test(self)
   end

@@ -23,8 +23,9 @@ class CompanyForm < BasicRecordForm
 
   def save
     ActiveRecord::Base.transaction do
+      id_b4_save = record.id
       record.save!
-      create_defaults
+      create_defaults if id_b4_save.nil?
     end
   end
 

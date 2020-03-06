@@ -17,15 +17,14 @@ class Company < ApplicationRecord
 
   before_validation :strip_whitespace
 
-  after_create_commit :create_defaults
+  def type_human_readable
+    return "" if company_type.nil?
+    human_attribute_name("company_type." + company_type)
+  end
 
   private
     def strip_whitespace
       self.name.strip! if !name.nil?
     end
 
-    def create_defaults
-      DockGroup.create(description: "Default", company_id: id)
-      AccessPolicy.create(description: "Everything", company_id: id, everything: true)
-    end
 end

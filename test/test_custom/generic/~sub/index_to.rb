@@ -14,8 +14,4 @@ class IndexTo < GenericTO
     test.index_to_test(self)
   end
 
-  def path
-    @path || index_path
-  end
-
 end

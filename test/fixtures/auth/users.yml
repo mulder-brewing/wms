@@ -144,3 +144,42 @@ nothing_setup_company_admin:
   password_digest: <%= default_password_digest %>
   password_reset: false
   access_policy: nothing_setup_access_policy_everything
+
+everything_ap_shipper_company_admin:
+  username: everything_ap_shipper_company_admin
+  first_name: Everything
+  last_name: Shipper Company Admin
+  email: everythingshippercompanyadmin@shippercompany.com
+  enabled: true
+  company_admin: true
+  app_admin: false
+  company: shipper_company
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: shipper_access_policy_everything
+
+nothing_ap_shipper_company_admin:
+  username: nothing_ap_shipper_company_admin
+  first_name: Nothing
+  last_name: Shipper Company Admin
+  email: nothingshippercompanyadmin@shippercompany.com
+  enabled: true
+  company_admin: true
+  app_admin: false
+  company: shipper_company
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: shipper_access_policy_nothing
+
+admin_company_admin:
+  username: admin_company_admin
+  first_name: Admin
+  last_name: Company Admin
+  email: admincompanyadmin@admincompany.com
+  enabled: true
+  company_admin: true
+  app_admin: true
+  company: admin_company
+  password_digest: <%= default_password_digest %>
+  password_reset: false
+  access_policy: admin_access_policy_everything

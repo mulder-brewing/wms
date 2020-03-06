@@ -12,8 +12,8 @@ module Includes
 
     attr_accessor :query
 
-    def index_path
-      path = Rails.application.routes.url_helpers.polymorphic_path(@model)
+    def path
+      path = @path || Rails.application.routes.url_helpers.polymorphic_path(@model)
       case @query
       when nil
         return path

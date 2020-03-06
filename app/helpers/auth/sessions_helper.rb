@@ -85,12 +85,4 @@ module Auth::SessionsHelper
     user == current_user
   end
 
-  # Returns the current user's access policy
-  def current_access_policy
-    AccessPolicyUtil.current_access_policy
-  end
-
-  def ap_check?(permission)
-    current_access_policy&.check(permission)
-  end
 end

@@ -7,6 +7,8 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     @nothing_ap_user = auth_users(:nothing_ap_user)
     @everything_ap_user = auth_users(:everything_ap_user)
     @other_admin = auth_users(:other_company_admin)
+    @everything_ap_shipper_admin = auth_users(:everything_ap_shipper_company_admin)
+    @nothing_ap_shipper_admin = auth_users(:nothing_ap_shipper_company_admin)
 
     # dock groups
     @dock_group_1 = dock_groups(:cooler)
@@ -70,6 +72,19 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     to.test(self)
   end
 
+  test "everything ap shipper user can't see the link" do
+    to = NavbarTO.new(@everything_ap_shipper_admin, @new, false)
+    to.query = :enabled
+    to.test(self)
+  end
+
+  test "dock ap shipper user can't see the link" do
+    to = NavbarTO.new(@nothing_ap_shipper_admin, @new, false)
+    to.enable_model_permission
+    to.query = :enabled
+    to.test(self)
+  end
+
   # ----------------------------------------------------------------------------
   # Tests for new modal.
 
@@ -80,25 +95,6 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
 
   test "a nothing ap user can't get new modal" do
     to = NewTO.new(@nothing_ap_user, @new, false)
-    to.test(self)
-  end
-
-  test "new modal title" do
-    to = NewTO.new(@everything_ap_user, @new, true)
-    to.visibles << NewModalTitleVisible.new(model_class: Dock)
-    to.test(self)
-  end
-
-  test "new modal buttons" do
-    to = NewTO.new(@everything_ap_user, @new, true)
-    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
-    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
-    to.test(self)
-  end
-
-  test "new modal timestamps aren't visible" do
-    to = NewTO.new(@everything_ap_user, @new, true)
-    to.visibles << ModalTimestampsVisible.new(visible: false)
     to.test(self)
   end
 
@@ -123,6 +119,36 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     to = NewTO.new(@nothing_ap_user, @new, false)
     to.enable_model_permission
     to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a everything ap shipper user can't get new modal" do
+    to = NewTO.new(@everything_ap_shipper_admin, @new, false)
+    to.test(self)
+  end
+
+  test "a dock ap shipper user can't get new modal" do
+    to = NewTO.new(@nothing_ap_shipper_admin, @new, false)
+    to.enable_model_permission
+    to.test(self)
+  end
+
+  test "new modal title" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << NewModalTitleVisible.new(model_class: Dock)
+    to.test(self)
+  end
+
+  test "new modal buttons" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalSaveButton.class_name)
+    to.visibles << ModalFooterVisible.new(class: Button::ModalCloseButton.class_name)
+    to.test(self)
+  end
+
+  test "new modal timestamps aren't visible" do
+    to = NewTO.new(@everything_ap_user, @new, true)
+    to.visibles << ModalTimestampsVisible.new(visible: false)
     to.test(self)
   end
 
@@ -362,18 +388,6 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     IndexTo.new(@nothing_ap_user, @new, false).test(self)
   end
 
-  test "page title should be there" do
-    to = IndexTo.new(@everything_ap_user, @new, true)
-    to.visibles << IndexRecordsTitleVisible.new(model_class: Dock)
-    to.test(self)
-  end
-
-  test "page should have new record button" do
-    to = IndexTo.new(@everything_ap_user, @new, true)
-    to.visibles << HeaderVisible.new(class: Button::NewButton.class_name)
-    to.test(self)
-  end
-
   test "a everything ap user can index and only see own records" do
     to = IndexTo.new(@everything_ap_user, @new, true)
     to.visibles << IndexTRecordVisible.new(record: @record_1)
@@ -397,6 +411,28 @@ class DocksControllerTest < ActionDispatch::IntegrationTest
     to = IndexTo.new(@nothing_ap_user, @new, false)
     to.enable_model_permission
     to.disable_user_access_policy
+    to.test(self)
+  end
+
+  test "a everything ap shipper user can't index" do
+    IndexTo.new(@everything_ap_shipper_admin, @new, false).test(self)
+  end
+
+  test "a dock ap shipper user can't index" do
+    to = IndexTo.new(@nothing_ap_shipper_admin, @new, false)
+    to.enable_model_permission
+    to.test(self)
+  end
+
+  test "page title should be there" do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.visibles << IndexRecordsTitleVisible.new(model_class: Dock)
+    to.test(self)
+  end
+
+  test "page should have new record button" do
+    to = IndexTo.new(@everything_ap_user, @new, true)
+    to.visibles << HeaderVisible.new(class: Button::NewButton.class_name)
     to.test(self)
   end
 

@@ -6,6 +6,8 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
     @regular_user = auth_users(:regular_user)
     @company_admin = auth_users(:company_admin_user)
     @other_admin = auth_users(:other_company_admin)
+    @shipper_admin = auth_users(:everything_ap_shipper_company_admin)
+    @admin_company_admin = auth_users(:admin_company_admin)
 
     @new = AccessPolicy.new
     @form = AccessPolicyForm
@@ -13,6 +15,8 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
     @averagejoe_access_policy = access_policies(:average_joe_access_policy_everything)
     @averagejoe_access_policy_nothing = access_policies(:average_joe_access_policy_nothing)
     @other_access_policy = access_policies(:other_access_policy_everything)
+    @shipper_access_policy_everything = access_policies(:shipper_access_policy_everything)
+    @admin_access_policy_everything = access_policies(:admin_access_policy_everything)
 
     @ph = { description: "New AP Description" }
     @phu = { description: "Updated Description", enabled: false,
@@ -61,8 +65,31 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
     to.visibles << FormFieldVisible.new(form: @form, field: :description)
     to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
     to.visibles << FormFieldVisible.new(form: @form, field: :everything)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_queue)
     to.visibles << FormFieldVisible.new(form: @form, field: :dock_groups)
     to.visibles << FormFieldVisible.new(form: @form, field: :docks)
+    to.test(self)
+  end
+
+  test "shipper company admin field visibility new modal" do
+    to = NewTO.new(@shipper_admin, @new, true)
+    to.visibles << FormFieldVisible.new(form: @form, field: :description)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :everything)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_queue, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_groups, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :docks, visible: false)
+    to.test(self)
+  end
+
+  test "admin company admin field visibility new modal" do
+    to = NewTO.new(@admin_company_admin, @new, true)
+    to.visibles << FormFieldVisible.new(form: @form, field: :description)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :everything)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_queue, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_groups, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :docks, visible: false)
     to.test(self)
   end
 
@@ -168,8 +195,31 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
     to.visibles << FormFieldVisible.new(form: @form, field: :description)
     to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
     to.visibles << FormFieldVisible.new(form: @form, field: :everything)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_queue)
     to.visibles << FormFieldVisible.new(form: @form, field: :dock_groups)
     to.visibles << FormFieldVisible.new(form: @form, field: :docks)
+    to.test(self)
+  end
+
+  test "shipper company admin field visibility edit modal" do
+    to = EditTO.new(@shipper_admin, @shipper_access_policy_everything, true)
+    to.visibles << FormFieldVisible.new(form: @form, field: :description)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
+    to.visibles << FormFieldVisible.new(form: @form, field: :everything)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_queue, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_groups, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :docks, visible: false)
+    to.test(self)
+  end
+
+  test "admin company admin field visibility edit modal" do
+    to = EditTO.new(@admin_company_admin, @admin_access_policy_everything, true)
+    to.visibles << FormFieldVisible.new(form: @form, field: :description)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
+    to.visibles << FormFieldVisible.new(form: @form, field: :everything)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_queue, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :dock_groups, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :docks, visible: false)
     to.test(self)
   end
 

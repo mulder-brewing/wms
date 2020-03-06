@@ -12,10 +12,11 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
     @new = Company.new
     @form = CompanyForm
 
-    @ph = { name: "Test Company A" }
-    @pu = { name: "Updated", enabled: false }
+    types = Company.company_types
+    @ph = { name: "Test Company A", company_type: types[:warehouse]}
+    @pu = { name: "Updated", company_type: types[:shipper], enabled: false }
 
-    @update_fields = [:name, :enabled]
+    @update_fields = [:name, :company_type, :enabled]
   end
 
   # ----------------------------------------------------------------------------
@@ -55,6 +56,8 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   test "app admin field visibility new modal" do
     to = NewTO.new(@app_admin, @new, true)
     to.visibles << FormFieldVisible.new(form: @form, field: :name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_type)
+    to.visibles << FormFieldVisible.new(form: @form, field: :enabled, visible: false)
     to.test(self)
   end
 
@@ -115,6 +118,7 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
   test "app admin field visibility" do
     to = EditTO.new(@app_admin, @averagejoes, true)
     to.visibles << FormFieldVisible.new(form: @form, field: :name)
+    to.visibles << FormFieldVisible.new(form: @form, field: :company_type)
     to.visibles << FormFieldVisible.new(form: @form, field: :enabled)
     to.test(self)
   end

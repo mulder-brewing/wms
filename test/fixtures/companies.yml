@@ -3,15 +3,29 @@
 averagejoes:
   name: Average Joes
   enabled: true
+  company_type: warehouse
 
 company_to_delete:
   name: Delete Me Company
   enabled: true
+  company_type: warehouse
 
 other_company:
   name: Other Company
   enabled: true
+  company_type: warehouse
 
 nothing_setup_company:
   name: Nothing Setup Company
   enabled: true
+  company_type: warehouse
+
+shipper_company:
+  name: Shipper Company
+  enabled: true
+  company_type: shipper
+
+admin_company:
+  name: Admin Company
+  enabled: true
+  company_type: admin

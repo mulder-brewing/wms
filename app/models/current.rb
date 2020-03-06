@@ -1,3 +1,3 @@
 class Current < ActiveSupport::CurrentAttributes
-  attribute :user, :access_policy
+  attribute :user, :company, :access_policy
 end

@@ -13,31 +13,31 @@ class ApplicationPolicy
   end
 
   def index?
-    ap_check?(permission)
+    Auth::AccessPolicyUtil.check?(permission)
   end
 
   def create?
-    ap_check?(permission)
+    Auth::AccessPolicyUtil.check?(permission)
   end
 
   def new?
-    ap_check?(permission)
+    Auth::AccessPolicyUtil.check?(permission)
   end
 
   def update?
-    ap_check?(permission) && same_company_as_current_user?(record)
+    Auth::AccessPolicyUtil.check?(permission) && same_company_as_current_user?(record)
   end
 
   def edit?
-    ap_check?(permission) && same_company_as_current_user?(record)
+    Auth::AccessPolicyUtil.check?(permission) && same_company_as_current_user?(record)
   end
 
   def show?
-    ap_check?(permission) && same_company_as_current_user?(record)
+    Auth::AccessPolicyUtil.check?(permission) && same_company_as_current_user?(record)
   end
 
   def destroy?
-    ap_check?(permission) && same_company_as_current_user?(record)
+    Auth::AccessPolicyUtil.check?(permission) && same_company_as_current_user?(record)
   end
 
   private

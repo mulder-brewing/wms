@@ -26,3 +26,20 @@ nothing_setup_access_policy_everything:
   enabled: true
   everything: true
   company: nothing_setup_company
+
+shipper_access_policy_everything:
+  description: Everything
+  enabled: true
+  everything: true
+  company: shipper_company
+
+shipper_access_policy_nothing:
+  description: Nothing
+  enabled: true
+  company: shipper_company
+
+admin_access_policy_everything:
+  description: Everything
+  enabled: true
+  everything: true
+  company: admin_company

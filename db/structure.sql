@@ -10,6 +10,17 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: company_type; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.company_type AS ENUM (
+    'warehouse',
+    'shipper',
+    'admin'
+);
+
+
+--
 -- Name: dock_request_audit_history_event; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -96,7 +107,8 @@ CREATE TABLE public.companies (
     name text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    enabled boolean DEFAULT true
+    enabled boolean DEFAULT true,
+    company_type public.company_type
 );
 
 
@@ -712,6 +724,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191129185733'),
 ('20191207203219'),
 ('20191214150324'),
-('20200208210456');
+('20200208210456'),
+('20200305225213');
 
 

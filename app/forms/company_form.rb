@@ -1,6 +1,7 @@
 class CompanyForm < BasicRecordForm
 
   delegate  :name, :name=,
+            :company_type, :company_type=,
             :enabled, :enabled=,
             to: :@record
 
@@ -15,7 +16,24 @@ class CompanyForm < BasicRecordForm
   end
 
   def permitted_params
-    [:name, :enabled]
+    [:name, :company_type, :enabled]
+  end
+
+  private
+
+  def save
+    ActiveRecord::Base.transaction do
+      record.save!
+      create_defaults
+    end
+  end
+
+  def create_defaults
+    id = record.id
+    if record.type_warehouse?
+      DockGroup.create(description: "Default", company_id: id)
+    end
+    AccessPolicy.create(description: "Everything", company_id: id, everything: true)
   end
 
 end

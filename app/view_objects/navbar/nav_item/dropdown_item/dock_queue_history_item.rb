@@ -4,7 +4,7 @@ class Navbar::NavItem::DropdownItem::DockQueueHistoryItem < Navbar::NavItem::Dro
     super(
       text_key: "dock_queue/history_dock_requests.title",
       path: PathUtil.path(:dock_queue_history_dock_requests_path),
-      show: AccessPolicyUtil.check?(:dock_queue)
+      show: Auth::AccessPolicyUtil.check?(:dock_queue)
     )
   end
 

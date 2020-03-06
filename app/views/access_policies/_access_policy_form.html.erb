@@ -11,10 +11,10 @@
       <% end %>
       <%= f.input :everything, sf_switch %>
       <div class="individual_permissions ml-4">
-        <%= f.input :dock_queue, sf_switch(label: model_plur(DockQueue::DockRequest)) %>
+        <%= permission(f, :dock_queue, model_plur(DockQueue::DockRequest)) %>
         <div class="dock_queue_sub_permissions ml-4">
-          <%= f.input :dock_groups, sf_switch(label: model_plur(DockGroup)) %>
-          <%= f.input :docks, sf_switch(label: model_plur(Dock)) %>
+          <%= permission(f, :dock_groups, model_plur(DockGroup)) %>
+          <%= permission(f, :docks, model_plur(Dock)) %>
         </div>
       </div>
     </div>

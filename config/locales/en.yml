@@ -89,6 +89,9 @@ en:
       dock_queue/dock_request:
         one: Dock Request
         other: Dock Queue
+      order/order_group:
+        one: Order Group
+        other: Order Groups
 
   activemodel:
     attributes:
@@ -180,6 +183,7 @@ en:
     date_time: Date/Time
     disabled: Disabled
     history: History
+    order: Order
 
   home:
     jumbo:

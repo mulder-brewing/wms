@@ -31,6 +31,10 @@ Rails.application.routes.draw do
     resources :dock_request_audit_histories, only: [:index]
   end
 
+  namespace :order do
+    resources :order_groups, except: [:show, :destroy]
+  end
+
   # Other routes
   root 'static_pages#home'
   get 'static_pages/home'

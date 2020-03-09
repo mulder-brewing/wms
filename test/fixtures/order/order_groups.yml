@@ -1,0 +1,9 @@
+default:
+  description: Default
+  company: averagejoes
+  enabled: true
+
+other:
+  description: Default
+  company: other_company
+  enabled: true

@@ -30,6 +30,10 @@ class DockQueue::DockRequest < ApplicationRecord
   }
   scope :include_docks, -> { includes(:dock) }
 
+  def primary_reference=(val)
+    super(val&.strip)
+  end
+
   def self.where_company_and_group(current_company_id, group_id)
     where("company_id = ? AND dock_group_id = ?", current_company_id, group_id)
   end

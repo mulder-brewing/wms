@@ -6,6 +6,7 @@ class AccessPolicyForm < BasicRecordForm
             :dock_queue, :dock_queue=,
             :dock_groups, :dock_groups=,
             :docks, :docks=,
+            :order_order_groups, :order_order_groups=,
             to: :@record
 
   def self.model_name
@@ -19,7 +20,15 @@ class AccessPolicyForm < BasicRecordForm
   end
 
   def permitted_params
-    [:description, :enabled, :everything, :dock_queue, :dock_groups, :docks]
+    [
+      :description,
+      :enabled,
+      :everything,
+      :dock_queue,
+      :dock_groups,
+      :docks,
+      :order_order_groups
+    ]
   end
 
 end

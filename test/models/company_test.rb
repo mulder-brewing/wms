@@ -47,7 +47,7 @@ class CompanyTest < ActiveSupport::TestCase
     @company.name = "     Name     "
     @company.save
     assert @company.reload.name = "Name"
-    @company.name = "  /t   Name   /n  "
+    @company.name = "  \t   Name   \n  "
     @company.save
     assert @company.reload.name = "Name"
   end

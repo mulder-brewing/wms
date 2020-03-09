@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_05_225213) do
+ActiveRecord::Schema.define(version: 2020_03_09_231415) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,6 +25,7 @@ ActiveRecord::Schema.define(version: 2020_03_05_225213) do
     t.boolean "enabled", default: true
     t.boolean "everything"
     t.boolean "dock_queue"
+    t.boolean "order_order_groups"
     t.index ["company_id"], name: "index_access_policies_on_company_id"
   end
 
@@ -58,6 +59,15 @@ ActiveRecord::Schema.define(version: 2020_03_05_225213) do
     t.index ["dock_group_id"], name: "index_docks_on_dock_group_id"
   end
 
+  create_table "order_order_groups", force: :cascade do |t|
+    t.text "description", null: false
+    t.boolean "enabled", default: true
+    t.bigint "company_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["company_id"], name: "index_order_order_groups_on_company_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.text "username"
     t.text "first_name"
@@ -88,6 +98,7 @@ ActiveRecord::Schema.define(version: 2020_03_05_225213) do
   add_foreign_key "dock_requests", "docks"
   add_foreign_key "docks", "companies"
   add_foreign_key "docks", "dock_groups"
+  add_foreign_key "order_order_groups", "companies"
   add_foreign_key "users", "access_policies"
   add_foreign_key "users", "companies"
 end

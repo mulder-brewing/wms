@@ -40,6 +40,7 @@ en:
         company_admin: Admin
       company:
         company_type: *type
+        legitimate: Legitimate
       dock_queue/dock_request:
         note: Note
         primary_reference: Primary Reference

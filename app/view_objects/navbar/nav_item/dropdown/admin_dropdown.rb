@@ -3,8 +3,8 @@ class Navbar::NavItem::Dropdown::AdminDropdown < Navbar::NavItem::Dropdown::Main
   def initialize(*)
     items = [
       Navbar::NavItem::Dropdown::AdminOnlySubDropdown.new,
-      Navbar::NavItem::DropdownItem::DockGroupsItem.new,
-      Navbar::NavItem::DropdownItem::DocksItem.new
+      Navbar::NavItem::Dropdown::DockQueueSubDropdown.new,
+      Navbar::NavItem::Dropdown::OrderSubDropdown.new
     ]
     super(
       text_key: "global.administration",

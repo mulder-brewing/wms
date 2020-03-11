@@ -31,8 +31,10 @@ class CompanyForm < BasicRecordForm
 
   def create_defaults
     id = record.id
+    default = "Default"
     if record.type_warehouse?
-      DockGroup.create(description: "Default", company_id: id)
+      DockGroup.create(description: default, company_id: id)
+      Order::OrderGroup.create(description: default, company_id: id)
     end
     AccessPolicy.create(description: "Everything", company_id: id, everything: true)
   end

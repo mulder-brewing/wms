@@ -63,7 +63,8 @@ CREATE TABLE public.access_policies (
     updated_at timestamp(6) without time zone NOT NULL,
     enabled boolean DEFAULT true,
     everything boolean,
-    dock_queue boolean
+    dock_queue boolean,
+    order_order_groups boolean
 );
 
 
@@ -276,6 +277,39 @@ ALTER SEQUENCE public.docks_id_seq OWNED BY public.docks.id;
 
 
 --
+-- Name: order_order_groups; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.order_order_groups (
+    id bigint NOT NULL,
+    description text NOT NULL,
+    enabled boolean DEFAULT true,
+    company_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: order_order_groups_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.order_order_groups_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: order_order_groups_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.order_order_groups_id_seq OWNED BY public.order_order_groups.id;
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -368,6 +402,13 @@ ALTER TABLE ONLY public.docks ALTER COLUMN id SET DEFAULT nextval('public.docks_
 
 
 --
+-- Name: order_order_groups id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.order_order_groups ALTER COLUMN id SET DEFAULT nextval('public.order_order_groups_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -428,6 +469,14 @@ ALTER TABLE ONLY public.dock_requests
 
 ALTER TABLE ONLY public.docks
     ADD CONSTRAINT docks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: order_order_groups order_order_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.order_order_groups
+    ADD CONSTRAINT order_order_groups_pkey PRIMARY KEY (id);
 
 
 --
@@ -552,6 +601,13 @@ CREATE INDEX index_docks_on_dock_group_id ON public.docks USING btree (dock_grou
 
 
 --
+-- Name: index_order_order_groups_on_company_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_order_order_groups_on_company_id ON public.order_order_groups USING btree (company_id);
+
+
+--
 -- Name: index_users_on_access_policy_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -634,6 +690,14 @@ ALTER TABLE ONLY public.dock_request_audit_histories
 
 ALTER TABLE ONLY public.dock_requests
     ADD CONSTRAINT fk_rails_aa5d061e79 FOREIGN KEY (dock_group_id) REFERENCES public.dock_groups(id);
+
+
+--
+-- Name: order_order_groups fk_rails_ab9a3f06e1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.order_order_groups
+    ADD CONSTRAINT fk_rails_ab9a3f06e1 FOREIGN KEY (company_id) REFERENCES public.companies(id);
 
 
 --
@@ -725,6 +789,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191207203219'),
 ('20191214150324'),
 ('20200208210456'),
-('20200305225213');
+('20200305225213'),
+('20200309163612'),
+('20200309213334'),
+('20200309231415');
 
 

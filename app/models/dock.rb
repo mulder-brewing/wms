@@ -5,10 +5,14 @@ class Dock < ApplicationRecord
   has_many :dock_requests, class_name: "DockQueue::DockRequest", dependent: :destroy
   has_many :dock_request_audit_histories, class_name: "DockQueue::DockRequestAuditHistory", dependent: :destroy
 
-  validates :number, presence: true, length: { maximum: 50 }
+  validates :number, presence: true, length: { maximum: NORMAL_LENGTH }
   validates :dock_group_id, presence: true
-  validates_uniqueness_of :number, scope: :dock_group_id
+  validates_uniqueness_of :number, scope: :dock_group_id, case_sensitive: false
   validates :dock_group, company_id: true
+
+  def number=(val)
+    super(val&.strip)
+  end
 
   def self.where_dock_group(dock_group_id)
     where("dock_group_id = ?", dock_group_id)

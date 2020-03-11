@@ -11,7 +11,7 @@ module Auth::AccessPolicyUtil
 
   def self.check_permission_company_type(permission)
     company_type = Auth::CurrentUtil.current_company_type
-    Auth::PermissionsCO.check_permission_against_company_type(permission, company_type)
+    PermissionsCO.check_permission_against_company_type(permission, company_type)
   end
 
 

@@ -4,7 +4,6 @@ class Auth::User < ApplicationRecord
   belongs_to :access_policy
   has_many :dock_request_audit_histories, class_name: "DockQueue::DockRequestAuditHistory", dependent: :destroy
 
-  before_validation :strip_whitespace
   validates :company_id, presence: true
   validates :access_policy_id, presence: true
   # Regex for lowercase letters, numbers, and underscore.
@@ -19,6 +18,18 @@ class Auth::User < ApplicationRecord
   validates :access_policy, company_id: true
 
   has_secure_password
+
+  def first_name=(val)
+    super(val&.strip)
+  end
+
+  def last_name=(val)
+    super(val&.strip)
+  end
+
+  def email=(val)
+    super(val&.strip)
+  end
 
   def full_name
     self.first_name + ' ' + self.last_name
@@ -42,11 +53,6 @@ class Auth::User < ApplicationRecord
   end
 
   private
-    def strip_whitespace
-      self.first_name.strip! if self.first_name?
-      self.last_name.strip! if self.last_name?
-      self.email.strip! if self.email?
-    end
 
     # Returns the hash digest of the given string, used for user fixtures with minitest.
     def self.digest(string)

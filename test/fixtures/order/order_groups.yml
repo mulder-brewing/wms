@@ -1,9 +1,14 @@
 default:
-  description: Default
+  description: Default Avg Joes
   company: averagejoes
   enabled: true
 
+disabled:
+  description: Disabled
+  company: averagejoes
+  enabled: false
+
 other:
-  description: Default
+  description: Default Other
   company: other_company
   enabled: true

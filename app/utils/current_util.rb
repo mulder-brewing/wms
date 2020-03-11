@@ -1,4 +1,4 @@
-module Auth::CurrentUtil
+module CurrentUtil
 
   def self.current_user
     Current.user
@@ -10,5 +10,9 @@ module Auth::CurrentUtil
 
   def self.current_company_type
     current_company.company_type
+  end
+
+  def self.current_company_id
+    current_company.id
   end
 end

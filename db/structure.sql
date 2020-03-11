@@ -64,7 +64,8 @@ CREATE TABLE public.access_policies (
     enabled boolean DEFAULT true,
     everything boolean,
     dock_queue boolean,
-    order_order_groups boolean
+    order_order_groups boolean,
+    shipper_profiles boolean
 );
 
 
@@ -320,6 +321,39 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: shipper_profiles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.shipper_profiles (
+    id bigint NOT NULL,
+    company_id bigint NOT NULL,
+    shipper_id bigint NOT NULL,
+    enabled boolean DEFAULT true,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: shipper_profiles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.shipper_profiles_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: shipper_profiles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.shipper_profiles_id_seq OWNED BY public.shipper_profiles.id;
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -410,6 +444,13 @@ ALTER TABLE ONLY public.order_order_groups ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
+-- Name: shipper_profiles id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shipper_profiles ALTER COLUMN id SET DEFAULT nextval('public.shipper_profiles_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -486,6 +527,14 @@ ALTER TABLE ONLY public.order_order_groups
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: shipper_profiles shipper_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shipper_profiles
+    ADD CONSTRAINT shipper_profiles_pkey PRIMARY KEY (id);
 
 
 --
@@ -623,6 +672,34 @@ CREATE INDEX index_order_order_groups_on_company_id ON public.order_order_groups
 
 
 --
+-- Name: index_shipper_profiles_on_company_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_shipper_profiles_on_company_id ON public.shipper_profiles USING btree (company_id);
+
+
+--
+-- Name: index_shipper_profiles_on_company_id_and_shipper_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_shipper_profiles_on_company_id_and_shipper_id ON public.shipper_profiles USING btree (company_id, shipper_id);
+
+
+--
+-- Name: index_shipper_profiles_on_enabled; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_shipper_profiles_on_enabled ON public.shipper_profiles USING btree (enabled);
+
+
+--
+-- Name: index_shipper_profiles_on_shipper_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_shipper_profiles_on_shipper_id ON public.shipper_profiles USING btree (shipper_id);
+
+
+--
 -- Name: index_users_on_access_policy_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -681,6 +758,14 @@ ALTER TABLE ONLY public.docks
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT fk_rails_2cc9dc4915 FOREIGN KEY (access_policy_id) REFERENCES public.access_policies(id);
+
+
+--
+-- Name: shipper_profiles fk_rails_688f5a87e1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shipper_profiles
+    ADD CONSTRAINT fk_rails_688f5a87e1 FOREIGN KEY (company_id) REFERENCES public.companies(id);
 
 
 --
@@ -748,6 +833,14 @@ ALTER TABLE ONLY public.access_policies
 
 
 --
+-- Name: shipper_profiles fk_rails_f4f1dbadbb; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shipper_profiles
+    ADD CONSTRAINT fk_rails_f4f1dbadbb FOREIGN KEY (shipper_id) REFERENCES public.companies(id);
+
+
+--
 -- Name: dock_request_audit_histories fk_rails_f9503f7f47; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -809,6 +902,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200309213334'),
 ('20200309231415'),
 ('20200311164625'),
-('20200311165927');
+('20200311165927'),
+('20200311211535'),
+('20200311215920');
 
 

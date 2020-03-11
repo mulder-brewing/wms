@@ -7,6 +7,7 @@ class AccessPolicyForm < BasicRecordForm
             :dock_groups, :dock_groups=,
             :docks, :docks=,
             :order_order_groups, :order_order_groups=,
+            :shipper_profiles, :shipper_profiles=,
             to: :@record
 
   def self.model_name
@@ -27,7 +28,8 @@ class AccessPolicyForm < BasicRecordForm
       :dock_queue,
       :dock_groups,
       :docks,
-      :order_order_groups
+      :order_order_groups,
+      :shipper_profiles
     ]
   end
 

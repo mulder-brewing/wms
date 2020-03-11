@@ -12,6 +12,8 @@ class Company < ApplicationRecord
   has_many :dock_request_audit_histories, class_name: "DockQueue::DockRequestAuditHistory", dependent: :destroy
   has_many :access_policies, dependent: :destroy
   has_many :order_groups, class_name: "Order::OrderGroup", dependent: :destroy
+  has_many :shipper_profiles, dependent: :destroy
+  has_many :warehouse_profiles, class_name: "ShipperProfile", foreign_key: "shipper_id", dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 50 }, uniqueness: { case_sensitive: false }
   validates :company_type, presence: true

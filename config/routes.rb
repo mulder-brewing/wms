@@ -1,10 +1,5 @@
 Rails.application.routes.draw do
   # Resources
-  resources :companies, except: :show do
-    member do
-      get :destroy_modal
-    end
-  end
 
   namespace :auth do
     resources :users, except: [:show, :destroy]
@@ -15,6 +10,12 @@ Rails.application.routes.draw do
   resources :access_policies, except: [:show, :destroy] do
     collection do
       get :company
+    end
+  end
+
+  resources :companies, except: :show do
+    member do
+      get :destroy_modal
     end
   end
 
@@ -34,6 +35,8 @@ Rails.application.routes.draw do
   namespace :order do
     resources :order_groups, except: [:show, :destroy]
   end
+
+  resources :shipper_profiles, except: [:show, :destroy]
 
   # Other routes
   root 'static_pages#home'

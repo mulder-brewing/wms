@@ -109,7 +109,8 @@ CREATE TABLE public.companies (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     enabled boolean DEFAULT true,
-    company_type public.company_type
+    company_type public.company_type,
+    legitimate boolean
 );
 
 
@@ -503,6 +504,20 @@ CREATE INDEX index_access_policies_on_company_id ON public.access_policies USING
 
 
 --
+-- Name: index_companies_on_enabled; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_companies_on_enabled ON public.companies USING btree (enabled);
+
+
+--
+-- Name: index_companies_on_legitimate; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_companies_on_legitimate ON public.companies USING btree (legitimate);
+
+
+--
 -- Name: index_companies_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -792,6 +807,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200305225213'),
 ('20200309163612'),
 ('20200309213334'),
-('20200309231415');
+('20200309231415'),
+('20200311164625'),
+('20200311165927');
 
 

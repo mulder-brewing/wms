@@ -19,6 +19,22 @@ class ShipperProfilesController < ApplicationController
     render_modal(modal)
   end
 
+  def edit
+    form = new_form_prep_record(ShipperProfileForm)
+    authorize form.record
+    modal = Modal::EditModal.new(form)
+    render_modal(modal)
+  end
+
+  def update
+    form = new_form_prep_record(ShipperProfileForm)
+    assign_form_attributes(form)
+    authorize form.record
+    form.submit
+    modal = Modal::UpdateModal.new(form, table: form.table)
+    render_modal(modal)
+  end
+
   def index
     page = prep_new_page(Page::IndexListPage)
     table = new_table_prep_records(Table::ShipperProfilesIndexTable)

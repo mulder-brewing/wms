@@ -15,4 +15,8 @@ module CurrentUtil
   def self.current_company_id
     current_company.id
   end
+
+  def self.current_company_legitimate?
+    current_company.legitimate
+  end
 end

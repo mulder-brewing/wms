@@ -3,9 +3,15 @@
       <%= errors_for(f.object) %>
     </div>
     <div class="mb-3">
-      <%= f.input :shipper_id,
-        :collection => modal.form.shippers, :label_method => :name,
-        :value_method => :id, required: true, prompt: true %>
+      <% if modal.role?(:new_create) %>
+        <%= f.input :shipper_id,
+          :collection => modal.form.shippers, :label_method => :name,
+          :value_method => :id, required: true, prompt: true %>
+      <% else %>
+        <div class="mb-2">
+          <%= modal.form.record.shipper.name %>
+        </div>
+      <% end %>
       <% if modal.role?(:edit_update) %>
         <div class="mb-2">
           <%= f.input :enabled, sf_switch %>

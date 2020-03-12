@@ -9,7 +9,8 @@ module PermissionsCO
     dock_queue: [WAREHOUSE],
     dock_groups: [WAREHOUSE],
     docks: [WAREHOUSE],
-    order_order_groups: [WAREHOUSE]
+    order_order_groups: [WAREHOUSE],
+    shipper_profiles: [WAREHOUSE]
   }
 
   def self.check_permission_against_company_type(permission, type)

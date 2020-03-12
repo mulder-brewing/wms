@@ -40,6 +40,11 @@ en:
         company_admin: Admin
       company:
         company_type: *type
+        legitimate: Legitimate
+      company/company_type:
+        warehouse: Warehouse
+        shipper: &shipper Shipper
+        admin: Admin
       dock_queue/dock_request:
         note: Note
         primary_reference: Primary Reference
@@ -56,14 +61,12 @@ en:
         dock_assigned: Dock %{number} Assigned
         text_message_sent: Text message sent to %{number}
         dock_unassigned: Dock Unassigned
+      shipper_profile:
+        shipper_id: *shipper
 
   activerecord:
     attributes:
       <<: *armattributes
-      company/company_type:
-        warehouse: Warehouse
-        shipper: Shipper
-        admin: Admin
     errors:
       messages:
         does_not_belong: does not belong to your company
@@ -92,6 +95,9 @@ en:
       order/order_group:
         one: Order Group
         other: Order Groups
+      shipper_profile:
+        one: *shipper
+        other: Shippers
 
   activemodel:
     attributes:

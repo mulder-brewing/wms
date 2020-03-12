@@ -13,10 +13,10 @@ class CompaniesControllerTest < ActionDispatch::IntegrationTest
     @form = CompanyForm
 
     types = Company.company_types
-    @ph = { name: "Test Company A", company_type: types[:warehouse]}
-    @pu = { name: "Updated", company_type: types[:shipper], enabled: false }
+    @ph = { name: "Test Company A", company_type: types[:warehouse], legitimate: true}
+    @pu = { name: "Updated", company_type: types[:shipper], legitimate: false, enabled: false }
 
-    @update_fields = [:name, :company_type, :enabled]
+    @update_fields = [:name, :company_type, :legitimate, :enabled]
   end
 
   # ----------------------------------------------------------------------------

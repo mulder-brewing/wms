@@ -1,0 +1,2 @@
+module ShipperProfilesHelper
+end

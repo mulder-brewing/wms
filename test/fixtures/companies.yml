@@ -4,28 +4,52 @@ averagejoes:
   name: Average Joes
   enabled: true
   company_type: warehouse
+  legitimate: true
 
 company_to_delete:
   name: Delete Me Company
   enabled: true
   company_type: warehouse
+  legitimate: true
 
 other_company:
   name: Other Company
   enabled: true
   company_type: warehouse
+  legitimate: true
 
 nothing_setup_company:
   name: Nothing Setup Company
   enabled: true
   company_type: warehouse
+  legitimate: true
 
 shipper_company:
   name: Shipper Company
   enabled: true
   company_type: shipper
+  legitimate: true
+
+shipper_company_2:
+  name: Shipper Company 2
+  enabled: true
+  company_type: shipper
+  legitimate: true
+
+shipper_company_3:
+  name: Shipper Company 3
+  enabled: true
+  company_type: shipper
+  legitimate: true
+
+test_shipper:
+  name: Test Shipper
+  enabled: true
+  company_type: shipper
+  legitimate: false
 
 admin_company:
   name: Admin Company
   enabled: true
   company_type: admin
+  legitimate: true

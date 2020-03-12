@@ -18,7 +18,8 @@ class ShipperProfileForm < BasicRecordForm
 
   def setup_variables
     ids = ShipperProfile.where_company(CurrentUtil.current_company_id).pluck(:shipper_id)
-    @shippers = Company.type_shipper.where.not(id: ids)
+    @shippers = Company.type_shipper.enabled.where.not(id: ids).order(:name)
+    @shippers = @shippers.where(legitimate: true) if CurrentUtil.current_company_legitimate?
   end
 
   def permitted_params

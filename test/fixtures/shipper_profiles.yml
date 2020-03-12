@@ -1,11 +1,12 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+shipper_profile:
+  company: averagejoes
+  shipper: shipper_company
 
-one:
-  company: one
-  shipper: one
+shipper_profile_disabled:
+  company: averagejoes
+  shipper: shipper_company_2
   enabled: false
 
-two:
-  company: two
-  shipper: two
-  enabled: false
+other:
+  company: other_company
+  shipper: shipper_company_3

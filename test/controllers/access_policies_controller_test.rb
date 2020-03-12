@@ -198,6 +198,7 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
     to.visibles << FormFieldVisible.new(form: @form, field: :dock_queue)
     to.visibles << FormFieldVisible.new(form: @form, field: :dock_groups)
     to.visibles << FormFieldVisible.new(form: @form, field: :docks)
+    to.visibles << FormFieldVisible.new(form: @form, field: :shipper_profiles)
     to.test(self)
   end
 
@@ -209,6 +210,7 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
     to.visibles << FormFieldVisible.new(form: @form, field: :dock_queue, visible: false)
     to.visibles << FormFieldVisible.new(form: @form, field: :dock_groups, visible: false)
     to.visibles << FormFieldVisible.new(form: @form, field: :docks, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :shipper_profiles, visible: false)
     to.test(self)
   end
 
@@ -220,6 +222,7 @@ class AccessPoliciesControllerTest < ActionDispatch::IntegrationTest
     to.visibles << FormFieldVisible.new(form: @form, field: :dock_queue, visible: false)
     to.visibles << FormFieldVisible.new(form: @form, field: :dock_groups, visible: false)
     to.visibles << FormFieldVisible.new(form: @form, field: :docks, visible: false)
+    to.visibles << FormFieldVisible.new(form: @form, field: :shipper_profiles, visible: false)
     to.test(self)
   end
 

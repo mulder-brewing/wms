@@ -1,4 +1,4 @@
-module PermissionsCO
+module Permissions
 
   COMPANY_TYPES = Company.company_types
   ADMIN = COMPANY_TYPES[:admin]
@@ -10,7 +10,8 @@ module PermissionsCO
     dock_groups: [WAREHOUSE],
     docks: [WAREHOUSE],
     order_order_groups: [WAREHOUSE],
-    shipper_profiles: [WAREHOUSE]
+    shipper_profiles: [WAREHOUSE],
+    locations: [WAREHOUSE]
   }
 
   def self.check_permission_against_company_type(permission, type)

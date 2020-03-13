@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_03_11_215920) do
+ActiveRecord::Schema.define(version: 2020_03_13_161552) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 2020_03_11_215920) do
     t.boolean "dock_queue"
     t.boolean "order_order_groups"
     t.boolean "shipper_profiles"
+    t.boolean "locations"
     t.index ["company_id"], name: "index_access_policies_on_company_id"
   end
 
@@ -58,6 +59,29 @@ ActiveRecord::Schema.define(version: 2020_03_11_215920) do
     t.bigint "company_id"
     t.index ["company_id"], name: "index_docks_on_company_id"
     t.index ["dock_group_id"], name: "index_docks_on_dock_group_id"
+  end
+
+  create_table "locations", force: :cascade do |t|
+    t.bigint "company_id", null: false
+    t.text "ref"
+    t.text "name"
+    t.text "address_1"
+    t.text "address_2"
+    t.text "city"
+    t.text "state"
+    t.text "postal_code"
+    t.text "country"
+    t.boolean "enabled"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["city"], name: "index_locations_on_city"
+    t.index ["company_id", "ref"], name: "index_locations_on_company_id_and_ref", unique: true
+    t.index ["company_id"], name: "index_locations_on_company_id"
+    t.index ["country"], name: "index_locations_on_country"
+    t.index ["enabled"], name: "index_locations_on_enabled"
+    t.index ["name"], name: "index_locations_on_name"
+    t.index ["ref"], name: "index_locations_on_ref"
+    t.index ["state"], name: "index_locations_on_state"
   end
 
   create_table "order_order_groups", force: :cascade do |t|
@@ -111,6 +135,7 @@ ActiveRecord::Schema.define(version: 2020_03_11_215920) do
   add_foreign_key "dock_requests", "docks"
   add_foreign_key "docks", "companies"
   add_foreign_key "docks", "dock_groups"
+  add_foreign_key "locations", "companies"
   add_foreign_key "order_order_groups", "companies"
   add_foreign_key "shipper_profiles", "companies"
   add_foreign_key "shipper_profiles", "companies", column: "shipper_id"

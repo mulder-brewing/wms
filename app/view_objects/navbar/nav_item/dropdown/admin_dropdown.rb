@@ -4,6 +4,7 @@ class Navbar::NavItem::Dropdown::AdminDropdown < Navbar::NavItem::Dropdown::Main
     items = [
       Navbar::NavItem::Dropdown::AdminOnlySubDropdown.new,
       Navbar::NavItem::Dropdown::DockQueueSubDropdown.new,
+      Navbar::NavItem::DropdownItem::LocationsItem.new,
       Navbar::NavItem::Dropdown::OrderSubDropdown.new,
       Navbar::NavItem::DropdownItem::ShipperProfilesItem.new
     ]

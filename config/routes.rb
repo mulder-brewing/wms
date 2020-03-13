@@ -32,6 +32,8 @@ Rails.application.routes.draw do
     resources :dock_request_audit_histories, only: [:index]
   end
 
+  resources :locations, except: [:show, :destroy]
+
   namespace :order do
     resources :order_groups, except: [:show, :destroy]
   end
@@ -41,7 +43,6 @@ Rails.application.routes.draw do
   # Other routes
   root 'static_pages#home'
   get 'static_pages/home'
-  get 'dock_request_audit_histories/index'
   get '/login', to: 'auth/sessions#new'
   post '/login', to: 'auth/sessions#create'
   delete '/logout', to: 'auth/sessions#destroy'

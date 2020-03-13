@@ -1,8 +1,8 @@
 class DockGroupPolicy < ApplicationPolicy
 
-  def initialize(user, scope)
+  def initialize(*)
+    super
     @permission = :dock_groups
-    super(user, scope)
   end
 
   class Scope < Scope

@@ -61,6 +61,12 @@ en:
         dock_assigned: Dock %{number} Assigned
         text_message_sent: Text message sent to %{number}
         dock_unassigned: Dock Unassigned
+      location:
+        ref: Reference
+        city: City
+        state: State/Province
+        postal_code: Zip
+        country: Country
       shipper_profile:
         shipper_id: *shipper
 
@@ -92,6 +98,9 @@ en:
       dock_queue/dock_request:
         one: Dock Request
         other: Dock Queue
+      location:
+        one: Location
+        other: Locations
       order/order_group:
         one: Order Group
         other: Order Groups

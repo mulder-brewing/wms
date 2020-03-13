@@ -65,7 +65,8 @@ CREATE TABLE public.access_policies (
     everything boolean,
     dock_queue boolean,
     order_order_groups boolean,
-    shipper_profiles boolean
+    shipper_profiles boolean,
+    locations boolean
 );
 
 
@@ -279,6 +280,46 @@ ALTER SEQUENCE public.docks_id_seq OWNED BY public.docks.id;
 
 
 --
+-- Name: locations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.locations (
+    id bigint NOT NULL,
+    company_id bigint NOT NULL,
+    ref text,
+    name text,
+    address_1 text,
+    address_2 text,
+    city text,
+    state text,
+    postal_code text,
+    country text,
+    enabled boolean,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: locations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.locations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: locations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.locations_id_seq OWNED BY public.locations.id;
+
+
+--
 -- Name: order_order_groups; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -437,6 +478,13 @@ ALTER TABLE ONLY public.docks ALTER COLUMN id SET DEFAULT nextval('public.docks_
 
 
 --
+-- Name: locations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.locations ALTER COLUMN id SET DEFAULT nextval('public.locations_id_seq'::regclass);
+
+
+--
 -- Name: order_order_groups id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -511,6 +559,14 @@ ALTER TABLE ONLY public.dock_requests
 
 ALTER TABLE ONLY public.docks
     ADD CONSTRAINT docks_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: locations locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.locations
+    ADD CONSTRAINT locations_pkey PRIMARY KEY (id);
 
 
 --
@@ -665,6 +721,62 @@ CREATE INDEX index_docks_on_dock_group_id ON public.docks USING btree (dock_grou
 
 
 --
+-- Name: index_locations_on_city; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_locations_on_city ON public.locations USING btree (city);
+
+
+--
+-- Name: index_locations_on_company_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_locations_on_company_id ON public.locations USING btree (company_id);
+
+
+--
+-- Name: index_locations_on_company_id_and_ref; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_locations_on_company_id_and_ref ON public.locations USING btree (company_id, ref);
+
+
+--
+-- Name: index_locations_on_country; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_locations_on_country ON public.locations USING btree (country);
+
+
+--
+-- Name: index_locations_on_enabled; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_locations_on_enabled ON public.locations USING btree (enabled);
+
+
+--
+-- Name: index_locations_on_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_locations_on_name ON public.locations USING btree (name);
+
+
+--
+-- Name: index_locations_on_ref; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_locations_on_ref ON public.locations USING btree (ref);
+
+
+--
+-- Name: index_locations_on_state; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_locations_on_state ON public.locations USING btree (state);
+
+
+--
 -- Name: index_order_order_groups_on_company_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -809,6 +921,14 @@ ALTER TABLE ONLY public.dock_request_audit_histories
 
 
 --
+-- Name: locations fk_rails_ca4b9e9931; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.locations
+    ADD CONSTRAINT fk_rails_ca4b9e9931 FOREIGN KEY (company_id) REFERENCES public.companies(id);
+
+
+--
 -- Name: dock_requests fk_rails_caff2c10d7; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -904,6 +1024,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200311164625'),
 ('20200311165927'),
 ('20200311211535'),
-('20200311215920');
+('20200311215920'),
+('20200313160602'),
+('20200313161552');
 
 

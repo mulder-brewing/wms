@@ -294,7 +294,7 @@ CREATE TABLE public.locations (
     state text,
     postal_code text,
     country text,
-    enabled boolean,
+    enabled boolean DEFAULT true,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );

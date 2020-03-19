@@ -4,7 +4,6 @@
  * Licensed under the GPL license
  */
 
-
 $( document ).on('turbolinks:load', function() {
     $( '.dropdown-menu a.dropdown-toggle' ).on( 'click', function ( e ) {
       var $el = $( this );

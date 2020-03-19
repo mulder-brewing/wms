@@ -19,6 +19,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :countries, only: [] do
+    member do
+      get :states
+    end
+  end
+
   resources :dock_groups, except: [:show, :destroy]
   resources :docks, except: [:show, :destroy]
 

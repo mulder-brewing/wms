@@ -24,6 +24,8 @@ var modal_id = '<%= modal.id %>';
 <% else %>
   <% unless form.view_path.nil? %>
     $("#<%= form.html_id %>").replaceWith("<%=  j render form.view_path, modal: modal %>");
+    // Need this to rebind on change events and things like input mask.
+    $("#generic-modal").trigger('show.bs.modal');
   <% end %>
 <% end %>
 <% if modal.error? %>

@@ -10,7 +10,7 @@ class CreateLocations < ActiveRecord::Migration[6.0]
       t.text :state
       t.text :postal_code
       t.text :country
-      t.boolean :enabled
+      t.boolean :enabled, default: true
 
       t.timestamps
     end

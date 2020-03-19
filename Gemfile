@@ -5,10 +5,6 @@ ruby '2.6.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~>6.0.0'
-# Use bottstrap framework for nice web design and interface elements.
-gem 'bootstrap', '~> 4.3', '>= 4.3.1'
-#Trying to get forms to work
-gem 'popper_js'
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
@@ -22,8 +18,6 @@ gem 'uglifier', '>= 1.3.0'
 
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 5.0.0'
-# Turbolinks makes navigating your web application faster. Read more: https://github.com/turbolinks/turbolinks
-gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -40,8 +34,6 @@ gem 'bcrypt', '~> 3.1.12'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '~>1.4.5', require: false
 
-gem 'jquery-rails', '4.3.1'
-
 #Pagination
 gem 'pagy', '~> 3.3.2'
 #Makes pagy run quicker
@@ -56,9 +48,6 @@ gem 'simple_form', '~>4.1.0'
 # Format times in user's timezone
 gem 'local_time', '~>2.1.0'
 
-# Masking for phone number fields etc.
-gem 'jquery_mask_rails', '~>0.1.0'
-
 # Amazon SNS for sending text message.
 gem 'aws-sdk-sns'
 
@@ -70,6 +59,8 @@ gem 'webpacker', '~>4.2.0'
 
 # Pundit is to help with authorization/access profiles
 gem 'pundit', '~>2.1.0'
+
+gem 'validates_zipcode', '~>0.2.4'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -95,6 +86,8 @@ group :test do
   gem 'minitest-reporters',       '1.1.14'
   # Require all my custome test cllasses and modules
   gem 'require_all'
+  # Need this so I can assert_select_jquery in minitest
+  gem 'jquery-rails', '4.3.1'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

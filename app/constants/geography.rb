@@ -1,3 +1,5 @@
+
+
 module Geography
 
   COUNTRIES = {
@@ -5,18 +7,6 @@ module Geography
     'CA' => 'Canada',
     'MX' => 'Mexico'
   }
-
-  def self.countries_states
-    {
-      'US' => States::US,
-      'CA' => States::CA,
-      'MX' => States::MX
-    }
-  end
-
-  def self.states_for_country(country_code)
-    countries_states[country_code]
-  end
 
   module States
 
@@ -126,6 +116,16 @@ module Geography
       'ZAC' => 'Zacatecas'
     }
 
+  end
+
+  COUNTRIES_STATES = {
+    'US' => States::US,
+    'CA' => States::CA,
+    'MX' => States::MX
+  }
+
+  def self.states_for_country(country_code)
+    COUNTRIES_STATES[country_code]
   end
 
 end

@@ -71,7 +71,7 @@ ActiveRecord::Schema.define(version: 2020_03_13_161552) do
     t.text "state"
     t.text "postal_code"
     t.text "country"
-    t.boolean "enabled"
+    t.boolean "enabled", default: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["city"], name: "index_locations_on_city"

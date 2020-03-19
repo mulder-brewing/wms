@@ -3,14 +3,19 @@
       <%= errors_for(f.object) %>
     </div>
     <div class="mb-3">
-      <%= f.input :ref, as: :string %>
-      <%= f.input :name, as: :string %>
-      <%= f.input :address_1, as: :string %>
+      <%= f.input :ref, as: :string, required: true %>
+      <%= f.input :name, as: :string, required: true %>
+      <%= f.input :address_1, as: :string, required: true %>
       <%= f.input :address_2, as: :string %>
-      <%= f.input :city, as: :string %>
-      <%= f.input :state, :collection => HashUtil.to_select(Geography.states_for_country("US")), prompt: true %>
-      <%= f.input :postal_code, as: :string %>
-      <%= f.input :country, :collection => HashUtil.to_select(Geography::COUNTRIES), selected: 1 %>
+      <%= f.input :city, as: :string, required: true %>
+      <%= f.input :state, :collection => states(f),
+                          prompt: true,
+                          required: true %>
+      <%= f.input :postal_code, as: :string, required: true %>
+      <%= f.input :country, :collection => countries,
+                            selected: selected_country(f),
+                            prompt: true,
+                            required: true %>
       <% if modal.role?(:edit_update) %>
         <div class="mb-2">
           <%= f.input :enabled, sf_switch %>

@@ -15,4 +15,31 @@
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
 
-console.log('Hello World from Webpacker')
+require('@rails/ujs').start()
+require('turbolinks').start()
+require('@rails/activestorage').start()
+
+import 'bootstrap'
+// Initialize bootstrap tooltips
+document.addEventListener("turbolinks:load", () => {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
+// Make JQuery available to views and js partials
+import JQuery from 'jquery';
+window.$ = window.JQuery = JQuery;
+
+import 'jquery-mask-plugin'
+
+import LocalTime from "local-time"
+LocalTime.start()
+
+// My custom JS
+import 'bootstrap-4-multi-dropdown-navbar'
+import 'modal'
+import 'auth/users'
+import 'access_policies'
+import 'locations'
+
+// stylesheets
+import "../stylesheets/application.scss"
